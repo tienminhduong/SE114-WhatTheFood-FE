@@ -1,8 +1,8 @@
 package com.example.se114_whatthefood_fe
 
 import android.R.attr.text
-import android.os.Bundle
 import android.widget.Button
+import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
