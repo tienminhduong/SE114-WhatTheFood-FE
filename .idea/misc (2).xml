@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-<<<<<<< HEAD
-  <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="jbr-21" project-jdk-type="JavaSDK" />
-=======
   <component name="DeviceStreaming">
     <option name="deviceSelectionList">
       <list>
@@ -792,7 +788,6 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="jbr-21" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
->>>>>>> 99a7860d2ba980832d2ef56bbb37b6bac0bdc572
   <component name="ProjectType">
     <option name="id" value="Android" />
   </component>
