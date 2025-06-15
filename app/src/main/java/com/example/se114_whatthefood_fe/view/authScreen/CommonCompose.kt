@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,7 @@ fun TabButton(text: String, isSelected: Boolean, onClick: () -> Unit, modifier: 
         onClick = onClick,
         shape = RoundedCornerShape(5.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) LightGreen else White,
+            containerColor = if (isSelected) Color.Transparent else White,
             contentColor = if (isSelected) White else LightGreen
         ),
         modifier = modifier
@@ -115,6 +116,11 @@ fun RoundCornerTextFieldWithIcon( leadingIcon: @Composable () -> Unit,
         shape = RoundedCornerShape(10.dp),
         modifier = modifier.fillMaxWidth(),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent, // Ẩn đường viền khi focus
+            unfocusedIndicatorColor = Color.Transparent, // Ẩn đường viền khi không focus
+            focusedContainerColor = Color.Transparent, // Màu nền khi focus
+        ),
         trailingIcon = { // Icon con mắt ở cuối
             if (isPassword) {
                 var passwordVisible by remember { mutableStateOf(false) }

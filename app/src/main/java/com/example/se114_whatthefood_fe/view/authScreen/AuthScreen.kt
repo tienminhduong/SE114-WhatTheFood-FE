@@ -126,7 +126,7 @@ fun TopBar(isLogin: Boolean,
         // Back button
         ButtonIcon(icon = Icons.AutoMirrored.Filled.ArrowBack,
             onClick = onBack,
-            colorBackGround = LightGreen,
+            colorBackGround = Color.Transparent,
             colorIcon = White,
             modifier = modifier
         )
@@ -154,7 +154,7 @@ fun TopBar(isLogin: Boolean,
         ButtonIcon(
             icon = Icons.AutoMirrored.Filled.Help,
             onClick = onHelp,
-            colorBackGround = LightGreen,
+            colorBackGround = Color.Transparent,
             colorIcon = White,
             modifier = modifier,
         )
