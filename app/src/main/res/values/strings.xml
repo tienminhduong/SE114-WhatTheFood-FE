@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SE114-WhatTheFood-FE</string>
+    <string name="title_activity_login_form">LoginForm</string>
 </resources>
