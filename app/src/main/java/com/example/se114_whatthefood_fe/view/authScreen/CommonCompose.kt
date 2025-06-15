@@ -117,9 +117,9 @@ fun RoundCornerTextFieldWithIcon( leadingIcon: @Composable () -> Unit,
         modifier = modifier.fillMaxWidth(),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent, // Ẩn đường viền khi focus
-            unfocusedIndicatorColor = Color.Transparent, // Ẩn đường viền khi không focus
-            focusedContainerColor = Color.Transparent, // Màu nền khi focus
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White,
+            focusedContainerColor = Color.White,
         ),
         trailingIcon = { // Icon con mắt ở cuối
             if (isPassword) {
