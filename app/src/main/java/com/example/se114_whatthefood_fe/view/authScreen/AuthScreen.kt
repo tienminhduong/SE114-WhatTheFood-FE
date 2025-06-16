@@ -34,21 +34,23 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 @Composable
 @Preview
 fun AuthScreenPreview() {
-    AuthScreen()
+    val authViewModel = AuthViewModel()
+    AuthScreen(authViewModel)
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AuthScreen() {
+fun AuthScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
     // This is a placeholder for the AuthScreen composable.
     // The actual implementation will include the login and register forms,
     // as well as any other necessary UI components.
     // For now, we can just display a simple text or a placeholder.
-    var isLogin by remember { mutableStateOf(true) }
+    val isLogin by authViewModel.isLogin
     Column(modifier = Modifier.fillMaxSize()
         .background(
             brush = Brush.verticalGradient(colors = listOf(LightGreen, White))
@@ -57,9 +59,9 @@ fun AuthScreen() {
         Scaffold(topBar = {
             TopBar(
                 isLogin = true,
-                onTabClick = { isLogin = it /* Handle tab click */ },
-                onBack = { /* Handle back navigation */ },
-                onHelp = { /* Handle help action */ }
+                onTabClick = { authViewModel.onTabClick(it) },
+                onBack = { authViewModel.onBackClick() },
+                onHelp = { authViewModel.onHelpClick() }
             )
         },
             containerColor = Color.Transparent,
@@ -87,8 +89,8 @@ fun AuthScreen() {
                             (fadeIn() + slideInHorizontally { it }).togetherWith(fadeOut() + slideOutHorizontally { -it })
                         }
                     ) { target ->
-                        if (target) LoginForm()
-                        else RegisterForm()
+                        if (target) LoginForm(authViewModel)
+                        else RegisterForm(authViewModel)
                     }
                 }
             }
@@ -96,14 +98,6 @@ fun AuthScreen() {
     }
 }
 
-@Composable
-@Preview
-fun AuthScreenTopBarPreview() {
-    TopBar(true,
-           onTabClick = {  },
-           onBack = { /* Handle back navigation */ },
-        onHelp = { /* Handle help action */ },)
-}
 
 @Composable
 fun BottomBar(){
@@ -115,11 +109,12 @@ fun BottomBar(){
 }
 
 @Composable
-fun TopBar(isLogin: Boolean,
-           onTabClick: (Boolean) -> Unit,
-           onBack: () -> Unit,
-           onHelp: () -> Unit,
-           modifier: Modifier = Modifier)
+fun TopBar(
+    isLogin: Boolean,
+    onTabClick: (Boolean) -> Unit,
+    onBack: () -> Unit,
+    onHelp: () -> Unit,
+    modifier: Modifier = Modifier)
 {
     var isLogin by remember { mutableStateOf(true) }
     Row {
