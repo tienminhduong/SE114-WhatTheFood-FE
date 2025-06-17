@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Modifier.Companion.then
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -33,24 +38,23 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
+import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 @Composable
 @Preview
 fun RegisterFormPreview() {
-    RegisterForm()
+    val authViewModel = AuthViewModel()
+    RegisterForm(authViewModel)
 }
 
 @Composable
-fun RegisterForm(modifier: Modifier = Modifier) {
-    var phone by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
     Column {
         // text field for phone number
         RoundCornerTextFieldWithIcon(
             placeholder = "Số điện thoại",
-            value = phone,
-            onValueChange = { phone = it },
+            value = authViewModel.phoneRegister,
+            onValueChange = { authViewModel.phoneRegister = it },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Phone,
@@ -65,8 +69,8 @@ fun RegisterForm(modifier: Modifier = Modifier) {
         // text field for password
         RoundCornerTextFieldWithIcon(
             placeholder = "Mật khẩu",
-            value = password,
-            onValueChange = { password = it },
+            value = authViewModel.passwordRegister,
+            onValueChange = { authViewModel.passwordRegister = it },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
@@ -75,14 +79,29 @@ fun RegisterForm(modifier: Modifier = Modifier) {
                 )
             },
             isPassword = true,
-            modifier = modifier
+            modifier = modifier,
+            trailingIcon = {
+                IconButton(
+                    onClick = { authViewModel.clickVisiblePasswordInRegister() }
+                )
+                {
+                    Icon(
+                        imageVector = if(authViewModel.isVisiblePasswordInRegister)
+                                        Icons.Default.VisibilityOff
+                                      else Icons.Default.Visibility,
+                        contentDescription = "Toggle Password Visibility",
+                        tint = LightGreen,
+                    )
+                }
+            },
+            isPasswordVisibility = authViewModel.isVisiblePasswordInRegister
         )
-        // text file for confirm password
+        // text field for confirm password
         Spacer(modifier.height(16.dp))
         RoundCornerTextFieldWithIcon(
             placeholder = "Nhập lại mật khẩu",
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            value = authViewModel.confirmPassword,
+            onValueChange = { authViewModel.confirmPassword = it },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
@@ -91,7 +110,22 @@ fun RegisterForm(modifier: Modifier = Modifier) {
                 )
             },
             isPassword = true,
-            modifier = modifier
+            modifier = modifier,
+            trailingIcon = {
+                IconButton(
+                    onClick = { authViewModel.clickVisibleConfirmPassword() }
+                )
+                {
+                    Icon(
+                        imageVector = if(authViewModel.isVisibleConfirmPasswordInRegister)
+                            Icons.Default.VisibilityOff
+                        else Icons.Default.Visibility,
+                        contentDescription = "Toggle Password Visibility",
+                        tint = LightGreen,
+                    )
+                }
+            },
+            isPasswordVisibility = authViewModel.isVisibleConfirmPasswordInRegister
         )
         // spacer
         Spacer(modifier.height(16.dp))
@@ -107,9 +141,8 @@ fun RegisterForm(modifier: Modifier = Modifier) {
                 fontSize = TextUnit(13f, TextUnitType.Sp),
             )
             // check box
-            var checked by remember { mutableStateOf(false)}
-            Checkbox(checked = checked,
-                onCheckedChange = {checked = it},
+            Checkbox(checked = authViewModel.isAgreeToTerms,
+                onCheckedChange = {authViewModel.isAgreeToTerms = it},
                 colors = CheckboxDefaults.colors(
                     checkedColor = LightGreen,
                     uncheckedColor = Color.Gray,
@@ -120,7 +153,7 @@ fun RegisterForm(modifier: Modifier = Modifier) {
         // button dang ki
         RoundCornerButton(
             text = "Đăng ký",
-            onClick = { /* TODO: Handle register */ },
+            onClick = { authViewModel.onRegisterClick() },
             modifier = modifier
         )
         // divider with center text

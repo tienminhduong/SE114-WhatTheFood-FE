@@ -32,3 +32,5 @@ val Typography = Typography(
     )
     */
 )
+
+val HeaderTextSize = 20.sp

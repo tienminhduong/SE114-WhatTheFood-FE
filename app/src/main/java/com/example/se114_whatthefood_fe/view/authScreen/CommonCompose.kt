@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -31,8 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.se114_whatthefood_fe.ui.theme.BlurGray
@@ -102,11 +105,13 @@ fun ButtonWithIcon(
 
 @Composable
 fun RoundCornerTextFieldWithIcon( leadingIcon: @Composable () -> Unit,
-    placeholder: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    isPassword: Boolean = false)
+                                    placeholder: String,
+                                    value: String,
+                                    onValueChange: (String) -> Unit,
+                                    modifier: Modifier = Modifier,
+                                    isPassword: Boolean = false,
+                                  trailingIcon: @Composable (() -> Unit)? = null,
+                                    isPasswordVisibility: Boolean? = false)
 {
     TextField(
         value = value,
@@ -115,26 +120,34 @@ fun RoundCornerTextFieldWithIcon( leadingIcon: @Composable () -> Unit,
         leadingIcon = leadingIcon,
         shape = RoundedCornerShape(10.dp),
         modifier = modifier.fillMaxWidth(),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        visualTransformation = if (isPassword)
+        {
+            if (isPasswordVisibility == true)
+                VisualTransformation.None
+            else
+                PasswordVisualTransformation() // Hiển thị mật khẩu
+
+        } else VisualTransformation.None,
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.White,
             unfocusedIndicatorColor = Color.White,
             focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
         ),
-        trailingIcon = { // Icon con mắt ở cuối
-            if (isPassword) {
-                var passwordVisible by remember { mutableStateOf(false) }
-                val image = if (!passwordVisible)
-                    Icons.Filled.Visibility// Thay đổi thành biến để kiểm soát hiển thị
-                else Icons.Filled.VisibilityOff
-
-                val description = if (passwordVisible) "Hide password" else "Show password"
-
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    androidx.compose.material3.Icon(imageVector = image, null)
-                }
-            }
-        }
+        trailingIcon = trailingIcon
+            //{ // Icon con mắt ở cuối
+//            if (isPassword) {
+//                var passwordVisible by remember { mutableStateOf(false) }
+//                val image = if (!passwordVisible)
+//                    Icons.Filled.Visibility// Thay đổi thành biến để kiểm soát hiển thị
+//                else Icons.Filled.VisibilityOff
+//
+//                val description = if (passwordVisible) "Hide password" else "Show password"
+//
+//                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+//                    androidx.compose.material3.Icon(imageVector = image, null)
+//                }
+//            }
     )
 }
 

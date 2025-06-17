@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,16 +30,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
+import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 @Composable
 @Preview
 fun LoginFormPreview() {
-    LoginForm()
+    val authViewModel = AuthViewModel()
+    LoginForm(authViewModel)
 }
 @Composable
-fun LoginForm(modifier: Modifier = Modifier) {
-    var phone by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
     Column{
         // text field for phone number
         RoundCornerTextFieldWithIcon(
@@ -48,16 +51,16 @@ fun LoginForm(modifier: Modifier = Modifier) {
                 )
             },
             placeholder = "Số điện thoại",
-            value = phone,
-            onValueChange = { phone = it },
+            value = authViewModel.phoneLogin,
+            onValueChange = { authViewModel.phoneLogin = it },
             modifier = Modifier.fillMaxWidth()
         )
 
         // spacer
         Spacer(modifier.height(16.dp))
         // text field for password
-        RoundCornerTextFieldWithIcon(value = password,
-            onValueChange = { password = it },
+        RoundCornerTextFieldWithIcon(value = authViewModel.passwordLogin,
+            onValueChange = { authViewModel.passwordLogin = it },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
@@ -67,7 +70,22 @@ fun LoginForm(modifier: Modifier = Modifier) {
             },
             placeholder = "Mật khẩu",
             isPassword = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                IconButton(
+                    onClick = { authViewModel.clickVisiblePasswordInLogin() }
+                )
+                {
+                    Icon(
+                        imageVector = if(authViewModel.isVisiblePasswordInLogin)
+                            Icons.Default.VisibilityOff
+                        else Icons.Default.Visibility,
+                        contentDescription = "Toggle Password Visibility",
+                        tint = LightGreen,
+                    )
+                }
+            },
+            isPasswordVisibility = authViewModel.isVisiblePasswordInLogin
         )
 
         // spacer
@@ -77,7 +95,7 @@ fun LoginForm(modifier: Modifier = Modifier) {
         Text(
             "Quên mật khẩu?",
             modifier = Modifier.align(Alignment.End)
-                               .clickable(onClick = { /* TODO: Handle forgot password */ }),
+                               .clickable(onClick = { authViewModel.onForgotPasswordClick() }),
             color = DarkBlue,
             style = MaterialTheme.typography.labelSmall,
         )
@@ -85,7 +103,7 @@ fun LoginForm(modifier: Modifier = Modifier) {
 
         // login button
         RoundCornerButton(
-            onClick = { TODO() },
+            onClick = { authViewModel.onLoginClick() },
             modifier = modifier,
             text = "Đăng nhập"
         )
