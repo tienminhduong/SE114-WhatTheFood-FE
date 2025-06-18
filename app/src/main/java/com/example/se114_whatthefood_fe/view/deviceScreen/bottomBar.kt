@@ -33,10 +33,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 
 data class BottomBarItem(
+    val route: String,
     val icon: ImageVector,
     val label: String,
     var badgeCount: Int? = null,
@@ -49,34 +51,41 @@ data class BottomBarItem(
 @Composable
 @Preview
 fun BottomBarPreview() {
-    BottomBarDeviceScreen(0)
+    //BottomBarDeviceScreen(0)
 
 }
 
 @Composable
-fun BottomBarDeviceScreen(selectedIndex: Int, modifier: Modifier = Modifier) {
-    var selectedIndex by remember { mutableIntStateOf(selectedIndex)}
+fun BottomBarDeviceScreen(navController: NavHostController,
+                          currentRoute: String?,
+                         modifier: Modifier = Modifier) {
+    //var selectedIndex by remember { mutableIntStateOf(selectedIndex)}
     val items = listOf(
         BottomBarItem(
             icon = Icons.Filled.Home,
-            label = "Home"
+            label = "Home",
+            route = "Home"
         ),
         BottomBarItem(
             icon = Icons.AutoMirrored.Filled.ReceiptLong,
             label = "Đơn hàng",
-            badgeCount = 10
+            badgeCount = 10,
+            route = "Orders",
         ),
         BottomBarItem(
             icon = Icons.Filled.Favorite,
-            label = "Đã thích"
+            label = "Đã thích",
+            route = "Favorites",
         ),
         BottomBarItem(
             icon = Icons.Filled.Notifications,
-            label = "Thông báo"
+            label = "Thông báo",
+            route = "Notifications",
         ),
         BottomBarItem(
             icon = Icons.Filled.Person,
-            label = "Tôi"
+            label = "Tôi",
+            route = "Account",
         )
     )
 
@@ -87,7 +96,7 @@ fun BottomBarDeviceScreen(selectedIndex: Int, modifier: Modifier = Modifier) {
         , horizontalArrangement = Arrangement.spacedBy((-0.2).dp) // Adjust spacing to avoid gaps between items
     ) {
         items.forEachIndexed { index, item ->
-            val isSelected = index == selectedIndex
+            val isSelected = item.route == currentRoute
 
             Box(
                 modifier = Modifier
@@ -96,7 +105,18 @@ fun BottomBarDeviceScreen(selectedIndex: Int, modifier: Modifier = Modifier) {
                     .background(
                         if (isSelected) item.selectedColorBackground else item.unselectedColorBackground
                     )
-                    .clickable { selectedIndex = index },
+                    .clickable {
+                        //selectedIndex = index
+                        if (currentRoute != item.route) {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                               },
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
