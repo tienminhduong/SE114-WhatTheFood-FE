@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -36,6 +37,7 @@ import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview
 fun AuthScreenPreview() {

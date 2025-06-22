@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview
 fun OrderScreenPreview() {
