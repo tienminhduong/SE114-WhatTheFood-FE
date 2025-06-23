@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -176,7 +175,7 @@ fun CardRecommendView(modifier: Modifier = Modifier, card: Card, imageLoader: Im
     Column(verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
            modifier = modifier
-               .padding(8.dp)
+               //.padding(8.dp)
                .background(shape = RoundedCornerShape(8.dp), color = Color.White)
                .width(150.dp)) {
         // image
@@ -198,7 +197,8 @@ fun CardRecommendView(modifier: Modifier = Modifier, card: Card, imageLoader: Im
 
 @Composable
 fun ListRecommendFood(modifier: Modifier = Modifier, listCard: List<Card>) {
-    LazyRow(modifier = modifier.fillMaxWidth()){
+    LazyRow(modifier = modifier.fillMaxWidth()
+        , horizontalArrangement = Arrangement.spacedBy(8.dp)){
         items(items = listCard, key = {it.id.toString()}) { card ->
             CardRecommendView(card = card, imageLoader = rememberOptimizedImageLoader())
         }
