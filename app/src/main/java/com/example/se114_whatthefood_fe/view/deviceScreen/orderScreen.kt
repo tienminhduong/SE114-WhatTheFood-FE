@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,10 +19,14 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,6 +44,7 @@ import com.example.se114_whatthefood_fe.ui.theme.HeaderTextSize
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
+import kotlinx.coroutines.launch
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -119,13 +125,53 @@ fun OrderScreen(orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
         // header
         HeaderOrderScreen()
 
-        CustomScrollTab(listOf("Đơn đã mua", "Lịch sử", "Đánh giá", "Đang đến", "Giỏ hàng"),
-           pagerState = pagerState)
+//        CustomScrollTab(listOf("Đơn đã mua", "Lịch sử", "Đánh giá", "Đang đến", "Giỏ hàng"),
+//           pagerState = pagerState)
+        ScrollTab(listOf("Đơn đã mua", "Lịch sử", "Đánh giá", "Đang đến", "Giỏ hàng"),
+            pagerState = pagerState,
+            modifier = Modifier.fillMaxWidth())
         // tab content
         SwipeTabs(pagerState = pagerState)
 
     }
 
+}
+
+@Composable
+fun ScrollTab(tabTitles: List<String>,
+              pagerState: PagerState,
+              modifier: Modifier = Modifier){
+    val coroutineScope = rememberCoroutineScope()
+    ScrollableTabRow(selectedTabIndex = pagerState.currentPage,
+        modifier = modifier,
+        containerColor = Color.Transparent,
+        edgePadding = 0.dp,
+        indicator = { tabPositions ->
+            TabRowDefaults.SecondaryIndicator(Modifier. tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                color = Color.White)}
+    ) {
+        tabTitles.forEachIndexed {
+            index, title ->
+            Tab(
+                selected = pagerState.currentPage == index,
+                onClick = {
+                    // Handle tab click
+                    // You can use pagerState.animateScrollToPage(index) to change the page
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
+                text = {
+                    Text(
+                        text = title,
+                        fontSize = 13.sp,
+                        fontWeight = Bold,
+                        color = if (pagerState.currentPage == index) Color.White else Color.White.copy(alpha = 0.6f)
+                    )
+                }
+            )
+        }
+    }
 }
 
 @Composable
