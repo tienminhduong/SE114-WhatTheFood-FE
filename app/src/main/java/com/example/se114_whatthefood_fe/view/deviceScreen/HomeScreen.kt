@@ -42,7 +42,6 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
-import com.example.se114_whatthefood_fe.ui.theme.LighterGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.card.Card
 import com.example.se114_whatthefood_fe.view.card.CardRecommendView
@@ -177,18 +176,19 @@ fun SearchBar(modifier: Modifier = Modifier) {
         Icon(imageVector = Icons.Filled.Search,
             contentDescription = null,
             tint = LightGreen,
-            modifier = Modifier.size(35.dp))
+            modifier = Modifier.size(40.dp).padding(start = 10.dp))
         TextField(value = textSearch.value,
             onValueChange = { textSearch.value = it },
             placeholder = { Text(text = "Tìm kiếm món ăn",
-                fontWeight = FontWeight.W800,
+                fontWeight = FontWeight.Bold,
                 color = LightGreen) },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent
-            ))
+            ),
+            modifier = Modifier.weight(1f))
     }
 }
 
@@ -196,7 +196,7 @@ fun SearchBar(modifier: Modifier = Modifier) {
 fun TabRowCustom(modifier: Modifier = Modifier, selectedIndexTab: Int, listTab: List<String>, onTabSelected: (Int) -> Unit) {
     TabRow(selectedTabIndex = selectedIndexTab,
         modifier = modifier.clip(shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
-        containerColor = LighterGreen,
+        containerColor = LightGreen,
         contentColor = White,
         indicator = { tabPositions ->
             if (selectedIndexTab < tabPositions.size) {

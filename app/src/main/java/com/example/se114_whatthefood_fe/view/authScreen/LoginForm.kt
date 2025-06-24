@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,10 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +29,7 @@ import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview
 fun LoginFormPreview() {
