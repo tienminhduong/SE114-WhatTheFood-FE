@@ -59,9 +59,10 @@ fun HomeScreenPreview() {
 fun HomeScreen(modifier: Modifier = Modifier) {
     var selectedIndexTab by remember { mutableIntStateOf(0) }
     val tablist = listOf("Gần bạn", "Bán chạy", "Đánh giá tốt")
-    Column(Modifier.background(brush = Brush.verticalGradient(colors = listOf(LightGreen, White)))) {
+    Column(modifier.background(brush = Brush.verticalGradient(colors = listOf(LightGreen, White)))
+        .padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
 
-        SearchBar(modifier = Modifier.height(50.dp))
+        SearchBar(modifier = Modifier.wrapContentHeight())
         LazyColumn(modifier = Modifier.padding(horizontal = 10.dp)
                                     .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(6.dp),){
@@ -176,7 +177,7 @@ fun SearchBar(modifier: Modifier = Modifier) {
         Icon(imageVector = Icons.Filled.Search,
             contentDescription = null,
             tint = LightGreen,
-            modifier = Modifier.size(40.dp))
+            modifier = Modifier.size(35.dp))
         TextField(value = textSearch.value,
             onValueChange = { textSearch.value = it },
             placeholder = { Text(text = "Tìm kiếm món ăn",
