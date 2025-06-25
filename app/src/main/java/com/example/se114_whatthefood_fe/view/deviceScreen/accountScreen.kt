@@ -215,7 +215,7 @@ fun AccountScreen(authViewModel: AuthViewModel,
         if(isLoggedIn == true) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = {},
+                onClick = { authViewModel.onLogoutClick() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),

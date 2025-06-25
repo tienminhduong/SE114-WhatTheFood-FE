@@ -62,6 +62,15 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
 
     }
 
+    fun onLogoutClick() {
+        viewModelScope.launch {
+            // Handle logout logic here, e.g., clear the token in DataStore
+            authModel.clearToken()
+            // Reset login state
+            loginSuccess = null
+        }
+    }
+
     suspend fun isLoggedIn(): Boolean {
         // Check if the user is logged in by checking the token in DataStore
         return authModel.getToken() != null

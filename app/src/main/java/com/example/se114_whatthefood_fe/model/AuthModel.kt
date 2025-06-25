@@ -17,6 +17,12 @@ class AuthModel (
         private val TOKEN_KEY = stringPreferencesKey("auth_token")
     }
 
+
+    suspend fun clearToken() {
+        dataStore.edit { preferences ->
+            preferences.remove(TOKEN_KEY)
+        }
+    }
     suspend fun login(phoneNumber: String, password: String): Result<LoginResponse> {
         return try {
             val response = api.login(LoginRequest(phoneNumber, password))

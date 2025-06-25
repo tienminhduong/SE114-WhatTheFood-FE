@@ -39,6 +39,10 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -56,8 +60,17 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
-            val retrofit = Retrofit.Builder().baseUrl("http://localhost:5087/api/")
+
+            val logging = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build()
+            val retrofit = Retrofit.Builder().baseUrl("http://10.0.238.20:5087/api/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build()
             val authViewModel = AuthViewModel(authModel = AuthModel(api = retrofit.create(ApiService::class.java),
                                                             dataStore = dataStore
