@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
@@ -41,13 +42,15 @@ import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 @Composable
 @Preview
 fun AuthScreenPreview() {
-    val authViewModel = AuthViewModel()
-    AuthScreen(authViewModel)
+//    val authViewModel = AuthViewModel()
+//    AuthScreen(authViewModel)
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AuthScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+fun AuthScreen(authViewModel: AuthViewModel,
+               modifier: Modifier = Modifier,
+               navController: NavController) {
     // This is a placeholder for the AuthScreen composable.
     // The actual implementation will include the login and register forms,
     // as well as any other necessary UI components.
@@ -60,9 +63,9 @@ fun AuthScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
     {
         Scaffold(topBar = {
             TopBar(
-                isLogin = true,
+                isLogin = isLogin,
                 onTabClick = { authViewModel.onTabClick(it) },
-                onBack = { authViewModel.onBackClick() },
+                onBack = { navController.popBackStack() },
                 onHelp = { authViewModel.onHelpClick() }
             )
         },
@@ -118,7 +121,6 @@ fun TopBar(
     onHelp: () -> Unit,
     modifier: Modifier = Modifier)
 {
-    var isLogin by remember { mutableStateOf(true) }
     Row {
         // Back button
         ButtonIcon(icon = Icons.AutoMirrored.Filled.ArrowBack,
@@ -134,7 +136,7 @@ fun TopBar(
             TabButton(text = "Đăng nhập",
                 isSelected = isLogin,
                 onClick = {
-                    isLogin = true
+                    if(!isLogin)
                     onTabClick(true) },
                 modifier = Modifier
             )
@@ -142,7 +144,7 @@ fun TopBar(
             TabButton(text = "Đăng ký",
                 isSelected = !isLogin,
                 onClick = {
-                    isLogin = false
+                    if(isLogin)
                     onTabClick(false) },
                 modifier = Modifier
             )

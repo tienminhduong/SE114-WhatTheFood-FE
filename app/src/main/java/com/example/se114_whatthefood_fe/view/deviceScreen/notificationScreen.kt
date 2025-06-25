@@ -36,8 +36,7 @@ fun NotificationScreen(modifier: Modifier = Modifier) {
     // This can be replaced with actual notification content later
     Column(
         modifier = modifier.fillMaxWidth()
-            .fillMaxHeight()
-            .background(Brush.verticalGradient(colors = listOf(LightGreen, White))),
+            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         HeaderNotificationScreen(modifier = Modifier.fillMaxWidth().padding(16.dp))

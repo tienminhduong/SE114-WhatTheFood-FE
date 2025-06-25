@@ -2,8 +2,12 @@ package com.example.se114_whatthefood_fe.view_model
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.se114_whatthefood_fe.model.AuthModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
     // This ViewModel handles the state and logic for authentication screens (login and register)
     // register
     var phoneRegister by mutableStateOf("")
@@ -11,8 +15,6 @@ class AuthViewModel : ViewModel() {
     var confirmPassword by mutableStateOf("")
     var isVisiblePasswordInRegister by mutableStateOf(false)
     var isVisibleConfirmPasswordInRegister by mutableStateOf(false)
-    var isAgreeToTerms by mutableStateOf(true)
-
 
     fun clickVisiblePasswordInRegister() {
         isVisiblePasswordInRegister = !isVisiblePasswordInRegister
@@ -32,6 +34,11 @@ class AuthViewModel : ViewModel() {
     var phoneLogin by mutableStateOf("")
     var passwordLogin by mutableStateOf("")
     var isVisiblePasswordInLogin by mutableStateOf(false)
+    var isAgreeToTerms by mutableStateOf(true)
+    var isLoading by mutableStateOf(false)
+    var loginSuccess by mutableStateOf<Boolean?>(null) // null is for initial state, true for success, false for failure
+    //var errorMessage by mutableStateOf<String?>(null)
+
     fun clickVisiblePasswordInLogin() {
         isVisiblePasswordInLogin = !isVisiblePasswordInLogin
     }
@@ -40,10 +47,26 @@ class AuthViewModel : ViewModel() {
         // This could be implemented using a navigation controller or similar mechanism
     }
     fun onLoginClick() {
+        viewModelScope.launch {
+            // neu de trong thong tin
+            if( phoneLogin.isBlank() || passwordLogin.isBlank() || isAgreeToTerms == false) {
+                // Handle empty fields, e.g., show an error message
+                loginSuccess = false
+                return@launch
+            }
+            else{
+                isLoading = true
+                authModel.login(phoneLogin, passwordLogin)
+            }
+        }
 
     }
 
-    // dùng chung
+    suspend fun isLoggedIn(): Boolean {
+        // Check if the user is logged in by checking the token in DataStore
+        return authModel.getToken() != null
+    }
+    // dung trong authScreen de xem nguoi dung da dang nhap hay dang ky
     private val _isLogin = mutableStateOf(true)
     val isLogin: State<Boolean> = _isLogin
     fun setLogin(isLoginState: Boolean)

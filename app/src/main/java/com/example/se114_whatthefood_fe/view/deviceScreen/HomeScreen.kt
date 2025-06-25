@@ -58,8 +58,7 @@ fun HomeScreenPreview() {
 fun HomeScreen(modifier: Modifier = Modifier) {
     var selectedIndexTab by remember { mutableIntStateOf(0) }
     val tablist = listOf("Gần bạn", "Bán chạy", "Đánh giá tốt")
-    Column(modifier.background(brush = Brush.verticalGradient(colors = listOf(LightGreen, White)))
-        .padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
+    Column(modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
 
         SearchBar(modifier = Modifier.wrapContentHeight())
         LazyColumn(modifier = Modifier.padding(horizontal = 10.dp)

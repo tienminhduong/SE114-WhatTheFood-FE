@@ -33,8 +33,8 @@ import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 @Composable
 @Preview
 fun LoginFormPreview() {
-    val authViewModel = AuthViewModel()
-    LoginForm(authViewModel)
+//    val authViewModel = AuthViewModel()
+//    LoginForm(authViewModel)
 }
 @Composable
 fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
