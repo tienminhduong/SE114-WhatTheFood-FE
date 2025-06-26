@@ -38,6 +38,7 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
     var isLoading by mutableStateOf(false)
     var loginSuccess by mutableStateOf<Boolean?>(null) // null is for initial state, true for success, false for failure
     //var errorMessage by mutableStateOf<String?>(null)
+    var loginState by mutableStateOf(UIState.IDLE)
 
     fun clickVisiblePasswordInLogin() {
         isVisiblePasswordInLogin = !isVisiblePasswordInLogin
@@ -47,16 +48,31 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
         // This could be implemented using a navigation controller or similar mechanism
     }
     fun onLoginClick() {
+        loginState = UIState.LOADING
         viewModelScope.launch {
             // neu de trong thong tin
             if( phoneLogin.isBlank() || passwordLogin.isBlank() || isAgreeToTerms == false) {
                 // Handle empty fields, e.g., show an error message
                 loginSuccess = false
+                loginState = UIState.ERROR
                 return@launch
             }
             else{
                 isLoading = true
-                authModel.login(phoneLogin, passwordLogin)
+                // ket qua tra ve tu authModel
+                val result =  authModel.login(phoneLogin, passwordLogin)
+                // neu thanh cong
+                if(result.isSuccess)
+                {
+                    loginState = UIState.SUCCESS
+                    loginSuccess = true
+                }
+                // neu that bai
+                else
+                {
+                    loginState = UIState.ERROR
+                    loginSuccess = false
+                }
             }
         }
 

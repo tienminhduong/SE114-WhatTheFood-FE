@@ -76,4 +76,6 @@ dependencies {
     implementation (libs.androidx.hilt.navigation.compose)
 
     implementation (libs.logging.interceptor)
+
+    implementation (libs.accompanist.systemuicontroller)
 }

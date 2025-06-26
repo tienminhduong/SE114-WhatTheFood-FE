@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.preferencesDataStore
@@ -31,6 +30,7 @@ import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
@@ -39,8 +39,6 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -56,6 +54,8 @@ class MainActivity : ComponentActivity() {
         // Cho phép Compose vẽ dưới system bar
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContent {
+            // set bottom bar cho mot so man hinh
+            val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
             //HomeScreen()
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
             val client = OkHttpClient.Builder()
                 .addInterceptor(logging)
                 .build()
-            val retrofit = Retrofit.Builder().baseUrl("http://10.0.238.20:5087/api/")
+            val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.4:5087/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()
@@ -80,22 +80,24 @@ class MainActivity : ComponentActivity() {
                 .systemBarsPadding()) {
                 Scaffold(containerColor = Color.Transparent,
                     bottomBar = {
-                    BottomBarDeviceScreen(
-                        navController = navController,
-                        currentRoute = currentRoute
-                    )
+                        if(checkHaveBottomBar(currentRoute, screenRootHaveBottomBar)) {
+                            BottomBarDeviceScreen(
+                                navController = navController,
+                                currentRoute = currentRoute
+                            )
+                        }
                 }) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "Home",
+                        startDestination = ScreenRoute.HomeScreen,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable("Account") { AccountScreen(authViewModel = authViewModel,
+                        composable(ScreenRoute.AccountScreen) { AccountScreen(authViewModel = authViewModel,
                                                               navController = navController) }
-                        composable("Orders") { OrderScreen(OrderViewModel()) }
-                        composable("Notifications") { NotificationScreen() }
-                        composable("Home") { HomeScreen() }
-                        composable("LoginOrRegister") { AuthScreen(authViewModel = authViewModel,
+                        composable(ScreenRoute.OrderScreen) { OrderScreen(OrderViewModel()) }
+                        composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
+                        composable(ScreenRoute.HomeScreen) { HomeScreen() }
+                        composable(ScreenRoute.LoginOrRegisterScreen) { AuthScreen(authViewModel = authViewModel,
                             navController = navController)}
                     }
                 }
@@ -103,6 +105,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    fun checkHaveBottomBar(route: String?, listScreenRoot: List<String>): Boolean {
+        listScreenRoot.forEach { screenRoot ->
+            if (route.equals(screenRoot)) {
+                return true
+            }
+        }
+        return false
+    }
     @Composable
     fun Greeting(name: String, modifier: Modifier = Modifier) {
         Text(
@@ -116,30 +126,5 @@ class MainActivity : ComponentActivity() {
         ) {
             Text(text = "Click Me")
         }
-    }
-
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ViewModelConstructorInComposable")
-    @Preview(showBackground = false)
-    @Composable
-    fun GreetingPreview() {
-//        val navController = rememberNavController()
-//        val navBackStackEntry by navController.currentBackStackEntryAsState()
-//        val currentRoute = navBackStackEntry?.destination?.route
-//        Scaffold(bottomBar = {
-//            BottomBarDeviceScreen(
-//                navController = navController,
-//                currentRoute = currentRoute
-//            )
-//        }) { innerPadding ->
-//            NavHost(
-//                navController = navController,
-//                startDestination = "Account",
-//                modifier = Modifier.padding(innerPadding)
-//            ) {
-//                composable("Account") { AuthScreen(AuthViewModel()) }
-//                composable("Orders") { OrderScreen(OrderViewModel()) }
-//                composable("Notifications") { NotificationScreen() }
-//            }
-//        }
     }
 }

@@ -42,6 +42,7 @@ import androidx.navigation.NavHostController
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 @SuppressLint("ViewModelConstructorInComposable")
@@ -191,7 +192,6 @@ fun AccountScreen(authViewModel: AuthViewModel,
             HeaderWhenNotLogIn(modifier = Modifier.padding(16.dp),
                 authViewModel = authViewModel,
                 clickLoginOrRegister = {
-                    Log.d("AccountScreen", "Click login or register")
                     // Navigate to login or register screen
                     navController.navigate("LoginOrRegister")
                 })
@@ -215,7 +215,11 @@ fun AccountScreen(authViewModel: AuthViewModel,
         if(isLoggedIn == true) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { authViewModel.onLogoutClick() },
+                onClick = {
+                    authViewModel.onLogoutClick()
+                    // Navigate to login or register screen after logout
+                    navController.navigate(ScreenRoute.AccountScreen)
+                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
