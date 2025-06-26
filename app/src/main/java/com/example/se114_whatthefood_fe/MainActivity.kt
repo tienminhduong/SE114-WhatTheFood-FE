@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,17 +17,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.se114_whatthefood_fe.data.remote.ApiService
+import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
@@ -53,28 +57,48 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         // Cho phép Compose vẽ dưới system bar
         WindowCompat.setDecorFitsSystemWindows(window, true)
+
+//        val logging = HttpLoggingInterceptor().apply {
+//            level = HttpLoggingInterceptor.Level.BODY
+//        }
+//
+//        val client = OkHttpClient.Builder()
+//            .addInterceptor(logging)
+//            .build()
+//        val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.4:5087/api/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .client(client)
+//            .build()
+//        val authViewModel = AuthViewModel(authModel = AuthModel(api = retrofit.create(ApiService::class.java),
+//            dataStore = dataStore
+//        ))
+        val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
         setContent {
             // set bottom bar cho mot so man hinh
-            val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
+
             //HomeScreen()
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            val logging = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+//            val logging = HttpLoggingInterceptor().apply {
+//                level = HttpLoggingInterceptor.Level.BODY
+//            }
+//
+//            val client = OkHttpClient.Builder()
+//                .addInterceptor(logging)
+//                .build()
+//            val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.4:5087/api/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .client(client)
+//                .build()
+            val authModel = remember{
+                AuthModel(api = RetrofitInstance.instance,
+                    dataStore = dataStore
+                )
             }
 
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build()
-            val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.4:5087/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build()
-            val authViewModel = AuthViewModel(authModel = AuthModel(api = retrofit.create(ApiService::class.java),
-                                                            dataStore = dataStore
-            ))
+            val authViewModel = remember {AuthViewModel(authModel = authModel)}
             Box(modifier = Modifier.fillMaxSize()
                 .background(Brush.verticalGradient(colors = listOf(LightGreen, White)))
                 .systemBarsPadding()) {
@@ -97,8 +121,9 @@ class MainActivity : ComponentActivity() {
                         composable(ScreenRoute.OrderScreen) { OrderScreen(OrderViewModel()) }
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
                         composable(ScreenRoute.HomeScreen) { HomeScreen() }
-                        composable(ScreenRoute.LoginOrRegisterScreen) { AuthScreen(authViewModel = authViewModel,
-                            navController = navController)}
+                        composable(ScreenRoute.LoginOrRegisterScreen) {
+                            AuthScreen(authViewModel = authViewModel,
+                                navController = navController)}
                     }
                 }
             }

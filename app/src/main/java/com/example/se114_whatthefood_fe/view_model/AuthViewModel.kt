@@ -3,11 +3,23 @@ package com.example.se114_whatthefood_fe.view_model
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.example.se114_whatthefood_fe.model.AuthModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
+
+    init{
+        // Initialize any necessary data or state here
+        // For example, you could check if the user is already logged in
+        viewModelScope.launch {
+            if (isLoggedIn()) {
+                getUserInfo() // Fetch user info if already logged in
+            }
+        }
+    }
+
     // This ViewModel handles the state and logic for authentication screens (login and register)
     // register
     var phoneRegister by mutableStateOf("")
@@ -40,6 +52,9 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
     //var errorMessage by mutableStateOf<String?>(null)
     var loginState by mutableStateOf(UIState.IDLE)
 
+    private val _userInfo = mutableStateOf<UserInfo?>(null)
+    val userInfo: State<UserInfo?> get() = _userInfo
+
     fun clickVisiblePasswordInLogin() {
         isVisiblePasswordInLogin = !isVisiblePasswordInLogin
     }
@@ -47,6 +62,18 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
         // Handle forgot password click logic here, e.g., navigate to a reset password screen
         // This could be implemented using a navigation controller or similar mechanism
     }
+
+    fun getUserInfo(){
+        viewModelScope.launch {
+            // Fetch user info from authModel
+            val result = authModel.getUserInfo()
+            if(result.isSuccessful)
+                _userInfo.value = result.body()
+            else
+                _userInfo.value = null
+        }
+    }
+
     fun onLoginClick() {
         loginState = UIState.LOADING
         viewModelScope.launch {
@@ -66,6 +93,7 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
                 {
                     loginState = UIState.SUCCESS
                     loginSuccess = true
+                    getUserInfo()
                 }
                 // neu that bai
                 else
@@ -89,6 +117,8 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
             authModel.clearToken()
             // Reset login state
             loginSuccess = null
+            // Reset user info
+            _userInfo.value = null
         }
     }
 

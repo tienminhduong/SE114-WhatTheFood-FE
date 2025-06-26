@@ -34,11 +34,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
@@ -63,10 +69,12 @@ fun AccountHeaderPreview() {
 
 @Composable
 fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
-                       avatar: ImageVector? = null,
-                       name: String = "User Name",
                        authViewModel: AuthViewModel
                       ) {
+    // Get user data from authViewModel
+    val user = authViewModel.userInfo.value
+        val name = user?.name ?: ""
+
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,) {
@@ -77,11 +85,25 @@ fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
                 .background(White).size(80.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = avatar ?: Icons.Default.Person,
-                contentDescription = "User Avatar",
-                tint = LightGreen,
-                modifier = Modifier.fillMaxSize()
+//            Icon(
+//                imageVector =  Icons.Default.Person,
+//                contentDescription = "User Avatar",
+//                tint = LightGreen,
+//                modifier = Modifier.fillMaxSize()
+//            )
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(user?.pfpUrl)
+                    .crossfade(true)
+                    .diskCachePolicy(CachePolicy.ENABLED)  // Cache trên ổ đĩa
+                    .memoryCachePolicy(CachePolicy.ENABLED) // Cache trên RAM
+                    //.size(100, 100) // Set kích thước ảnh
+                    .placeholder(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                    .error(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                    .build(),
+                contentDescription = "Card Image",
+                contentScale = ContentScale.Crop,
+                modifier = modifier.size(48.dp).clip(shape= RoundedCornerShape(8.dp))
             )
         }
         Text(text = name,

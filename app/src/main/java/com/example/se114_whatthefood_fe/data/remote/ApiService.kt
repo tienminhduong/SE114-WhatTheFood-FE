@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 // auth API
@@ -20,7 +21,16 @@ data class LoginResponse(
     val token: String
 )
 
-
+data class UserInfo(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("phoneNumber")
+    val phoneNumber: String,
+    @SerializedName("role")
+    val role: String,
+    @SerializedName("pfpUrl")
+    val pfpUrl: String?
+)
 
 interface ApiService {
     // auth API
@@ -28,6 +38,7 @@ interface ApiService {
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
-//    @GET("users/info")
-//    suspend fun getUserInfo(): Response<UserInfoResponse>
+
+    @GET("users/info")
+    suspend fun getUserInfo(@Header("Authorization") token: String): Response<UserInfo>
 }
