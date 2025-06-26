@@ -42,7 +42,7 @@ import java.util.UUID
 
 @Immutable
 data class Card(
-    val id: UUID? = UUID.randomUUID(),
+    val id: Int = UUID.randomUUID().hashCode(),
     val imageLink: String? = null,
     val title: String? = null,
     val rate: Float? = null,
@@ -199,7 +199,7 @@ fun CardRecommendView(modifier: Modifier = Modifier, card: Card, imageLoader: Im
 fun ListRecommendFood(modifier: Modifier = Modifier, listCard: List<Card>) {
     LazyRow(modifier = modifier.fillMaxWidth()
         , horizontalArrangement = Arrangement.spacedBy(8.dp)){
-        items(items = listCard, key = {it.id.toString()}) { card ->
+        items(items = listCard, key = {it.id}) { card ->
             CardRecommendView(card = card, imageLoader = rememberOptimizedImageLoader())
         }
     }

@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
+import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.ScreenRoute
@@ -42,6 +43,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -99,6 +101,15 @@ class MainActivity : ComponentActivity() {
             }
 
             val authViewModel = remember {AuthViewModel(authModel = authModel)}
+
+            val foodModel = remember{
+                FoodModel(api = RetrofitInstance.instance,
+                    dataStore = dataStore
+                )
+            }
+            val foodViewModel = remember {
+                FoodViewModel(foodModel = foodModel)
+            }
             Box(modifier = Modifier.fillMaxSize()
                 .background(Brush.verticalGradient(colors = listOf(LightGreen, White)))
                 .systemBarsPadding()) {
@@ -120,7 +131,7 @@ class MainActivity : ComponentActivity() {
                                                               navController = navController) }
                         composable(ScreenRoute.OrderScreen) { OrderScreen(OrderViewModel()) }
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
-                        composable(ScreenRoute.HomeScreen) { HomeScreen() }
+                        composable(ScreenRoute.HomeScreen) { HomeScreen(foodViewModel = foodViewModel) }
                         composable(ScreenRoute.LoginOrRegisterScreen) {
                             AuthScreen(authViewModel = authViewModel,
                                 navController = navController)}

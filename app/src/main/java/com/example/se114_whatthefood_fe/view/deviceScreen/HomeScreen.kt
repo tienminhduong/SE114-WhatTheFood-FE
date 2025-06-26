@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -41,21 +42,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.card.Card
 import com.example.se114_whatthefood_fe.view.card.CardRecommendView
 import com.example.se114_whatthefood_fe.view.card.CardView
 import com.example.se114_whatthefood_fe.view.card.rememberOptimizedImageLoader
+import com.example.se114_whatthefood_fe.view_model.FoodViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 @Preview
 fun HomeScreenPreview() {
-    HomeScreen()
+    //HomeScreen()
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
     var selectedIndexTab by remember { mutableIntStateOf(0) }
     val tablist = listOf("Gần bạn", "Bán chạy", "Đánh giá tốt")
     Column(modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
@@ -76,7 +82,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 //                })}
 
             val listCard = when (selectedIndexTab) {
-                0 -> getDataGanBan()
+                0-> testGetData(foodViewModel = foodViewModel)
+//                0 -> getDataGanBan()
                 1 -> getDataBanChay()
                 2 -> getDataDanhGiaTot()
                 else -> getDataGanBan()
@@ -88,6 +95,21 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         }
 
+    }
+}
+
+fun testGetData(foodViewModel: FoodViewModel): List<Card> {
+    // This function should return a list of Card objects for testing purposes
+    val listFood = foodViewModel.tabGanBanList
+    return listFood.value.map { foodItem ->
+        Card(
+            id = foodItem.id,
+            imageLink = "",
+            title = foodItem.foodName,
+            rate = 5.0f, // Assuming a default rate for testing
+            distance = 10.0f, // Assuming a default distance for testing
+            time = 10.0f // Assuming a default time for testing
+        )
     }
 }
 

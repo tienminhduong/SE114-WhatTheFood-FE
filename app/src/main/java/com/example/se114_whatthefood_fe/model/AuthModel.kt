@@ -12,6 +12,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
+
 class AuthModel (
     private val api: ApiService,
     private val dataStore: DataStore<androidx.datastore.preferences.core.Preferences>
