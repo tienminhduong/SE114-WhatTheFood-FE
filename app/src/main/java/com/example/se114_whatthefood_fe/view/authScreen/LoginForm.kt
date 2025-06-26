@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import com.example.se114_whatthefood_fe.view_model.UIState
+import kotlin.math.log
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -38,6 +40,8 @@ fun LoginFormPreview() {
 }
 @Composable
 fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+
+    val loginState = authViewModel.loginState
     Column{
         // text field for phone number
         RoundCornerTextFieldWithIcon(
@@ -85,7 +89,13 @@ fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
             },
             isPasswordVisibility = authViewModel.isVisiblePasswordInLogin
         )
-
+        if(loginState == UIState.ERROR)
+        {
+            Text(text = "Thông tin đăng nhập không chính xác",
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp))
+        }
         // spacer
         Spacer(modifier.height(16.dp))
 

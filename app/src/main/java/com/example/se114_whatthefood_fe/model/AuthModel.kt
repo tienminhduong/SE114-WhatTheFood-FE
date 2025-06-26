@@ -7,6 +7,8 @@ import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.data.remote.LoginRequest
 import com.example.se114_whatthefood_fe.data.remote.LoginResponse
 import kotlinx.coroutines.flow.first
+import okhttp3.ResponseBody.Companion.toResponseBody
+import retrofit2.Response
 import javax.inject.Inject
 
 class AuthModel (
@@ -23,20 +25,34 @@ class AuthModel (
             preferences.remove(TOKEN_KEY)
         }
     }
-    suspend fun login(phoneNumber: String, password: String): Result<LoginResponse> {
+
+
+//    suspend fun login(phoneNumber: String, password: String): Result<LoginResponse> {
+//        return try {
+//            val response = api.login(LoginRequest(phoneNumber, password))
+//            if (response.isSuccessful) {
+//                response.body()?.let { loginResponse ->
+//                    // Save the token to DataStore
+//                    saveToken(loginResponse.token)
+//                    Result.success(loginResponse)
+//                } ?: Result.failure(Exception("Login failed: No response body"))
+//            } else {
+//                Result.failure(Exception("Login failed: ${response.errorBody()?.string()}"))
+//            }
+//        } catch (e: Exception) {
+//            Result.failure(e)
+//        }
+//    }
+
+    suspend fun login(phoneNumber: String, password: String): Response<LoginResponse> {
         return try {
             val response = api.login(LoginRequest(phoneNumber, password))
             if (response.isSuccessful) {
-                response.body()?.let { loginResponse ->
-                    // Save the token to DataStore
-                    saveToken(loginResponse.token)
-                    Result.success(loginResponse)
-                } ?: Result.failure(Exception("Login failed: No response body"))
-            } else {
-                Result.failure(Exception("Login failed: ${response.errorBody()?.string()}"))
+                saveToken(response.body()?.token ?: "")
             }
+            response
         } catch (e: Exception) {
-            Result.failure(e)
+            Response.error(500, "".toResponseBody(null))
         }
     }
 

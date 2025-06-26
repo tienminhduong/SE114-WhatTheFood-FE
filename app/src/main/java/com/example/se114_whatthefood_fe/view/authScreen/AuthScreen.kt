@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.WindowManager
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.UIState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -143,8 +145,8 @@ fun AuthScreen(authViewModel: AuthViewModel,
             authViewModel.loginSuccess?.let { isLoginSuccess ->
                 if(isLoginSuccess) {
                     // Navigate to the main screen or show a success message
-                    navController.navigate("Account") {
-                        popUpTo("LoginOrRegister") { inclusive = true }
+                    navController.navigate(ScreenRoute.HomeScreen) {
+                        popUpTo(ScreenRoute.LoginOrRegisterScreen) { inclusive = true }
                     }
                 }
             }
@@ -155,6 +157,9 @@ fun AuthScreen(authViewModel: AuthViewModel,
         }
         UIState.IDLE -> {
             // Do nothing, this is the initial state
+        }
+        UIState.NETWORK_ERROR -> {
+            Toast.makeText(LocalView.current.context, "Network Error", Toast.LENGTH_SHORT).show()
         }
     }
 

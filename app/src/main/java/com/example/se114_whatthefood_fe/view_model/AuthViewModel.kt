@@ -62,7 +62,7 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
                 // ket qua tra ve tu authModel
                 val result =  authModel.login(phoneLogin, passwordLogin)
                 // neu thanh cong
-                if(result.isSuccess)
+                if(result.isSuccessful)
                 {
                     loginState = UIState.SUCCESS
                     loginSuccess = true
@@ -70,7 +70,12 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
                 // neu that bai
                 else
                 {
-                    loginState = UIState.ERROR
+                    val statusCode = result.code()
+                    // sai mat khau sdt hoac khong ton tai
+                    loginState = if(statusCode == 400)
+                        UIState.ERROR
+                    else
+                        UIState.NETWORK_ERROR
                     loginSuccess = false
                 }
             }

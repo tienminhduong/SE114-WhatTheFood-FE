@@ -4,5 +4,6 @@ enum class UIState {
     LOADING,
     SUCCESS,
     ERROR,
-    IDLE
+    IDLE,
+    NETWORK_ERROR,
 }
