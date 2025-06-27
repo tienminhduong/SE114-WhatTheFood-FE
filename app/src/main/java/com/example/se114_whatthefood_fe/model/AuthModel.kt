@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.data.remote.LoginRequest
 import com.example.se114_whatthefood_fe.data.remote.LoginResponse
+import com.example.se114_whatthefood_fe.data.remote.RegisterRequest
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import kotlinx.coroutines.flow.first
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -26,6 +27,17 @@ class AuthModel (
         dataStore.edit { preferences ->
             preferences.remove(TOKEN_KEY)
         }
+    }
+
+    suspend fun register(phoneNumber: String, password: String, name: String, role: String): Boolean {
+        var result: Boolean = false
+        try {
+            val response = api.register(RegisterRequest(phoneNumber, password, name, role))
+            result = response.isSuccessful
+        } catch (e: Exception) {
+            result = false
+        }
+        return result
     }
 
     suspend fun login(phoneNumber: String, password: String): Response<LoginResponse> {

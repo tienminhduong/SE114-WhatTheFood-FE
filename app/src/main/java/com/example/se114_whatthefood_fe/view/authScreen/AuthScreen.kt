@@ -1,9 +1,7 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
+import android.R
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.view.WindowManager
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -17,13 +15,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -31,17 +26,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
@@ -55,7 +44,6 @@ import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.UIState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -74,7 +62,6 @@ fun AuthScreen(authViewModel: AuthViewModel,
     // The actual implementation will include the login and register forms,
     // as well as any other necessary UI components.
     // For now, we can just display a simple text or a placeholder.
-    val loginState = authViewModel.loginState
     val isLogin by authViewModel.isLogin
     Column(modifier = Modifier.fillMaxSize()
         .background(
@@ -106,8 +93,6 @@ fun AuthScreen(authViewModel: AuthViewModel,
                         end = 16.dp
                     )
                 ) {
-
-
                     AnimatedContent(
                         targetState = isLogin,
                         transitionSpec = {
@@ -121,7 +106,58 @@ fun AuthScreen(authViewModel: AuthViewModel,
             }
         }
     }
+    if(isLogin)
+    {
+        ScreenWhenLogin(authViewModel = authViewModel,
+            navController = navController)
+    }
+    else
+    {
+        ScreenWhenRegister(authViewModel = authViewModel,
+            navController = navController)
+    }
+}
 
+@Composable
+fun ScreenWhenRegister(authViewModel: AuthViewModel,
+                       navController: NavController){
+    val registerState = authViewModel.registerState
+    when(registerState) {
+        UIState.LOADING -> {
+            Box(modifier = Modifier.fillMaxSize()
+                .background(color = Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit){},
+                contentAlignment = Alignment.Center){
+                CircularProgressIndicator(
+                    modifier = Modifier.size(50.dp),
+                    color = Color.White
+                )
+            }
+        }
+
+        UIState.SUCCESS -> {
+            // Handle success state, e.g., navigate to the main screen
+            Toast.makeText(LocalView.current.context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+            authViewModel.setLogin(true)
+            authViewModel.registerState = UIState.IDLE // Reset register state
+        }
+
+        UIState.ERROR -> {
+            // Handle error state, e.g., show an error message
+            Toast.makeText(LocalView.current.context, "Đăng ký thất bại", Toast.LENGTH_SHORT).show()
+            authViewModel.registerState = UIState.IDLE // Reset register state
+        }
+        else -> {
+            // Do nothing, this is the initial state
+        }
+    }
+
+}
+
+@Composable
+fun ScreenWhenLogin(authViewModel: AuthViewModel,
+                    navController: NavController){
+    val loginState = authViewModel.loginState
     when(loginState)
     {
         UIState.LOADING -> {
@@ -162,7 +198,6 @@ fun AuthScreen(authViewModel: AuthViewModel,
             Toast.makeText(LocalView.current.context, "Network Error", Toast.LENGTH_SHORT).show()
         }
     }
-
 }
 
 

@@ -22,11 +22,14 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
 
     // This ViewModel handles the state and logic for authentication screens (login and register)
     // register
+    var nameRegister by mutableStateOf("")
     var phoneRegister by mutableStateOf("")
     var passwordRegister by mutableStateOf("")
     var confirmPassword by mutableStateOf("")
+    var optionRole = mutableStateOf("User")
     var isVisiblePasswordInRegister by mutableStateOf(false)
     var isVisibleConfirmPasswordInRegister by mutableStateOf(false)
+    var registerState by mutableStateOf<UIState>(UIState.IDLE)
 
     fun clickVisiblePasswordInRegister() {
         isVisiblePasswordInRegister = !isVisiblePasswordInRegister
@@ -37,8 +40,17 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
     }
 
     fun onRegisterClick(){
-        // Handle register click logic here, e.g., validate input and perform registration
-        // This could be implemented using a repository or similar mechanism
+        registerState = UIState.LOADING
+        viewModelScope.launch {
+            val result = authModel.register(phoneNumber = phoneRegister,
+                                            password = passwordRegister,
+                                            name = nameRegister,
+                                            role = optionRole.value)
+            if(result == true)
+                registerState = UIState.SUCCESS
+            else
+                registerState = UIState.ERROR
+        }
     }
 
     // login

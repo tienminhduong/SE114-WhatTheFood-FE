@@ -1,6 +1,8 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,26 +11,48 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Label
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.datastore.dataStore
+import com.example.se114_whatthefood_fe.data.remote.ApiService
+import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
@@ -36,13 +60,30 @@ import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 @Composable
 @Preview
 fun RegisterFormPreview() {
-//    val authViewModel = AuthViewModel()
-//    RegisterForm(authViewModel)
+    //RegisterForm()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
     Column {
+        // text tield for full name
+        RoundCornerTextFieldWithIcon(
+            placeholder = "Tên của bạn",
+            value = authViewModel.nameRegister,
+            onValueChange = { authViewModel.nameRegister = it },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Phone Icon",
+                    tint = LightGreen
+                )
+            },
+            modifier = modifier
+        )
+
+        Spacer(modifier.height(16.dp))
+
         // text field for phone number
         RoundCornerTextFieldWithIcon(
             placeholder = "Số điện thoại",
@@ -122,6 +163,10 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
         )
         // spacer
         Spacer(modifier.height(16.dp))
+
+        // combobox chon quyen
+        CustomComboBox(authViewModel = authViewModel)
+
         // text đồng ý điều khoản
         Row(horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -149,44 +194,73 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
             onClick = { authViewModel.onRegisterClick() },
             modifier = modifier
         )
-        // divider with center text
-        DividerWithCenterText(
-            text = "Hoặc",
-            modifier = modifier
-        )
-        // Spacer
-        Spacer(modifier.height(16.dp))
-        // cac lua chon dang ky khac
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-        ) {
-            // google button
-            ButtonWithIcon("Tiếp tục với Google",
-                onClick = { /* TODO: Handle Google login */ },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = com.example.se114_whatthefood_fe.R.drawable.google__g__logo),
-                        contentDescription = "Google Icon",
-                        tint = Color.Unspecified, // Use default color for the icon
-                        modifier = modifier.size(20.dp).align(Alignment.CenterHorizontally)// Adjust size as needed
-                    )
-                },
-                modifier = modifier)
 
-            // facebook button
-            ButtonWithIcon("Tiếp tục với Facebook",
-                onClick = { /* TODO: Handle facebook login */ },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = com.example.se114_whatthefood_fe.R.drawable.google__g__logo),
-                        contentDescription = "FaceBook Icon",
-                        tint = Color.Unspecified, // Use default color for the icon
-                        modifier = modifier.size(20.dp).align(Alignment.CenterHorizontally)// Adjust size as needed
-                    )
+    }
+
+}
+data class RoleOption(
+    val label: String,
+    val value: String
+)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomComboBox(authViewModel: AuthViewModel) {
+    val options = listOf(
+        RoleOption( "Khách hàng","User"),
+        RoleOption("Chủ cửa hàng","Owner"))
+    var expanded by remember { mutableStateOf(false) }
+    val optionRole by authViewModel.optionRole
+    Log.i("test", "optionRole: $optionRole")
+    var selectedOption by remember { mutableStateOf(options.find({ it.value == optionRole }) ?: options[0])}
+    Column(){
+        //label
+        Text(text = "Bạn là",
+            color = Color.White)
+        Spacer(modifier = Modifier.height(3.dp))
+        //combobox
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.background(color = Color.White, shape = RoundedCornerShape(20.dp))
+        ) {
+            TextField(
+                readOnly = true,
+                value = selectedOption.label,
+                onValueChange = {},
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
-                modifier = modifier)
+                modifier = Modifier
+                    .menuAnchor() // QUAN TRỌNG: để DropdownMenu định vị đúng chỗ
+                    .fillMaxWidth()
+                    .background(Color.White, RoundedCornerShape(10.dp)),
+                colors = TextFieldDefaults.colors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                ),
+                shape = RoundedCornerShape(20.dp),
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                containerColor = Color.White
+            ) {
+                options.forEach { selectionOption ->
+                    DropdownMenuItem(
+                        text = { Text(text = selectionOption.label,
+                            textAlign = TextAlign.Center) },
+                        onClick = {
+                            authViewModel.optionRole.value = selectionOption.value
+                            selectedOption = selectionOption
+                            expanded = false
+                        },
+                        colors = MenuDefaults.itemColors(),
+                    )
+                }
+            }
         }
     }
 

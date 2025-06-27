@@ -11,6 +11,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 // auth API
+// login
 data class LoginRequest(
     @SerializedName("phoneNumber")
     val phoneNumber: String,
@@ -21,6 +22,27 @@ data class LoginRequest(
 data class LoginResponse(
     @SerializedName("accessToken")
     val token: String
+)
+// register
+data class RegisterRequest(
+    @SerializedName("phoneNumber")
+    val phoneNumber: String,
+    @SerializedName("password")
+    val password: String,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("role")
+    val role: String
+)
+data class RegisterResponse(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("phoneNumber")
+    val phoneNumber: String,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("pfpUrl")
+    val pfpUrl: String? = null
 )
 // user info API
 data class UserInfo(
@@ -76,6 +98,10 @@ interface ApiService {
 
     @GET("users/info")
     suspend fun getUserInfo(@Header("Authorization") token: String): Response<UserInfo>
+
+    @Headers("Content-Type: application/json")
+    @POST("users/register")
+    suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
 
     // food API
     @Headers("Content-Type: application/json")
