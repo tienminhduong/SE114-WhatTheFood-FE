@@ -1,6 +1,5 @@
 package com.example.se114_whatthefood_fe.SellerView
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,25 +8,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,13 +27,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
-import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarItem
-import kotlinx.coroutines.launch
 
 
 data class BottomSellerBarItem(
@@ -58,33 +46,38 @@ data class BottomSellerBarItem(
 
 @Composable
 @Preview
-fun SellerBottomBarPreview()
-{
+fun SellerBottomBarPreview() {
 
 }
 
 @Composable
-fun SellerBottomBar(navController: NavHostController,
-                    currentRoute: String?,
-                    modifier: Modifier = Modifier)
-{
-   var items = listOf(
-       BottomSellerBarItem(
-           icon = Icons.Filled.Home,
-           label = "HOME",
-           route = "SellerHome"
-       ),
-       BottomSellerBarItem(
-           icon = Icons.Filled.Person,
-           label = "Tài Khoản",
-           route = "SellerAccount"
-       ),
-   )
+fun SellerBottomBar(
+    navController: NavHostController,
+    currentRoute: String?,
+    modifier: Modifier = Modifier
+) {
+    var items = listOf(
+        BottomSellerBarItem(
+            icon = Icons.Filled.Home,
+            label = "HOME",
+            route = "SellerHome"
+        ),
+        BottomSellerBarItem(
+            icon = Icons.Filled.Person,
+            label = "Tài Khoản",
+            route = "SellerAccount"
+        ),
+        BottomSellerBarItem(
+            icon = Icons.Filled.Inventory,
+            label = "Quản lý đơn",
+            route = "SellerManager"
+        ),
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-        , horizontalArrangement = Arrangement.spacedBy((-0.2).dp) // Adjust spacing to avoid gaps between items
+            .height(60.dp),
+        horizontalArrangement = Arrangement.spacedBy((-0.2).dp) // Adjust spacing to avoid gaps between items
     ) {
         items.forEachIndexed { index, item ->
             val isSelected = item.route == currentRoute
@@ -127,7 +120,7 @@ fun SellerBottomBar(navController: NavHostController,
                         Icon(
                             imageVector = item.icon,
                             contentDescription = item.label,
-                            tint = if(isSelected) item.selectedColor else item.unselectedColor,
+                            tint = if (isSelected) item.selectedColor else item.unselectedColor,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -136,7 +129,7 @@ fun SellerBottomBar(navController: NavHostController,
 
                     Text(
                         text = item.label,
-                        color = if(isSelected) item.selectedColor else item.unselectedColor,
+                        color = if (isSelected) item.selectedColor else item.unselectedColor,
                         fontSize = 12.sp
                     )
                 }

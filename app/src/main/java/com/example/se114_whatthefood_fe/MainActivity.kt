@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.se114_whatthefood_fe.SellerView.SellerAccount
 import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
 import com.example.se114_whatthefood_fe.SellerView.SellerHome
+import com.example.se114_whatthefood_fe.SellerView.SellerManager
 import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
@@ -44,17 +45,30 @@ class MainActivity : ComponentActivity() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            SellerBottomBar(
-                navController = navController,
-                currentRoute = currentRoute
-            )
-
-            NavHost(
-                navController = navController,
-                startDestination = "SellerHome"
-            ) {
-                composable("SellerHome") { SellerHome(SellerHomeViewModel()) }
-                composable("SellerAccount") { SellerAccount() }
+            Scaffold(
+                bottomBar = {
+                    SellerBottomBar(
+                        navController = navController,
+                        currentRoute = currentRoute
+                    )
+                }
+            ) { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = "SellerHome",
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable("SellerHome") {
+                        SellerHome(SellerHomeViewModel())
+                    }
+                    composable("SellerAccount") {
+                        SellerAccount()
+                    }
+                    composable("SellerManager")
+                    {
+                        SellerManager()
+                    }
+                }
             }
 //            //HomeScreen()
 //            val navController = rememberNavController()
