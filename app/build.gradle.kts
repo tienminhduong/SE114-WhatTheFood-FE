@@ -78,4 +78,10 @@ dependencies {
     implementation (libs.logging.interceptor)
 
     implementation (libs.accompanist.systemuicontroller)
+
+    //gms -- google play services
+    implementation(libs.play.services.location)
+    // permissions
+    implementation(libs.accompanist.permissions)
+
 }

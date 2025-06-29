@@ -1,23 +1,29 @@
 package com.example.se114_whatthefood_fe.view_model
 
+import android.content.Context
+import android.location.Location
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.model.FoodModel
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 
 class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
     val tabGanBanList = mutableStateOf<List<FoodItemResponse>>(emptyList())
-
+    val tabBanChayList = mutableStateOf<List<FoodItemResponse>>(emptyList())
+    val tabDanhGiaTotList = mutableStateOf<List<FoodItemResponse>>(emptyList())
     init{
         viewModelScope.launch {
             loadTabGanBanList()
         }
     }
 
-    suspend fun loadTabGanBanList(
+    suspend fun loadDanhGiaTotList(
         pageNumber: Int = 0,
         pageSize: Int = 30,
         categoryId: Int = -1,
@@ -28,9 +34,30 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
         priceHigherThan: Int = 0,
         sortBy: String = ""
     ) {
-        tabGanBanList.value = getFoodItem(
+        tabDanhGiaTotList.value = getFoodItem(
             pageNumber, pageSize, categoryId, nameContains, restaurantId, isAvailableOnly, priceLowerThan, priceHigherThan, sortBy
         )
+    }
+
+    suspend fun loadBanChayList(
+        pageNumber: Int = 0,
+        pageSize: Int = 30,
+        categoryId: Int = -1,
+        nameContains: String = "",
+        restaurantId: Int = -1,
+        isAvailableOnly: Boolean = true,
+        priceLowerThan: Int = Int.MAX_VALUE,
+        priceHigherThan: Int = 0,
+        sortBy: String = ""
+    ) {
+        tabBanChayList.value = getFoodItem(
+            pageNumber, pageSize, categoryId, nameContains, restaurantId, isAvailableOnly, priceLowerThan, priceHigherThan, sortBy
+        )
+    }
+    suspend fun loadTabGanBanList(location: Location? = null) {
+        if(location == null)
+            return
+        // call api
     }
 
     suspend fun getFoodItem(
@@ -56,4 +83,5 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
         ).body()
         return res ?: emptyList()
     }
+
 }

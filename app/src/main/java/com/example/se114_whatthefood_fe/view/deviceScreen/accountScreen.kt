@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -80,9 +81,9 @@ fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically,) {
         // icon for user avatar
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .clip(CircleShape)
-                .background(White).size(80.dp),
+                .size(80.dp),
             contentAlignment = Alignment.Center,
         ) {
 //            Icon(
@@ -103,7 +104,7 @@ fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
                     .build(),
                 contentDescription = "Card Image",
                 contentScale = ContentScale.Crop,
-                modifier = modifier.size(48.dp).clip(shape= RoundedCornerShape(8.dp))
+                modifier = Modifier.fillMaxSize()//.clip(shape= RoundedCornerShape(8.dp))
             )
         }
         Text(text = name,

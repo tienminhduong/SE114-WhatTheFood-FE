@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.se114_whatthefood_fe.model.FoodModel
+import com.example.se114_whatthefood_fe.model.LocationManager
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.card.Card
@@ -52,6 +55,7 @@ import com.example.se114_whatthefood_fe.view.card.CardRecommendView
 import com.example.se114_whatthefood_fe.view.card.CardView
 import com.example.se114_whatthefood_fe.view.card.rememberOptimizedImageLoader
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 
 @Composable
@@ -64,6 +68,17 @@ fun HomeScreenPreview() {
 fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
     var selectedIndexTab by remember { mutableIntStateOf(0) }
     val tablist = listOf("Gần bạn", "Bán chạy", "Đánh giá tốt")
+    // dung de lay vi tri hien tai cua nguoi dung
+    val context = LocalContext.current
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    val locationManager = remember { LocationManager(context, fusedLocationClient)}
+    // nhung danh sach de hien
+    val ganBanList by foodViewModel.tabGanBanList
+    val banChayList by foodViewModel.tabBanChayList
+    val danhGiaTotList by foodViewModel.tabDanhGiaTotList
+
+    // fetch du lieu
+    FetchData(locationManager = locationManager, foodViewModel = foodViewModel, selectedTab = selectedIndexTab)
     Column(modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
 
         SearchBar(modifier = Modifier.wrapContentHeight())
@@ -71,16 +86,12 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
                                     .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(6.dp),){
             item {ListRecommendFood(modifier = modifier.fillMaxWidth().wrapContentHeight())}
-//            val listTab: List<String> =
+            // tab cac lua chon
             stickyHeader { TabRowCustom(selectedIndexTab = selectedIndexTab, listTab = tablist,
                 onTabSelected = { index ->
                     selectedIndexTab = index
                 }) }
-//            item {TabRowCustom(selectedIndexTab = selectedIndexTab, listTab = tablist,
-//                onTabSelected = { index ->
-//                    selectedIndexTab = index
-//                })}
-
+            // list card cua mon an
             val listCard = when (selectedIndexTab) {
                 0-> testGetData(foodViewModel = foodViewModel)
 //                0 -> getDataGanBan()
@@ -95,6 +106,30 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
 
         }
 
+    }
+}
+
+@Composable
+fun FetchData(locationManager: LocationManager, foodViewModel: FoodViewModel, selectedTab: Int){
+    LaunchedEffect(selectedTab) {
+        when(selectedTab){
+            // load list gan ban
+            0 -> {
+                val location = locationManager.getLocation()
+                location?.let {
+                    foodViewModel.loadTabGanBanList(location)
+                }
+            }
+            // load list ban chay
+            1 -> {
+                foodViewModel.loadBanChayList();
+            }
+            // load list danh gia tot
+            2->{
+                foodViewModel.loadDanhGiaTotList();
+            }
+
+        }
     }
 }
 

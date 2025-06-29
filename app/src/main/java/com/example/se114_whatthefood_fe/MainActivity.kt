@@ -1,14 +1,19 @@
 package com.example.se114_whatthefood_fe
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -16,23 +21,31 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.FoodModel
+import com.example.se114_whatthefood_fe.model.LocationManager
+
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.ScreenRoute
@@ -45,55 +58,83 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
 
 val Context.dataStore by preferencesDataStore(name = "user_pref")
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // Cho phép Compose vẽ dưới system bar
         WindowCompat.setDecorFitsSystemWindows(window, true)
-
-//        val logging = HttpLoggingInterceptor().apply {
-//            level = HttpLoggingInterceptor.Level.BODY
-//        }
-//
-//        val client = OkHttpClient.Builder()
-//            .addInterceptor(logging)
-//            .build()
-//        val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.4:5087/api/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .client(client)
-//            .build()
-//        val authViewModel = AuthViewModel(authModel = AuthModel(api = retrofit.create(ApiService::class.java),
-//            dataStore = dataStore
-//        ))
         val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
         setContent {
-            // set bottom bar cho mot so man hinh
-
+//            // set bottom bar cho mot so man hinh
+//            val context = LocalContext.current
+//            val locationManager = remember{
+//                LocationManager(context = context,
+//                                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+//                )
+//            }
+//            val locationPermissions = rememberMultiplePermissionsState(
+//                permissions = listOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,
+//                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+//            )
+//
+//            var location by remember { mutableStateOf<Location?>(null) }
+//            val coroutineScope = rememberCoroutineScope()
+//
+//            LaunchedEffect(locationPermissions.allPermissionsGranted) {
+//                if (locationPermissions.allPermissionsGranted && location == null) {
+//                    Log.d("DEBUG", "Quyền vừa được cấp, gọi getLocation()")
+//                    coroutineScope.launch {
+//                        location = locationManager.getLocation()
+//                        Log.d("DEBUG", "Vị trí: ${location?.latitude}, ${location?.longitude}")
+//                    }
+//                }
+//            }
+//
+//            Column(modifier = Modifier.fillMaxSize(),
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+//                location?.let {
+//                    Text(
+//                        text = "Location: ${it.latitude}, ${it.longitude}",
+//                        modifier = Modifier.padding(16.dp),
+//                        fontSize = 32.sp,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//                Button(onClick = {
+//                    Log.d("DEBUG", "Permissions granted: ${locationPermissions.allPermissionsGranted}")
+//
+//                    if(!locationPermissions.allPermissionsGranted || locationPermissions.shouldShowRationale)
+//                    {
+//                        locationPermissions.launchMultiplePermissionRequest()
+//                    }
+//                    else
+//                    {
+//                        coroutineScope.launch {
+//                            location = locationManager.getLocation()
+//                        }
+//
+//                    }
+//                })
+//                {
+//                    Text(text = "Get Location")
+//                }
+//
+//            }
             //HomeScreen()
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
-
-//            val logging = HttpLoggingInterceptor().apply {
-//                level = HttpLoggingInterceptor.Level.BODY
-//            }
-//
-//            val client = OkHttpClient.Builder()
-//                .addInterceptor(logging)
-//                .build()
-//            val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.4:5087/api/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .client(client)
-//                .build()
             val authModel = remember{
                 AuthModel(api = RetrofitInstance.instance,
                     dataStore = dataStore
