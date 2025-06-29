@@ -195,7 +195,7 @@ fun SearchBar(modifier: Modifier = Modifier) {
 @Composable
 fun TabRowCustom(modifier: Modifier = Modifier, selectedIndexTab: Int, listTab: List<String>, onTabSelected: (Int) -> Unit) {
     TabRow(selectedTabIndex = selectedIndexTab,
-        modifier = modifier.clip(shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
+        modifier = modifier.clip(shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)),
         containerColor = LighterGreen,
         contentColor = White,
         indicator = { tabPositions ->
