@@ -53,6 +53,7 @@ import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
+import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreenTest
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
@@ -172,7 +173,11 @@ class MainActivity : ComponentActivity() {
                                                               navController = navController) }
                         composable(ScreenRoute.OrderScreen) { OrderScreen(OrderViewModel()) }
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
-                        composable(ScreenRoute.HomeScreen) { HomeScreen(foodViewModel = foodViewModel) }
+                        composable(ScreenRoute.HomeScreen) {
+                            //test home screen
+                            HomeScreenTest(foodViewModel = foodViewModel)
+                            //HomeScreen(foodViewModel = foodViewModel)
+                        }
                         composable(ScreenRoute.LoginOrRegisterScreen) {
                             AuthScreen(authViewModel = authViewModel,
                                 navController = navController)}

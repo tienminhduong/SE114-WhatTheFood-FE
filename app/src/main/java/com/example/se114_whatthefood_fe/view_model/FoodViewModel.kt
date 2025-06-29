@@ -3,25 +3,69 @@ package com.example.se114_whatthefood_fe.view_model
 import android.content.Context
 import android.location.Location
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.model.FoodModel
+import com.example.se114_whatthefood_fe.util.DefaultPaginator
+import com.example.se114_whatthefood_fe.util.PaginateList
+import com.example.se114_whatthefood_fe.util.TestRepo
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 
 class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
+    // test phan trang
+    val testRepo = TestRepo()
+    var tabGanBanListTest by mutableStateOf(PaginateList())
+    private val paginator = DefaultPaginator<Int, FoodItemResponse>(
+        initializeKey = tabGanBanListTest.page,
+        onLoadUpdated = { isLoading ->
+            tabGanBanListTest = tabGanBanListTest.copy(isLoading = isLoading)
+        },
+        onRequest = { nextKey ->
+            testRepo.getItems(nextKey, 15)
+        },
+        getNextKey = { items ->
+            tabGanBanListTest.page + 1
+        },
+        onError = { error ->
+            tabGanBanListTest = tabGanBanListTest.copy(error = error.localizedMessage)
+        },
+        onSuccess = { items, newKey ->
+            tabGanBanListTest = tabGanBanListTest.copy(
+                items = tabGanBanListTest.items + items,
+                page = newKey,
+                endReached = items.isEmpty()
+            )
+        }
+    )
+
+    fun loadNextItems() {
+        viewModelScope.launch {
+            paginator.loadNextItems()
+        }
+    }
+    init{
+        viewModelScope.launch {
+            loadNextItems()
+        }
+    }
+
+
+    //
     val tabGanBanList = mutableStateOf<List<FoodItemResponse>>(emptyList())
     val tabBanChayList = mutableStateOf<List<FoodItemResponse>>(emptyList())
     val tabDanhGiaTotList = mutableStateOf<List<FoodItemResponse>>(emptyList())
-    init{
-        viewModelScope.launch {
-            loadTabGanBanList()
-        }
-    }
+//    init{
+//        viewModelScope.launch {
+//            loadTabGanBanList()
+//        }
+//    }
 
     suspend fun loadDanhGiaTotList(
         pageNumber: Int = 0,

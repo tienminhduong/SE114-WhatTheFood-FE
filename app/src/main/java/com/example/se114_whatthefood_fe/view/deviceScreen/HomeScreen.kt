@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
+import android.R.attr.fontWeight
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -441,6 +443,33 @@ fun ListRecommendFood(modifier: Modifier = Modifier) {
         ) {
             items(items = listCard, key = { it.id.toString() }) { card ->
                 CardRecommendView(card = card, imageLoader = rememberOptimizedImageLoader())
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeScreenTest(foodViewModel: FoodViewModel) {
+    val ganBanList = foodViewModel.tabGanBanListTest
+    Text(text = "Test phan trang",
+        modifier = Modifier.padding(8.dp),
+        fontWeight = Bold)
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+
+        items(ganBanList.items.size){ i->
+            if(i >= ganBanList.items.size -1 && !ganBanList.endReached && !ganBanList.isLoading){
+                foodViewModel.loadNextItems()
+            }
+            val card = ganBanList.items[i]
+            Text(text = "${card.foodName + i} - ${card.restaurant.name} - ${card.price} VND",
+                modifier = Modifier.padding(8.dp))
+        }
+        item{
+            if(ganBanList.isLoading)
+            {
+                Row(modifier = Modifier.fillMaxWidth()){
+                    CircularProgressIndicator()
+                }
             }
         }
     }
