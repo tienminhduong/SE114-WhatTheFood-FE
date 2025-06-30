@@ -151,4 +151,9 @@ interface ApiService {
     suspend fun getFoodItemsBySoldAmount(@Query("pageNumber") pageNumber: Int = 0,
                                          @Query("pageSize") pageSize: Int = 10,
     ): Response<List<FoodItemNearByResponse>>
+
+    @GET("fooditems/recommended/byrating")
+    suspend fun getFoodItemsByRating(@Query("pageNumber") pageNumber: Int = 0,
+                                         @Query("pageSize") pageSize: Int = 10,
+    ): Response<List<FoodItemNearByResponse>>
 }

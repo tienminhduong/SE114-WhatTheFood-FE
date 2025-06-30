@@ -64,11 +64,7 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
         },
         onRequest = { nextPage, location ->
             //testRepo.getItems(nextPage, 15)
-            if(location == null) {
-                return@DefaultPaginator Response.error(500, "".toResponseBody())
-            }
-            foodModel.getFoodItemNearBy(location.latitude.toFloat(),
-                location.longitude.toFloat())
+            foodModel.getFoodItemGoodRate(nextPage)
         },
         getNextKey = { items ->
             goodRateList.page + 1
