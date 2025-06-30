@@ -44,7 +44,7 @@ data class BottomBarItem(
     var badgeCount: Int? = null,
     val selectedColor: Color = LightGreen,
     val unselectedColor: Color = White,
-    val selectedColorBackground: Color = Color.Transparent,
+    val selectedColorBackground: Color = Color.White,
     val unselectedColorBackground: Color = LightGreen
 )
 
@@ -109,11 +109,11 @@ fun BottomBarDeviceScreen(navController: NavHostController,
                         //selectedIndex = index
                         if (currentRoute != item.route) {
                             navController.navigate(item.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
+//                                popUpTo(navController.graph.startDestinationId) {
+//                                    saveState = true
+//                                }
+//                                launchSingleTop = true
+//                                restoreState = true
                             }
                         }
                                },

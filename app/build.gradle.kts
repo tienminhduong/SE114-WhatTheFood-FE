@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("kapt")
 }
 
 android {
@@ -69,4 +70,25 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil.compose)
+
+    implementation (libs.hilt.android)
+    kapt (libs.hilt.android.compiler)
+
+    implementation (libs.androidx.datastore.preferences)
+    implementation (libs.androidx.datastore.core)
+
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+
+    implementation (libs.androidx.hilt.navigation.compose)
+
+    implementation (libs.logging.interceptor)
+
+    implementation (libs.accompanist.systemuicontroller)
+
+    //gms -- google play services
+    implementation(libs.play.services.location)
+    // permissions
+    implementation(libs.accompanist.permissions)
+
 }

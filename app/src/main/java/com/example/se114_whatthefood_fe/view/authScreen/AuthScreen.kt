@@ -1,6 +1,8 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
+import android.R
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -10,44 +12,52 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import com.example.se114_whatthefood_fe.view_model.UIState
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview
 fun AuthScreenPreview() {
-    val authViewModel = AuthViewModel()
-    AuthScreen(authViewModel)
+//    val authViewModel = AuthViewModel()
+//    AuthScreen(authViewModel)
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AuthScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+fun AuthScreen(authViewModel: AuthViewModel,
+               modifier: Modifier = Modifier,
+               navController: NavController) {
     // This is a placeholder for the AuthScreen composable.
     // The actual implementation will include the login and register forms,
     // as well as any other necessary UI components.
@@ -60,9 +70,9 @@ fun AuthScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
     {
         Scaffold(topBar = {
             TopBar(
-                isLogin = true,
+                isLogin = isLogin,
                 onTabClick = { authViewModel.onTabClick(it) },
-                onBack = { authViewModel.onBackClick() },
+                onBack = { navController.popBackStack() },
                 onHelp = { authViewModel.onHelpClick() }
             )
         },
@@ -83,8 +93,6 @@ fun AuthScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                         end = 16.dp
                     )
                 ) {
-
-
                     AnimatedContent(
                         targetState = isLogin,
                         transitionSpec = {
@@ -96,6 +104,98 @@ fun AuthScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                     }
                 }
             }
+        }
+    }
+    if(isLogin)
+    {
+        ScreenWhenLogin(authViewModel = authViewModel,
+            navController = navController)
+    }
+    else
+    {
+        ScreenWhenRegister(authViewModel = authViewModel,
+            navController = navController)
+    }
+}
+
+@Composable
+fun ScreenWhenRegister(authViewModel: AuthViewModel,
+                       navController: NavController){
+    val registerState = authViewModel.registerState
+    when(registerState) {
+        UIState.LOADING -> {
+            Box(modifier = Modifier.fillMaxSize()
+                .background(color = Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit){},
+                contentAlignment = Alignment.Center){
+                CircularProgressIndicator(
+                    modifier = Modifier.size(50.dp),
+                    color = Color.White
+                )
+            }
+        }
+
+        UIState.SUCCESS -> {
+            // Handle success state, e.g., navigate to the main screen
+            Toast.makeText(LocalView.current.context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+            authViewModel.setLogin(true)
+            authViewModel.registerState = UIState.IDLE // Reset register state
+        }
+
+        UIState.ERROR -> {
+            // Handle error state, e.g., show an error message
+            Toast.makeText(LocalView.current.context, "Đăng ký thất bại", Toast.LENGTH_SHORT).show()
+            authViewModel.registerState = UIState.IDLE // Reset register state
+        }
+        else -> {
+            // Do nothing, this is the initial state
+        }
+    }
+
+}
+
+@Composable
+fun ScreenWhenLogin(authViewModel: AuthViewModel,
+                    navController: NavController){
+    val loginState = authViewModel.loginState
+    when(loginState)
+    {
+        UIState.LOADING -> {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)) // Màu đen mờ
+                // Modifier.pointerInput để chặn mọi tương tác chuột/chạm
+                .pointerInput(Unit) {
+                    // Khối này không làm gì cả, chỉ để consume (tiêu thụ) sự kiện
+                    // và ngăn nó truyền xuống dưới
+                },
+                contentAlignment = Alignment.Center){
+                CircularProgressIndicator(
+                    modifier = Modifier.size(50.dp),
+                    color = Color.White
+                )
+            }
+        }
+        UIState.SUCCESS -> {
+            // Handle success state, e.g., navigate to the main screen
+            authViewModel.loginSuccess?.let { isLoginSuccess ->
+                if(isLoginSuccess) {
+                    // Navigate to the main screen or show a success message
+                    navController.navigate(ScreenRoute.HomeScreen) {
+                        popUpTo(ScreenRoute.LoginOrRegisterScreen) { inclusive = true }
+                    }
+                }
+            }
+        }
+        UIState.ERROR -> {
+            // Handle error state, e.g., show an error message
+            authViewModel.loginSuccess = null // Reset login success state
+        }
+        UIState.IDLE -> {
+            // Do nothing, this is the initial state
+        }
+        UIState.NETWORK_ERROR -> {
+            Toast.makeText(LocalView.current.context, "Network Error", Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -118,7 +218,6 @@ fun TopBar(
     onHelp: () -> Unit,
     modifier: Modifier = Modifier)
 {
-    var isLogin by remember { mutableStateOf(true) }
     Row {
         // Back button
         ButtonIcon(icon = Icons.AutoMirrored.Filled.ArrowBack,
@@ -134,7 +233,7 @@ fun TopBar(
             TabButton(text = "Đăng nhập",
                 isSelected = isLogin,
                 onClick = {
-                    isLogin = true
+                    if(!isLogin)
                     onTabClick(true) },
                 modifier = Modifier
             )
@@ -142,7 +241,7 @@ fun TopBar(
             TabButton(text = "Đăng ký",
                 isSelected = !isLogin,
                 onClick = {
-                    isLogin = false
+                    if(isLogin)
                     onTabClick(false) },
                 modifier = Modifier
             )
