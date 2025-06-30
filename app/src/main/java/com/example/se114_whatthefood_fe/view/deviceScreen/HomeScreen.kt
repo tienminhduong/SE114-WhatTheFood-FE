@@ -1,13 +1,11 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
-import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,13 +44,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.se114_whatthefood_fe.data.remote.FoodItemNearByResponse
+import com.example.se114_whatthefood_fe.data.remote.Rating
 import com.example.se114_whatthefood_fe.model.LocationManager
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.util.CustomPaginateList
+import com.example.se114_whatthefood_fe.view.card.BestSellerCardView
 import com.example.se114_whatthefood_fe.view.card.Card
 import com.example.se114_whatthefood_fe.view.card.CardRecommendView
-import com.example.se114_whatthefood_fe.view.card.CardView
+import com.example.se114_whatthefood_fe.view.card.GoodRateCardView
+import com.example.se114_whatthefood_fe.view.card.NearByCardView
 import com.example.se114_whatthefood_fe.view.card.rememberOptimizedImageLoader
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -137,7 +139,12 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
                     rate = card.rating.average.toFloat(),
                     distance = card.distanceInKm,
                     time = card.distanceInTime.toFloat())
-                CardView(card = cardData)
+                when(selectedIndexTab)
+                {
+                    0-> NearByCardView(card = listCard.items[index])
+                    1-> BestSellerCardView(card = listCard.items[index])
+                    2-> GoodRateCardView(card = listCard.items[index])
+                }
             }
             item{
                 if(listCard.isLoading)
@@ -184,79 +191,6 @@ fun testGetData(foodViewModel: FoodViewModel): List<Card> {
             time = 10.0f // Assuming a default time for testing
         )
     }
-}
-
-fun getDataGanBan(): List<Card> {
-    // This function should return a list of Card objects for the "Gần bạn" tab
-    return listOf(
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "GanBan",
-            rate = 4.5f,
-            distance = 2.0f,
-            time = 30.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-    )
-}
-
-fun getDataBanChay(): List<Card> {
-    // This function should return a list of Card objects for the "Bán chạy" tab
-    return listOf(
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "BanChay",
-            rate = 4.5f,
-            distance = 2.0f,
-            time = 30.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-    )
-}
-
-fun getDataDanhGiaTot(): List<Card> {
-    // This function should return a list of Card objects for the "Đánh giá tốt" tab
-    return listOf(
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "DanhGiaTot",
-            rate = 4.5f,
-            distance = 2.0f,
-            time = 30.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-    )
 }
 
 @Composable
@@ -311,151 +245,22 @@ fun TabRowCustom(modifier: Modifier = Modifier, selectedIndexTab: Int, listTab: 
         }
     }
 }
-@Composable
-fun ListFood(modifier: Modifier = Modifier, listTab: List<String>){
-    var selectedIndexTab by remember { mutableIntStateOf(0) }
-    Column(verticalArrangement = Arrangement.spacedBy (6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize()) {
-        TabRowCustom(selectedIndexTab = selectedIndexTab, listTab = listOf("Gần bạn", "Bán chạy", "Đánh giá tốt"),
-            onTabSelected = { index ->
-                selectedIndexTab = index
-            })
-        // data
-        when (selectedIndexTab) {
-            0 -> DataTabGanBan(modifier = Modifier)
-            1 -> DataTabBanChay(modifier = Modifier.fillMaxHeight())
-            2 -> DataTabDanhGiaTot(modifier = Modifier.fillMaxHeight())
-            else -> DataTabGanBan(modifier = Modifier.fillMaxHeight())
-        }
-    }
-}
-
-@Composable
-fun DataTabGanBan(modifier: Modifier){
-    // test data
-    val listFood: List<Card> = listOf(
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "GanBan",
-            rate = 4.5f,
-            distance = 2.0f,
-            time = 30.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-    )
-    LazyColumn(modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        items(items = listFood, key = {it.id.toString()}){ card ->
-            CardView(card = card)
-        }
-    }
-}
-
-@Composable
-fun DataTabBanChay(modifier: Modifier){
-    // test data
-    val listFood: List<Card> = listOf(
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "BanChay",
-            rate = 4.5f,
-            distance = 2.0f,
-            time = 30.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-    )
-    LazyColumn(modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        items(items = listFood, key = {it.id.toString()}){ card ->
-            CardView(card = card)
-        }
-    }
-}
-
-@Composable
-fun DataTabDanhGiaTot(modifier: Modifier){
-    // test data
-    val listFood: List<Card> = listOf(
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "DanhGiaTot",
-            rate = 4.5f,
-            distance = 2.0f,
-            time = 30.0f),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-        ,
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(imageLink = "ht", title = "com tam", rate = 3.5f, distance = 3.0f, time = 25.0f)
-    )
-    LazyColumn(modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        items(items = listFood, key = {it.id.toString()}){ card ->
-            CardView(card = card)
-        }
-    }
-}
 
 @Composable
 fun ListRecommendFood(modifier: Modifier = Modifier) {
     // data test
+
     val listCard = listOf(
-        Card(
-            imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "banh mi",
-            rate = 4.5f,
-            distance = 2.0f,
-            time = 30.0f
-        ),
-        Card(imageLink = "ht", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(
-            imageLink = "ht",
-            title = "com tam",
-            rate = 3.5f,
-            distance = 3.0f,
-            time = 25.0f
-        ),
-        Card(imageLink = "https://media.istockphoto.com/id/1462352351/vi/anh/ph%E1%BB%9F.jpg?s=612x612&w=0&k=20&c=H8CFdkpTEMIHCrtByEkhpW0um8IPmjPVyeHKYpLyoVc=", title = "pho", rate = 4.0f, distance = 1.5f, time = 20.0f),
-        Card(
-            imageLink = "ht",
-            title = "banh xeo",
-            rate = 3.5f,
-            distance = 3.0f,
-            time = 25.0f
+        FoodItemNearByResponse(
+            foodId = 1,
+            name = "Bánh mì thịt nướng",
+            rating = Rating(average = 4.5f, number = 100),
+            distanceInKm = 1.2f,
+            distanceInTime = 10,
+            imgUrl = "https://example.com/banhmi.jpg",
+            soldAmount = 50
         )
     )
-
     Column(verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.padding(vertical = 16.dp)) {
         Box(
@@ -477,8 +282,8 @@ fun ListRecommendFood(modifier: Modifier = Modifier) {
             modifier = modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            items(items = listCard, key = { it.id.toString() }) { card ->
-                CardRecommendView(card = card, imageLoader = rememberOptimizedImageLoader())
+            items(items = listCard, key = { it.foodId }) { card ->
+                //CardRecommendView(card = card, imageLoader = rememberOptimizedImageLoader())
             }
         }
     }

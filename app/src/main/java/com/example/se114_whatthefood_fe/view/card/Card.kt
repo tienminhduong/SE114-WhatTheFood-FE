@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
@@ -37,30 +38,29 @@ import coil.compose.rememberAsyncImagePainter
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.example.se114_whatthefood_fe.data.remote.FoodItemNearByResponse
 import com.example.se114_whatthefood_fe.ui.theme.White
 import java.util.UUID
 
 @Immutable
 data class Card(
-    val id: Int = UUID.randomUUID().hashCode(),
+    val id: Int,
     val imageLink: String? = null,
     val title: String? = null,
     val rate: Float? = null,
     val distance: Float? = null,
     val time: Float? = null
+
 )
 
 @Composable
 @Preview
 fun CardPreview() {
-    CardView( card =
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f)
-    )
+
 }
 
 @Composable
-fun CardView(modifier: Modifier = Modifier, card: Card) {
+fun NearByCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
     Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
                                        color = White)
         .fillMaxWidth()
@@ -71,7 +71,77 @@ fun CardView(modifier: Modifier = Modifier, card: Card) {
         // image
         AsyncImage(
             model = ImageRequest.Builder(context = LocalContext.current)
-                .data(card.imageLink)
+                .data(card.imgUrl)
+                .crossfade(true)
+                .diskCachePolicy(CachePolicy.ENABLED)  // Cache trên ổ đĩa
+                .memoryCachePolicy(CachePolicy.ENABLED) // Cache trên RAM
+                //.size(100, 100) // Set kích thước ảnh
+                .placeholder(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                .error(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                .build(),
+            contentDescription = "Card Image",
+            contentScale = ContentScale.Crop,
+            modifier = modifier.size(48.dp).clip(shape= RoundedCornerShape(8.dp))
+        )
+        // information
+        Column(modifier = Modifier.padding(horizontal = 8.dp)
+            .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceAround) {
+            // title
+            androidx.compose.material3.Text(
+                text = card.name,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 1,
+                softWrap = false,
+                textAlign = TextAlign.Center
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = String.format("%.1f", card.rating.average),
+                    )
+                    // rate icon
+                    Icon(
+                        imageVector = Icons.Default.StarRate,
+                        contentDescription = "Rate Icon",
+                        tint = Color.Yellow
+                    )
+                }
+
+                // distance
+                Text(
+                    text = String.format("%.1f", card.distanceInKm) + " km"
+                )
+                // time
+                Text(
+                    text = "~ ${card.distanceInTime} phút"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
+    Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
+        color = White)
+        .fillMaxWidth()
+        .height(64.dp)
+        .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
+        .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
+        verticalAlignment = Alignment.CenterVertically) {
+        // image
+        AsyncImage(
+            model = ImageRequest.Builder(context = LocalContext.current)
+                .data(card.imgUrl)
                 .crossfade(true)
                 .diskCachePolicy(CachePolicy.ENABLED)  // Cache trên ổ đĩa
                 .memoryCachePolicy(CachePolicy.ENABLED) // Cache trên RAM
@@ -88,43 +158,91 @@ fun CardView(modifier: Modifier = Modifier, card: Card) {
             .fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceAround){
             // title
-            if (card.title != null) {
+
                 androidx.compose.material3.Text(
-                    text = card.title,
+                    text = card.name,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                     softWrap = false,
                     textAlign = TextAlign.Center
                 )
-            }
+
             Row(horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()) {
                 Row(horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,){
-                    if (card.rate != null) {
                         androidx.compose.material3.Text(
-                            text = String.format("%.1f", card.rate),
+                            text = String.format("%.1f", card.rating.average),
                         )
-                    }
                     // rate icon
                     Icon(imageVector = Icons.Default.StarRate,
                         contentDescription = "Rate Icon",
                         tint = Color.Yellow)
                 }
 
-                // distance
-                if (card.distance != null) {
-                    androidx.compose.material3.Text(
-                        text = String.format("%.1f", card.distance) + " km"
+                // so luong ban
+                Text(text = "Đã bán: ${card.soldAmount}")
+            }
+
+        }
+    }
+}
+
+@Composable
+fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
+    Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
+        color = White)
+        .fillMaxWidth()
+        .height(64.dp)
+        .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
+        .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
+        verticalAlignment = Alignment.CenterVertically) {
+        // image
+        AsyncImage(
+            model = ImageRequest.Builder(context = LocalContext.current)
+                .data(card.imgUrl)
+                .crossfade(true)
+                .diskCachePolicy(CachePolicy.ENABLED)  // Cache trên ổ đĩa
+                .memoryCachePolicy(CachePolicy.ENABLED) // Cache trên RAM
+                //.size(100, 100) // Set kích thước ảnh
+                .placeholder(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                .error(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                .build(),
+            contentDescription = "Card Image",
+            contentScale = ContentScale.Crop,
+            modifier = modifier.size(48.dp).clip(shape= RoundedCornerShape(8.dp))
+        )
+        // information
+        Column(modifier = Modifier.padding(horizontal = 8.dp)
+            .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceAround){
+            // title
+
+            Text(
+                text = card.name,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 1,
+                softWrap = false,
+                textAlign = TextAlign.Center
+            )
+
+            Row(horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()) {
+                Row(horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,){
+                    Text(
+                        text = String.format("%.1f", card.rating.average),
                     )
+                    // rate icon
+                    Icon(imageVector = Icons.Default.StarRate,
+                        contentDescription = "Rate Icon",
+                        tint = Color.Yellow)
                 }
-                // time
-                if (card.time != null) {
-                    androidx.compose.material3.Text(
-                        text = "~ ${card.time} phút"
-                    )
-                }
+
+                // so luong danh gia
+                Text(text = "Số lượt đánh giá: ${card.rating.number}")
             }
 
         }
@@ -135,7 +253,7 @@ fun CardView(modifier: Modifier = Modifier, card: Card) {
 @Preview
 fun CardRecommendPreview() {
     CardRecommendView(card = Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-        title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
+        title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f, id = 1),
         imageLoader = rememberOptimizedImageLoader())
 }
 
@@ -208,32 +326,5 @@ fun ListRecommendFood(modifier: Modifier = Modifier, listCard: List<Card>) {
 @Composable
 @Preview
 fun ListRecommendFoodPreview() {
-    ListRecommendFood(modifier = Modifier.wrapContentHeight()
-        .fillMaxWidth().background(color = Color.Gray)
-                    , listCard = listOf(
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f),
-        Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f)
-    ))
+
 }
