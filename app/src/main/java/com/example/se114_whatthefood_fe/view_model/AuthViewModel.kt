@@ -42,6 +42,14 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
     fun onRegisterClick(){
         registerState = UIState.LOADING
         viewModelScope.launch {
+            if( nameRegister.isBlank() || phoneRegister.isBlank() ||
+                passwordRegister.isBlank() || confirmPassword.isBlank() ||
+                optionRole.value.isBlank() ||
+                passwordRegister != confirmPassword) {
+                // Handle empty fields, e.g., show an error message
+                registerState = UIState.ERROR
+                return@launch
+            }
             val result = authModel.register(phoneNumber = phoneRegister,
                                             password = passwordRegister,
                                             name = nameRegister,

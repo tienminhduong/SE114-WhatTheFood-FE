@@ -44,9 +44,12 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             ganBanList.error = error.localizedMessage
         },
         onSuccess = { items, newKey ->
-            ganBanList = ganBanList.copy(items = ganBanList.items + items,
-                page = newKey,
-                endReached = items.isEmpty())
+//            ganBanList = ganBanList.copy(items = ganBanList.items + items,
+//                page = newKey,
+//                endReached = items.isEmpty())
+            ganBanList.items.addAll(items)
+            ganBanList.page = newKey
+            ganBanList.endReached = items.isEmpty()
         },
         getPostion = {
             location // Lấy vị trí nếu có
@@ -57,7 +60,7 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
     private val paginatorGoodRate = DefaultPaginator<Int, FoodItemNearByResponse>(
         initializeKey = goodRateList.page,
         onLoadUpdated = { isLoading ->
-            goodRateList = goodRateList.copy(isLoading = isLoading) // Cập nhật trạng thái isLoading
+            goodRateList.isLoading = isLoading // Cập nhật trạng thái isLoading
         },
         onRequest = { nextPage, location ->
             //testRepo.getItems(nextPage, 15)
@@ -71,12 +74,12 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             goodRateList.page + 1
         },
         onError = { error ->
-            goodRateList.copy(error = error.localizedMessage) // Cập nhật lỗi
+            goodRateList.error = error.localizedMessage // Cập nhật lỗi
         },
         onSuccess = { items, newKey ->
-            goodRateList = goodRateList.copy(items = goodRateList.items +items,
-                page = newKey,
-                endReached = items.isEmpty())
+            goodRateList.items.addAll(items)
+            goodRateList.page = newKey
+            goodRateList.endReached = items.isEmpty()
         }
     )
     // tab ban chay
@@ -84,7 +87,7 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
     private val paginatorBestSeller = DefaultPaginator<Int, FoodItemNearByResponse>(
         initializeKey = bestSellerList.page,
         onLoadUpdated = { isLoading ->
-            bestSellerList = bestSellerList.copy(isLoading = isLoading)
+            bestSellerList.isLoading = isLoading // Cập nhật trạng thái isLoading
         },
         onRequest = { nextKey, location ->
             // sua lai keo api
@@ -98,12 +101,12 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             bestSellerList.page + 1
         },
         onError = { error ->
-            bestSellerList = bestSellerList.copy(error = error.localizedMessage)
+            bestSellerList.error = error.localizedMessage // Cập nhật lỗi
         },
         onSuccess = { items, newKey ->
-            bestSellerList = bestSellerList.copy(items = bestSellerList.items + items,
-                page = newKey,
-                endReached = items.isEmpty())
+            bestSellerList.items.addAll(items)
+            bestSellerList.page = newKey
+            bestSellerList.endReached = items.isEmpty()
         }
     )
     fun loadNextItems(selectedTab: Int) {

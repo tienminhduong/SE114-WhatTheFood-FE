@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
+import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -87,15 +89,21 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
         {
             locationPermissions.launchMultiplePermissionRequest()
         }
-//        foodViewModel.location = locationManager.getLocation()
-//        Log.i("HomeScreen", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
+        //foodViewModel.location = locationManager.getLocation()
+        //Log.i("HomeScreen", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
     }
 
     LaunchedEffect(locationPermissions.allPermissionsGranted) {
         foodViewModel.location = locationManager.getLocation()
-        Log.i("HomeScreen", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
+//        foodViewModel.location = Location("dummy_provider").apply {
+//            latitude = 10.8843273 // Example latitude
+//            longitude = 106.7835597 // Example longitude
+//        }
+        Log.i("homescreenfunct", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
     }
-
+    LaunchedEffect(foodViewModel.location) {
+        foodViewModel.loadNextItems(0)
+    }
     // fetch du lieu
     FetchData(locationManager = locationManager, foodViewModel = foodViewModel, selectedTab = selectedIndexTab)
     Column(modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
@@ -118,13 +126,17 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
                 2 -> danhGiaTotList
                 else -> CustomPaginateList()
             }
-            items(count = listCard.items.size, key = {it}) { index ->
+            itemsIndexed(listCard.items, key = { index, _ -> index }) { index, item ->
                 if(index >= listCard.items.size -1 && !listCard.endReached && !listCard.isLoading){
                     FetchData(locationManager, foodViewModel, selectedTab = selectedIndexTab)
                 }
                 val card = listCard.items[index]
                 val cardData = Card(id = card.foodId,
-                    title = card.name)
+                    title = card.name,
+                    imageLink = card.imgUrl ?: "",
+                    rate = card.rating,
+                    distance = card.distanceInKm,
+                    time = card.distanceInTime.toFloat())
                 CardView(card = cardData)
             }
             item{
@@ -150,7 +162,7 @@ fun FetchData(locationManager: LocationManager, foodViewModel: FoodViewModel, se
         if(selectedTab == 0 && (previousTabIndex.intValue != selectedTab))
         {
             foodViewModel.location = locationManager.getLocation()
-            Log.i("HomeScreen", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
+            Log.i("fetchdatafunct", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
         }
         if(selectedTab != previousTabIndex.intValue) {
             previousTabIndex.intValue = selectedTab

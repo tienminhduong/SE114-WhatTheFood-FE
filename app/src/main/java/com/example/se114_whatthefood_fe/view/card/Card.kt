@@ -104,7 +104,7 @@ fun CardView(modifier: Modifier = Modifier, card: Card) {
                     verticalAlignment = Alignment.CenterVertically,){
                     if (card.rate != null) {
                         androidx.compose.material3.Text(
-                            text = card.rate.toString(),
+                            text = String.format("%.1f", card.rate),
                         )
                     }
                     // rate icon
@@ -116,7 +116,7 @@ fun CardView(modifier: Modifier = Modifier, card: Card) {
                 // distance
                 if (card.distance != null) {
                     androidx.compose.material3.Text(
-                        text = card.distance.toString() + " km"
+                        text = String.format("%.1f", card.distance) + " km"
                     )
                 }
                 // time
