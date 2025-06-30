@@ -88,6 +88,21 @@ data class FoodItemResponse(
     @SerializedName("restaurant")
     val restaurant: Restaurant
 )
+// cac quan an gan day
+data class FoodItemNearByResponse(
+    @SerializedName("foodId")
+    val foodId: Int,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("rating")
+    val rating: Float,
+    @SerializedName("distanceInKm")
+    val distanceInKm: Float,
+    @SerializedName("distanceInTime")
+    val distanceInTime: Int,
+    @SerializedName("imgUrl")
+    var imgUrl: String? = null,
+)
 
 interface ApiService {
     // auth API
@@ -117,4 +132,12 @@ interface ApiService {
                              @Query("priceHigherThan") priceHigherThan: Int = 0,
                              @Query("sortBy") sortBy: String = "priceAsc"
     ): Response<List<FoodItemResponse>>
+
+    // get food item nearby
+    @GET("fooditems/recommended/bylocation")
+    suspend fun getFoodItemsNearBy(@Query("latitude") latitude: Float,
+                                   @Query("longitude") longitude: Float,
+                                   @Query("pageNumber") pageNumber: Int = 0,
+                                   @Query("pageSize") pageSize: Int = 10)
+    : Response<List<FoodItemNearByResponse>>
 }

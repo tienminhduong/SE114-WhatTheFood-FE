@@ -53,7 +53,6 @@ import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
-import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreenTest
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
@@ -73,7 +72,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // Cho phép Compose vẽ dưới system bar
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
         setContent {
 //            // set bottom bar cho mot so man hinh
@@ -175,8 +174,8 @@ class MainActivity : ComponentActivity() {
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
                         composable(ScreenRoute.HomeScreen) {
                             //test home screen
-                            HomeScreenTest(foodViewModel = foodViewModel)
-                            //HomeScreen(foodViewModel = foodViewModel)
+                            //HomeScreenTest(foodViewModel = foodViewModel)
+                            HomeScreen(foodViewModel = foodViewModel)
                         }
                         composable(ScreenRoute.LoginOrRegisterScreen) {
                             AuthScreen(authViewModel = authViewModel,

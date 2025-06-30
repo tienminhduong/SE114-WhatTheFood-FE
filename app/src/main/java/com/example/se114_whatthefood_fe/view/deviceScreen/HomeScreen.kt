@@ -1,6 +1,6 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
-import android.R.attr.fontWeight
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
@@ -39,26 +38,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.model.LocationManager
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.util.CustomPaginateList
 import com.example.se114_whatthefood_fe.view.card.Card
 import com.example.se114_whatthefood_fe.view.card.CardRecommendView
 import com.example.se114_whatthefood_fe.view.card.CardView
 import com.example.se114_whatthefood_fe.view.card.rememberOptimizedImageLoader
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.launch
 
 @Composable
 @Preview
@@ -66,6 +63,7 @@ fun HomeScreenPreview() {
     //HomeScreen()
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
     var selectedIndexTab by remember { mutableIntStateOf(0) }
@@ -74,10 +72,29 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val locationManager = remember { LocationManager(context, fusedLocationClient)}
+    val locationPermissions = rememberMultiplePermissionsState(
+        permissions = listOf(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    )
     // nhung danh sach de hien
-    val ganBanList by foodViewModel.tabGanBanList
-    val banChayList by foodViewModel.tabBanChayList
-    val danhGiaTotList by foodViewModel.tabDanhGiaTotList
+    val ganBanList = foodViewModel.ganBanList
+    val banChayList = foodViewModel.bestSellerList
+    val danhGiaTotList = foodViewModel.goodRateList
+    LaunchedEffect(Unit) {
+        if(!locationPermissions.allPermissionsGranted || locationPermissions.shouldShowRationale)
+        {
+            locationPermissions.launchMultiplePermissionRequest()
+        }
+//        foodViewModel.location = locationManager.getLocation()
+//        Log.i("HomeScreen", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
+    }
+
+    LaunchedEffect(locationPermissions.allPermissionsGranted) {
+        foodViewModel.location = locationManager.getLocation()
+        Log.i("HomeScreen", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
+    }
 
     // fetch du lieu
     FetchData(locationManager = locationManager, foodViewModel = foodViewModel, selectedTab = selectedIndexTab)
@@ -95,17 +112,31 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
                 }) }
             // list card cua mon an
             val listCard = when (selectedIndexTab) {
-                0-> testGetData(foodViewModel = foodViewModel)
 //                0 -> getDataGanBan()
-                1 -> getDataBanChay()
-                2 -> getDataDanhGiaTot()
-                else -> getDataGanBan()
+                0 -> ganBanList
+                1 -> banChayList
+                2 -> danhGiaTotList
+                else -> CustomPaginateList()
             }
-
-            items(items = listCard, key = { it.id.toString() }) { card ->
-                CardView(card = card)
+            items(count = listCard.items.size, key = {it}) { index ->
+                if(index >= listCard.items.size -1 && !listCard.endReached && !listCard.isLoading){
+                    FetchData(locationManager, foodViewModel, selectedTab = selectedIndexTab)
+                }
+                val card = listCard.items[index]
+                val cardData = Card(id = card.foodId,
+                    title = card.name)
+                CardView(card = cardData)
             }
-
+            item{
+                if(listCard.isLoading)
+                {
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center) {
+                        CircularProgressIndicator(color = Color.White)
+                    }
+                }
+            }
         }
 
     }
@@ -113,25 +144,18 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
 
 @Composable
 fun FetchData(locationManager: LocationManager, foodViewModel: FoodViewModel, selectedTab: Int){
+    var previousTabIndex = remember { mutableIntStateOf(-1) }
     LaunchedEffect(selectedTab) {
-        when(selectedTab){
-            // load list gan ban
-            0 -> {
-                val location = locationManager.getLocation()
-                location?.let {
-                    foodViewModel.loadTabGanBanList(location)
-                }
-            }
-            // load list ban chay
-            1 -> {
-                foodViewModel.loadBanChayList();
-            }
-            // load list danh gia tot
-            2->{
-                foodViewModel.loadDanhGiaTotList();
-            }
-
+        // neu la gan ban thi lay vi tri truoc
+        if(selectedTab == 0 && (previousTabIndex.intValue != selectedTab))
+        {
+            foodViewModel.location = locationManager.getLocation()
+            Log.i("HomeScreen", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
         }
+        if(selectedTab != previousTabIndex.intValue) {
+            previousTabIndex.intValue = selectedTab
+        }
+        foodViewModel.loadNextItems(selectedTab)
     }
 }
 
@@ -443,33 +467,6 @@ fun ListRecommendFood(modifier: Modifier = Modifier) {
         ) {
             items(items = listCard, key = { it.id.toString() }) { card ->
                 CardRecommendView(card = card, imageLoader = rememberOptimizedImageLoader())
-            }
-        }
-    }
-}
-
-@Composable
-fun HomeScreenTest(foodViewModel: FoodViewModel) {
-    val ganBanList = foodViewModel.tabGanBanListTest
-    Text(text = "Test phan trang",
-        modifier = Modifier.padding(8.dp),
-        fontWeight = Bold)
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-
-        items(ganBanList.items.size){ i->
-            if(i >= ganBanList.items.size -1 && !ganBanList.endReached && !ganBanList.isLoading){
-                foodViewModel.loadNextItems()
-            }
-            val card = ganBanList.items[i]
-            Text(text = "${card.foodName + i} - ${card.restaurant.name} - ${card.price} VND",
-                modifier = Modifier.padding(8.dp))
-        }
-        item{
-            if(ganBanList.isLoading)
-            {
-                Row(modifier = Modifier.fillMaxWidth()){
-                    CircularProgressIndicator()
-                }
             }
         }
     }
