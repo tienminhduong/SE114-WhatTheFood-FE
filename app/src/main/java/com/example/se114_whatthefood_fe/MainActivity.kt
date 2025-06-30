@@ -45,8 +45,11 @@ import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.model.LocationManager
+import com.example.se114_whatthefood_fe.ui.theme.DarkGreen
 
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
+import com.example.se114_whatthefood_fe.ui.theme.LighterGreen
+import com.example.se114_whatthefood_fe.ui.theme.MintGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
@@ -140,8 +143,13 @@ class MainActivity : ComponentActivity() {
                     dataStore = dataStore
                 )
             }
+            val imageModel = remember {
+                com.example.se114_whatthefood_fe.model.ImageModel(api = RetrofitInstance.instance,
+                    dataStore = dataStore
+                )
+            }
 
-            val authViewModel = remember {AuthViewModel(authModel = authModel)}
+            val authViewModel = remember {AuthViewModel(authModel = authModel, imageModel = imageModel)}
 
             val foodModel = remember{
                 FoodModel(api = RetrofitInstance.instance,
@@ -152,7 +160,7 @@ class MainActivity : ComponentActivity() {
                 FoodViewModel(foodModel = foodModel)
             }
             Box(modifier = Modifier.fillMaxSize()
-                .background(Brush.verticalGradient(colors = listOf(LightGreen, White)))
+                .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
                 .systemBarsPadding()) {
                 Scaffold(containerColor = Color.Transparent,
                     bottomBar = {

@@ -1,8 +1,8 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
 import android.annotation.SuppressLint
-import android.util.Log
-import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,7 +32,6 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -43,14 +41,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import android.net.Uri
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -190,6 +187,16 @@ fun ButtonWithLeadingAndTrailingIcon(
 fun AccountScreen(authViewModel: AuthViewModel,
                   modifier: Modifier = Modifier,
                   navController: NavHostController) {
+
+    // dung cho doi anh
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            authViewModel.uploadImage(context = context, uri = it)
+        }
+    }
     // add accountViewModel to handle user data and actions
 
     Column(modifier = modifier.fillMaxSize(),
@@ -221,7 +228,7 @@ fun AccountScreen(authViewModel: AuthViewModel,
         Spacer(modifier = Modifier.height(16.dp))
         // vi voucher
         ButtonWithLeadingAndTrailingIcon(
-            "Ví Voucher",
+            "Đổi ảnh đại diện",
             leadingIcon = Icons.Default.ConfirmationNumber,
             trailingIcon = Icons.Default.PlayArrow,
             onClick = { /* TODO: Handle click */ },
@@ -235,6 +242,10 @@ fun AccountScreen(authViewModel: AuthViewModel,
             onClick = { /* TODO: Handle click */ },
             modifier = Modifier.padding(top = 5.dp)
         )
+        // doi anh
+        Button(onClick = { launcher.launch("image/*")}) {
+            Text(text = "Đổi ảnh đại diện", color = LightGreen)
+        }
         if(isLoggedIn == true) {
             Spacer(modifier = Modifier.weight(1f))
             Button(

@@ -29,8 +29,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -194,7 +196,7 @@ fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse
     Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
         color = White)
         .fillMaxWidth()
-        .height(64.dp)
+        .height(88.dp)
         .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
         .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
         verticalAlignment = Alignment.CenterVertically) {
@@ -211,7 +213,7 @@ fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(48.dp).clip(shape= RoundedCornerShape(8.dp))
+            modifier = modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
         )
         // information
         Column(modifier = Modifier.padding(horizontal = 8.dp)
@@ -224,7 +226,9 @@ fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 1,
                 softWrap = false,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp) // Set font size
             )
 
             Row(horizontalArrangement = Arrangement.SpaceAround,

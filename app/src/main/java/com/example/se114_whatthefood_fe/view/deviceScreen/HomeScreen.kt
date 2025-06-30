@@ -132,13 +132,6 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
                 if(index >= listCard.items.size -1 && !listCard.endReached && !listCard.isLoading){
                     FetchData(locationManager, foodViewModel, selectedTab = selectedIndexTab)
                 }
-                val card = listCard.items[index]
-                val cardData = Card(id = card.foodId,
-                    title = card.name,
-                    imageLink = card.imgUrl ?: "",
-                    rate = card.rating.average.toFloat(),
-                    distance = card.distanceInKm,
-                    time = card.distanceInTime.toFloat())
                 when(selectedIndexTab)
                 {
                     0-> NearByCardView(card = listCard.items[index])

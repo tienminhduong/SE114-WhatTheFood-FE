@@ -1,14 +1,18 @@
 package com.example.se114_whatthefood_fe.view_model
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.example.se114_whatthefood_fe.model.AuthModel
+import com.example.se114_whatthefood_fe.model.ImageModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
+class AuthViewModel(private val authModel: AuthModel,
+    private val imageModel: ImageModel? = null) : ViewModel() {
 
     init{
         // Initialize any necessary data or state here
@@ -17,6 +21,23 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
             if (isLoggedIn()) {
                 getUserInfo() // Fetch user info if already logged in
             }
+        }
+    }
+
+    // upload image
+    var isUploading by mutableStateOf(false)
+    var uploadResult by mutableStateOf<Boolean?>(null)
+
+    fun uploadImage(context: Context, uri: Uri) {
+        viewModelScope.launch {
+            isUploading = true
+            val result = imageModel?.PushImageAndGetUrl(context, uri)
+            uploadResult = result != null
+            if(uploadResult == true)
+            {
+                _userInfo.value = userInfo.value?.copy(pfpUrl = result?.pfpUrl)
+            }
+            isUploading = false
         }
     }
 
@@ -72,7 +93,7 @@ class AuthViewModel(private val authModel: AuthModel) : ViewModel() {
     //var errorMessage by mutableStateOf<String?>(null)
     var loginState by mutableStateOf(UIState.IDLE)
 
-    private val _userInfo = mutableStateOf<UserInfo?>(null)
+    private var _userInfo = mutableStateOf<UserInfo?>(null)
     val userInfo: State<UserInfo?> get() = _userInfo
 
     fun clickVisiblePasswordInLogin() {

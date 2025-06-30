@@ -1,13 +1,15 @@
 package com.example.se114_whatthefood_fe.data.remote
 
 import com.google.gson.annotations.SerializedName
-import kotlinx.serialization.Serializable
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 // auth API
@@ -53,7 +55,7 @@ data class UserInfo(
     @SerializedName("role")
     val role: String,
     @SerializedName("pfpUrl")
-    val pfpUrl: String?
+    var pfpUrl: String?
 )
 // food API
 data class FoodCategory(
@@ -125,6 +127,13 @@ interface ApiService {
     @Headers("Content-Type: application/json")
     @POST("users/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
+
+    // user's image
+    @Multipart
+    @POST("images/profile")
+    suspend fun uploadProfileImage(@Header("Authorization") token: String?,
+                                   @Part image: MultipartBody.Part
+    ): Response<UserInfo>
 
     // food API
     @Headers("Content-Type: application/json")
