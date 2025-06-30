@@ -89,13 +89,19 @@ data class FoodItemResponse(
     val restaurant: Restaurant
 )
 // cac quan an gan day
+data class Rating(
+    @SerializedName("avgRating")
+    val average: Float,
+    @SerializedName("number")
+    val number: Int
+)
 data class FoodItemNearByResponse(
     @SerializedName("foodId")
     val foodId: Int,
     @SerializedName("name")
     val name: String,
     @SerializedName("rating")
-    val rating: Float,
+    val rating: Rating,
     @SerializedName("distanceInKm")
     val distanceInKm: Float,
     @SerializedName("distanceInTime")
@@ -140,4 +146,9 @@ interface ApiService {
                                    @Query("pageNumber") pageNumber: Int = 0,
                                    @Query("pageSize") pageSize: Int = 10)
     : Response<List<FoodItemNearByResponse>>
+
+    @GET("fooditems/recommended/bysoldamount")
+    suspend fun getFoodItemsBySoldAmount(@Query("pageNumber") pageNumber: Int = 0,
+                                         @Query("pageSize") pageSize: Int = 10,
+    ): Response<List<FoodItemNearByResponse>>
 }

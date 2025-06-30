@@ -91,11 +91,7 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
         },
         onRequest = { nextKey, location ->
             // sua lai keo api
-            if(location == null) {
-                return@DefaultPaginator Response.error(500, "".toResponseBody())
-            }
-            foodModel.getFoodItemNearBy(location.latitude.toFloat(),
-                location.longitude.toFloat())
+            foodModel.getFoodItemBestSeller(pageNumber = nextKey)
         },
         getNextKey = { items ->
             bestSellerList.page + 1

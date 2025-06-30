@@ -134,7 +134,7 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
                 val cardData = Card(id = card.foodId,
                     title = card.name,
                     imageLink = card.imgUrl ?: "",
-                    rate = card.rating,
+                    rate = card.rating.average.toFloat(),
                     distance = card.distanceInKm,
                     time = card.distanceInTime.toFloat())
                 CardView(card = cardData)

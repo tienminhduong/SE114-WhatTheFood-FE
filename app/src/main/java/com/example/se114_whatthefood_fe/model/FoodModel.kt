@@ -36,6 +36,17 @@ class FoodModel(
         }
     }
 
+    suspend fun getFoodItemBestSeller(pageNumber: Int = 0,
+                                  pageSize: Int = 10): Response<List<FoodItemNearByResponse>> {
+        return try{
+            val response = api.getFoodItemsBySoldAmount(pageNumber, pageSize)
+            response
+        }
+        catch (e: Exception){
+            Response.error(500, "".toResponseBody(null))
+        }
+    }
+
     suspend fun getFoodItem(pageNumber: Int = 0,
                             pageSize: Int = 30,
                             categoryId: Int = -1,
