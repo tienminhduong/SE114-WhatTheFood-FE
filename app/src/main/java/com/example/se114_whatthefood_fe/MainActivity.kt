@@ -23,6 +23,7 @@ import com.example.se114_whatthefood_fe.SellerView.SellerAccount
 import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
 import com.example.se114_whatthefood_fe.SellerView.SellerHome
 import com.example.se114_whatthefood_fe.SellerView.SellerManager
+import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
 import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
@@ -67,6 +68,10 @@ class MainActivity : ComponentActivity() {
                     composable("SellerManager")
                     {
                         SellerManager()
+                    }
+                    composable("SellerNotification")
+                    {
+                        SellerNotificationContent()
                     }
                 }
             }

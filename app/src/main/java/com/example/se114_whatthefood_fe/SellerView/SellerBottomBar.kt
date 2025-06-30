@@ -72,6 +72,11 @@ fun SellerBottomBar(
             label = "Tài Khoản",
             route = "SellerAccount"
         ),
+        BottomSellerBarItem(
+            icon = Icons.Filled.Person,
+            label = "Thông Báo",
+            route = "SellerNotification"
+        ),
     )
     Row(
         modifier = Modifier
