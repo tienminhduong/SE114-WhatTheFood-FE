@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,10 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,15 +28,20 @@ import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import com.example.se114_whatthefood_fe.view_model.UIState
+import kotlin.math.log
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview
 fun LoginFormPreview() {
-    val authViewModel = AuthViewModel()
-    LoginForm(authViewModel)
+//    val authViewModel = AuthViewModel()
+//    LoginForm(authViewModel)
 }
 @Composable
 fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+
+    val loginState = authViewModel.loginState
     Column{
         // text field for phone number
         RoundCornerTextFieldWithIcon(
@@ -87,7 +89,13 @@ fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
             },
             isPasswordVisibility = authViewModel.isVisiblePasswordInLogin
         )
-
+        if(loginState == UIState.ERROR)
+        {
+            Text(text = "Thông tin đăng nhập không chính xác",
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp))
+        }
         // spacer
         Spacer(modifier.height(16.dp))
 

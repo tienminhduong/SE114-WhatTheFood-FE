@@ -1,5 +1,8 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
+import android.annotation.SuppressLint
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,52 +23,85 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.view.ScreenRoute
+import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import android.net.Uri
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview
 fun AccountScreenPreview() {
-    AccountScreen()
+//    AccountScreen(authViewModel = AuthViewModel(AuthModel(
+//        api = TODO(),
+//        dataStore = TODO()
+//    )))
 }
 
 @Composable
 @Preview
 fun AccountHeaderPreview() {
-    HeaderWhenLoggedIn()
+    //HeaderWhenLoggedIn()
 }
 
 @Composable
 fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
-                       avatar: ImageVector? = null,
-                       name: String = "User Name",
+                       authViewModel: AuthViewModel
                       ) {
+    // Get user data from authViewModel
+    val user = authViewModel.userInfo.value
+        val name = user?.name ?: ""
+
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,) {
         // icon for user avatar
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .clip(CircleShape)
-                .background(White).size(80.dp),
+                .size(80.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = avatar ?: Icons.Default.Person,
-                contentDescription = "User Avatar",
-                tint = LightGreen,
-                modifier = Modifier.fillMaxSize()
+//            Icon(
+//                imageVector =  Icons.Default.Person,
+//                contentDescription = "User Avatar",
+//                tint = LightGreen,
+//                modifier = Modifier.fillMaxSize()
+//            )
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(user?.pfpUrl)
+                    .crossfade(true)
+                    .diskCachePolicy(CachePolicy.ENABLED)  // Cache trên ổ đĩa
+                    .memoryCachePolicy(CachePolicy.ENABLED) // Cache trên RAM
+                    //.size(100, 100) // Set kích thước ảnh
+                    .placeholder(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                    .error(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                    .build(),
+                contentDescription = "Card Image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()//.clip(shape= RoundedCornerShape(8.dp))
             )
         }
         Text(text = name,
@@ -77,7 +113,9 @@ fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun HeaderWhenNotLogIn(modifier: Modifier = Modifier){
+fun HeaderWhenNotLogIn(modifier: Modifier = Modifier,
+                       authViewModel: AuthViewModel,
+                       clickLoginOrRegister: () -> Unit) {
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,) {
@@ -98,10 +136,9 @@ fun HeaderWhenNotLogIn(modifier: Modifier = Modifier){
         // spacer
         Spacer(modifier = Modifier.weight(1f))
         // register or login button
-        Button(onClick = {},
+        Button(onClick = { clickLoginOrRegister() },
             modifier = Modifier,
-            colors = ButtonDefaults.buttonColors(containerColor = White,
-                contentColor = White),
+            colors = ButtonDefaults.buttonColors(containerColor = White),
             shape = RoundedCornerShape(8.dp)
         )
         {
@@ -147,18 +184,51 @@ fun ButtonWithLeadingAndTrailingIcon(
 }
 
 @Composable
-fun AccountScreen(modifier: Modifier = Modifier) {
+fun AccountScreen(authViewModel: AuthViewModel,
+                  modifier: Modifier = Modifier,
+                  navController: NavHostController) {
+
+    // dung cho doi anh
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            authViewModel.uploadImage(context = context, uri = it)
+        }
+    }
     // add accountViewModel to handle user data and actions
-    Column(modifier = Modifier.fillMaxSize(),
+
+    Column(modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally){
-        if (true)
-            HeaderWhenLoggedIn(Modifier.padding(16.dp))
+
+        // Gọi suspend function để lấy login status
+        val isLoggedIn by produceState<Boolean?>(initialValue = null) {
+            value = authViewModel.isLoggedIn()
+        }
+
+        // Khi chưa biết trạng thái → hiển thị loading hoặc trống
+        if (isLoggedIn == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return
+        }
+
+        if (isLoggedIn == true) // check if user is logged in
+            HeaderWhenLoggedIn(modifier = Modifier.padding(16.dp),
+                authViewModel = authViewModel)
         else
-            HeaderWhenNotLogIn(Modifier.padding(16.dp))
+            HeaderWhenNotLogIn(modifier = Modifier.padding(16.dp),
+                authViewModel = authViewModel,
+                clickLoginOrRegister = {
+                    // Navigate to login or register screen
+                    navController.navigate("LoginOrRegister")
+                })
         Spacer(modifier = Modifier.height(16.dp))
         // vi voucher
         ButtonWithLeadingAndTrailingIcon(
-            "Ví Voucher",
+            "Đổi ảnh đại diện",
             leadingIcon = Icons.Default.ConfirmationNumber,
             trailingIcon = Icons.Default.PlayArrow,
             onClick = { /* TODO: Handle click */ },
@@ -172,10 +242,18 @@ fun AccountScreen(modifier: Modifier = Modifier) {
             onClick = { /* TODO: Handle click */ },
             modifier = Modifier.padding(top = 5.dp)
         )
-        if(true) {
+        // doi anh
+        Button(onClick = { launcher.launch("image/*")}) {
+            Text(text = "Đổi ảnh đại diện", color = LightGreen)
+        }
+        if(isLoggedIn == true) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = {},
+                onClick = {
+                    authViewModel.onLogoutClick()
+                    // Navigate to login or register screen after logout
+                    navController.navigate(ScreenRoute.AccountScreen)
+                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),

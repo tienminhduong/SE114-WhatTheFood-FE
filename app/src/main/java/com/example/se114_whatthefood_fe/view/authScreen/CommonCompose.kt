@@ -115,10 +115,11 @@ fun RoundCornerTextFieldWithIcon( leadingIcon: @Composable () -> Unit,
 
         } else VisualTransformation.None,
         colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White,
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
+            focusedIndicatorColor = Color.Transparent, // Màu khi TextField được focus
+            unfocusedIndicatorColor = Color.Transparent, // Màu khi TextField không được focus
+            disabledIndicatorColor = Color.Transparent
         ),
         trailingIcon = trailingIcon
             //{ // Icon con mắt ở cuối

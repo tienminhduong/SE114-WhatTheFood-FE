@@ -119,8 +119,7 @@ fun OrderScreen(orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState(initialPage = 0,
         pageCount = { 5 }) // Assuming there are 5 tabs
 
-    Column(modifier = Modifier.fillMaxSize()
-        .background(brush = Brush.verticalGradient(colors = listOf(LightGreen, White))))
+    Column(modifier = Modifier.fillMaxSize())
     {
         // header
         HeaderOrderScreen()
