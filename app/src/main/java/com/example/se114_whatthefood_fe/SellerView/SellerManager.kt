@@ -1,13 +1,18 @@
 package com.example.se114_whatthefood_fe.SellerView
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -98,8 +103,79 @@ fun OrderStatusScreen() {
 
 @Composable
 fun PreparingContent() {
-    val ongoingDeals = listOf<DealItem>()
-    //listOf(
+
+    var ongoingDeals by remember { mutableStateOf<List<DealItem>>(emptyList()) }
+
+    Column(modifier = Modifier.fillMaxSize())
+    {
+        // Nút thao tác
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = {
+                // Đổ dữ liệu test
+                ongoingDeals = listOf(
+                    DealItem(
+                        imageLink = "https://via.placeholder.com/150",
+                        title = "001",
+                        status = "Đang chuẩn bị",
+                        userId = "user_01",
+                        userContact = "0912345678"
+                    ),
+                    DealItem(
+                        imageLink = "https://via.placeholder.com/150",
+                        title = "002",
+                        status = "Đang chuẩn bị",
+                        userId = "user_02",
+                        userContact = "0987654321"
+                    ),
+                    DealItem(
+                        imageLink = "https://via.placeholder.com/150",
+                        title = "001",
+                        status = "Đang chuẩn bị",
+                        userId = "user_01",
+                        userContact = "0912345678"
+                    ),
+                    DealItem(
+                        imageLink = "https://via.placeholder.com/150",
+                        title = "002",
+                        status = "Đang chuẩn bị",
+                        userId = "user_02",
+                        userContact = "0987654321"
+                    ),
+                    DealItem(
+                        imageLink = "https://via.placeholder.com/150",
+                        title = "001",
+                        status = "Đang chuẩn bị",
+                        userId = "user_01",
+                        userContact = "0912345678"
+                    ),
+                    DealItem(
+                        imageLink = "https://via.placeholder.com/150",
+                        title = "002",
+                        status = "Đang chuẩn bị",
+                        userId = "user_02",
+                        userContact = "0987654321"
+                    )
+                )
+            }) {
+                Text("Tạo dữ liệu test")
+            }
+
+            Button(onClick = {
+                // Xóa dữ liệu
+                ongoingDeals = emptyList()
+            }) {
+                Text("Xóa")
+            }
+        }
+
+
+        //val ongoingDeals = listOf<DealItem>()
+        //listOf(
 //        DealItem(
 //            imageLink = "https://via.placeholder.com/150",
 //            title = "Đơn hàng #001",
@@ -114,11 +190,53 @@ fun PreparingContent() {
 //            userId = "user_02",
 //            userContact = "0987654321"
 //        )
-    //)
+        //)
 
-    if (!ongoingDeals.isEmpty()) {
+        if (ongoingDeals.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(ongoingDeals) { deal ->
+                    DealItemCard(deal = deal)
+                }
+            }
+        } else {
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Chưa có đơn hàng nào cần chuẩn bị",
+                    color = Color.Black,
+                    fontSize = 20.sp
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+fun ShippingContent() {
+    val shippingDeals = listOf(
+        DealItem(
+            imageLink = "https://via.placeholder.com/150",
+            title = "Đơn hàng #001",
+            status = "Đang giao",
+            userId = "user_01",
+            userContact = "0912345678"
+        ),
+        DealItem(
+            imageLink = "https://via.placeholder.com/150",
+            title = "Đơn hàng #002",
+            status = "Đang giao",
+            userId = "user_02",
+            userContact = "0987654321"
+        )
+    )
+
+    if (!shippingDeals.isEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(ongoingDeals) { deal ->
+            items(shippingDeals) { deal ->
                 DealItemCard(deal = deal)
             }
         }
@@ -129,7 +247,7 @@ fun PreparingContent() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Chưa có đơn hàng nào cần chuẩn bị",
+                text = "Chưa có đơn hàng nào đang giao",
                 color = Color.Black,
                 fontSize = 20.sp
             )
@@ -140,34 +258,8 @@ fun PreparingContent() {
 }
 
 @Composable
-fun ShippingContent() {
-    val ongoingDeals = listOf(
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #001",
-            status = "Đang giao",
-            userId = "user_01",
-            userContact = "0912345678"
-        ),
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #002",
-            status = "Đang giao",
-            userId = "user_02",
-            userContact = "0987654321"
-        )
-    )
-
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(ongoingDeals) { deal ->
-            DealItemCard(deal = deal)
-        }
-    }
-}
-
-@Composable
 fun DeliveredContent() {
-    val ongoingDeals = listOf(
+    val deliveredDeals = listOf(
         DealItem(
             imageLink = "https://via.placeholder.com/150",
             title = "Đơn hàng #001",
@@ -184,9 +276,26 @@ fun DeliveredContent() {
         )
     )
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(ongoingDeals) { deal ->
-            DealItemCard(deal = deal)
+    if (!deliveredDeals.isEmpty()) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(deliveredDeals) { deal ->
+                DealItemCard(deal = deal)
+            }
         }
+    } else {
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Chưa có đơn hàng nào hoàn thành",
+                color = Color.Black,
+                fontSize = 20.sp
+            )
+        }
+
+
     }
+
 }
