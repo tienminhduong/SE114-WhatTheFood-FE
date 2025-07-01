@@ -85,6 +85,16 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
+            val authModel = remember{
+                AuthModel(api = RetrofitInstance.instance,
+                    dataStore = dataStore
+                )
+            }
+            val imageModel = remember {
+                com.example.se114_whatthefood_fe.model.ImageModel(api = RetrofitInstance.instance,
+                    dataStore = dataStore
+                )
+            }
 
 
             val authViewModel = remember {AuthViewModel(authModel = authModel, imageModel = imageModel)}
