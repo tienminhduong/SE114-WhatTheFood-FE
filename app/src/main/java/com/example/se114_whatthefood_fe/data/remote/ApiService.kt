@@ -13,7 +13,12 @@ import retrofit2.http.Part
 import retrofit2.http.Query
 import java.time.LocalDateTime
 
-
+data class ShippingInfoDetail(
+    @SerializedName("foodItem")
+    val foodItem: FoodItemResponse,
+    @SerializedName("amount")
+    val amount: Int
+)
 data class Address(
     @SerializedName("name")
     val name: String,
@@ -28,12 +33,22 @@ data class ShippingInfo(
     val id: Int,
     @SerializedName("orderTime")
     val orderTime: String,
+    @SerializedName("arrivedTime")
+    val arrivedTime: String,
     @SerializedName("totalPrice")
     val totalPrice: Int,
+    @SerializedName("userNote")
+    val userNote: String,
     @SerializedName("restaurant")
     val restaurant: Restaurant,
     @SerializedName("status")
-    val status: String
+    val status: String,
+    @SerializedName("paymentMethod")
+    val paymentMethod: String,
+    @SerializedName("address")
+    val address: Address,
+    @SerializedName("shippingInfoDetails")
+    val shippingInfoDetails: List<ShippingInfoDetail>
 )
 
 // auth API
@@ -199,4 +214,18 @@ interface ApiService {
     suspend fun getAllOrder(@Header("Authorization") token: String,
                             @Query("pageNumber") pageNumber: Int = 0,
                             @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+
+    @GET("shippinginfo/pending")
+    suspend fun getPendingOrder(@Header("Authorization") token: String,
+                            @Query("pageNumber") pageNumber: Int = 0,
+                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+    @GET("shippinginfo/delivering")
+    suspend fun getDeliveringOrder(@Header("Authorization") token: String,
+                            @Query("pageNumber") pageNumber: Int = 0,
+                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+    @GET("shippinginfo/completed")
+    suspend fun getCompletedOrder(@Header("Authorization") token: String,
+                            @Query("pageNumber") pageNumber: Int = 0,
+                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+
 }
