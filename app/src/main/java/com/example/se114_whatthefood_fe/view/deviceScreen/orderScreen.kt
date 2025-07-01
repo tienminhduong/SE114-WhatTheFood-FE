@@ -3,6 +3,7 @@ package com.example.se114_whatthefood_fe.view.deviceScreen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,11 +51,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
 import com.example.se114_whatthefood_fe.ui.theme.HeaderTextSize
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.util.CustomPaginateList
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.card.BestSellerCardView
 import com.example.se114_whatthefood_fe.view.card.CardOrder
 import com.example.se114_whatthefood_fe.view.card.GoodRateCardView
@@ -103,7 +106,7 @@ fun Tab2(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun Content(indexTab: Int, orderViewModel: OrderViewModel, modifier: Modifier = Modifier){
+fun Content(navController: NavController? = null, indexTab: Int, orderViewModel: OrderViewModel, modifier: Modifier = Modifier){
     val list = when(indexTab) {
         0->orderViewModel.pendingOrderList.items
         1->orderViewModel.deliveringOrderList.items
@@ -118,7 +121,10 @@ fun Content(indexTab: Int, orderViewModel: OrderViewModel, modifier: Modifier = 
             if(index >= list.size -1 && !orderViewModel.allOrderList.endReached && !orderViewModel.allOrderList.isLoading){
                 FetchData(orderViewModel, indexTab)
             }
-            CardOrder(order = item)
+            CardOrder(order = item,
+                modifier = Modifier.clickable{
+                    navController?.navigate("DetailOrder/${item.id}")
+                })
         }
         item{
             if(orderViewModel.allOrderList.isLoading)
@@ -135,17 +141,18 @@ fun Content(indexTab: Int, orderViewModel: OrderViewModel, modifier: Modifier = 
 }
 
 @Composable
-fun SwipeTabs(orderViewModel: OrderViewModel, pagerState: PagerState, modifier: Modifier = Modifier) {
+fun SwipeTabs(navController: NavController? = null, orderViewModel: OrderViewModel, pagerState: PagerState, modifier: Modifier = Modifier) {
     FetchData(orderViewModel = orderViewModel, indexTab = pagerState.currentPage)
     HorizontalPager(state = pagerState,
         modifier = modifier.fillMaxSize(),
         beyondViewportPageCount = 1) { page ->
-        Content(indexTab = pagerState.currentPage, orderViewModel = orderViewModel)
+        Content(indexTab = pagerState.currentPage, orderViewModel = orderViewModel,
+            navController = navController)
     }
 }
 
 @Composable
-fun OrderScreen(orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
+fun OrderScreen(navController: NavController? = null, orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState(initialPage = 0,
         pageCount = { 4 }) // Assuming there are 5 tabs
     Column(modifier = Modifier.fillMaxSize())
@@ -160,7 +167,8 @@ fun OrderScreen(orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
             orderViewModel = orderViewModel)
         // tab content
-        SwipeTabs(pagerState = pagerState, orderViewModel = orderViewModel)
+        SwipeTabs(pagerState = pagerState, orderViewModel = orderViewModel,
+            navController = navController)
 
     }
 

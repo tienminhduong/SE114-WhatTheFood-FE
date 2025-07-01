@@ -10,6 +10,7 @@ import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 import java.time.LocalDateTime
 
@@ -129,7 +130,9 @@ data class FoodItemResponse(
     @SerializedName("foodCategory")
     val foodCategory: FoodCategory,
     @SerializedName("restaurant")
-    val restaurant: Restaurant
+    val restaurant: Restaurant,
+    @SerializedName("cldnrUrl")
+    val cldnrUrl: String?
 )
 // cac quan an gan day
 data class Rating(
@@ -227,5 +230,9 @@ interface ApiService {
     suspend fun getCompletedOrder(@Header("Authorization") token: String,
                             @Query("pageNumber") pageNumber: Int = 0,
                             @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+
+    @GET("shippinginfo/detail/{id}")
+    suspend fun getOrderById(@Header("Authorization") token: String,
+                             @Path("id") id: Int): Response<ShippingInfo>
 
 }

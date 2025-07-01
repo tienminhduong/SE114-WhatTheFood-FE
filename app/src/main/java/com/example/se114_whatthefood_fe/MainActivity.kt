@@ -30,10 +30,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 import com.example.se114_whatthefood_fe.SellerView.SellerAccount
 import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
@@ -49,6 +51,7 @@ import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.model.ImageModel
 import com.example.se114_whatthefood_fe.model.LocationManager
+import com.example.se114_whatthefood_fe.model.OrderModel
 import com.example.se114_whatthefood_fe.ui.theme.DarkGreen
 
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
@@ -56,6 +59,7 @@ import com.example.se114_whatthefood_fe.ui.theme.MintGreen
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.card.SellerNotification
+import com.example.se114_whatthefood_fe.view.detailOrderScreen.DetailOrderScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
@@ -64,6 +68,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
+import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
@@ -150,7 +155,7 @@ class MainActivity : ComponentActivity() {
                                     dataStore = dataStore
                                 )
                             )}
-                            OrderScreen(orderViewModel)
+                            OrderScreen(orderViewModel = orderViewModel, navController = navController)
                         }
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
                         composable(ScreenRoute.HomeScreen) {
@@ -161,6 +166,19 @@ class MainActivity : ComponentActivity() {
                         composable(ScreenRoute.LoginOrRegisterScreen) {
                             AuthScreen(authViewModel = authViewModel,
                                 navController = navController)}
+                        composable(ScreenRoute.DetailOrderScreen,
+                            arguments = listOf(
+                                navArgument("orderId") { type = NavType.IntType}
+                            )) { backStackEntry ->
+                            val orderDetailViewModel = remember {
+                                OrderDetailViewModel(orderModel = OrderModel(api = RetrofitInstance.instance,
+                                dataStore = dataStore))
+                            }
+                            val orderId = backStackEntry.arguments?.getInt("orderId")
+                            DetailOrderScreen(orderDetailViewModel = orderDetailViewModel,
+                                orderId = orderId,
+                                navController = navController)
+                        }
 
                     }
                 }
