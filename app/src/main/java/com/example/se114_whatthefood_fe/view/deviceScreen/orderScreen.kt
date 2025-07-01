@@ -103,7 +103,13 @@ fun Tab2(modifier: Modifier = Modifier){
 
 @Composable
 fun Content(indexTab: Int, orderViewModel: OrderViewModel, modifier: Modifier = Modifier){
-    val list = orderViewModel.allOrderList.items
+    val list = when(indexTab) {
+        0->orderViewModel.pendingOrderList.items
+        1->orderViewModel.deliveringOrderList.items
+        2->orderViewModel.completedOrderList.items
+        3->orderViewModel.allOrderList.items
+        else ->orderViewModel.allOrderList.items
+    }
     LazyColumn(modifier = modifier.fillMaxSize()) {
         itemsIndexed(list, key = { index, t -> index }) { index, item ->
             if(index >= list.size -1 && !orderViewModel.allOrderList.endReached && !orderViewModel.allOrderList.isLoading){
@@ -143,7 +149,7 @@ fun SwipeTabs(orderViewModel: OrderViewModel, pagerState: PagerState, modifier: 
 @Composable
 fun OrderScreen(orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState(initialPage = 0,
-        pageCount = { 3 }) // Assuming there are 5 tabs
+        pageCount = { 4 }) // Assuming there are 5 tabs
     Column(modifier = Modifier.fillMaxSize())
     {
         // header
@@ -151,7 +157,7 @@ fun OrderScreen(orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
 
 //        CustomScrollTab(listOf("Đơn đã mua", "Lịch sử", "Đánh giá", "Đang đến", "Giỏ hàng"),
 //           pagerState = pagerState)
-        ScrollTab(listOf("Chờ xác nhận", "Đang giao", "Lịch sử"),
+        ScrollTab(listOf("Chờ xác nhận", "Đang giao", "Đã hoàn thành","Lịch sử"),
             pagerState = pagerState,
             modifier = Modifier.fillMaxWidth(),
             orderViewModel = orderViewModel)
@@ -211,74 +217,3 @@ fun FetchData(orderViewModel: OrderViewModel, indexTab: Int)
         orderViewModel.loadNextItems(indexTab)
     }
 }
-@Composable
-fun CustomScrollTab(
-    tabTitles: List<String>,
-    pagerState: PagerState,
-    modifier: Modifier = Modifier,
-    activeColor: Color = Color.White,
-    inactiveColor: Color = Color.White.copy(alpha = 0.6f),
-    indicatorColor: Color = Color.White,
-) {
-    val coroutineScope = rememberCoroutineScope()
-
-    TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        modifier = modifier,
-        //edgePadding = 0.dp,
-        containerColor = Color.Transparent,
-        contentColor = activeColor,
-        indicator = { tabPositions ->
-            val currentTabPosition = tabPositions.getOrNull(pagerState.currentPage)
-            val nextTabPosition = tabPositions.getOrNull(
-                (pagerState.currentPage + 1).coerceAtMost(tabTitles.lastIndex)
-            )
-            val fraction = pagerState.currentPageOffsetFraction
-
-            if (currentTabPosition != null && nextTabPosition != null) {
-                val start = lerp(currentTabPosition.left, nextTabPosition.left, fraction)
-                val end = lerp(currentTabPosition.right, nextTabPosition.right, fraction)
-
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize(Alignment.BottomStart)
-                        .offset(x = start)
-                        .width(end - start)
-                        .height(3.dp)
-                        .background(indicatorColor, shape = RoundedCornerShape(2.dp))
-                )
-            } else if (currentTabPosition != null) {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize(Alignment.BottomStart)
-                        .offset(x = currentTabPosition.left)
-                        .width(currentTabPosition.width)
-                        .height(3.dp)
-                        .background(indicatorColor, shape = RoundedCornerShape(2.dp))
-                )
-            }
-        }
-    ) {
-        tabTitles.forEachIndexed { index, title ->
-            Tab(
-                selected = pagerState.currentPage == index,
-                onClick = {
-//                    coroutineScope.launch {
-//                        pagerState.animateScrollToPage(index)
-//                    }
-                },
-                text = {
-                    Text(
-                        text = title,
-                        fontSize = 13.sp,
-                        fontWeight = Bold,
-                        color = if (pagerState.currentPage == index) activeColor else inactiveColor
-                    )
-                }
-            )
-        }
-    }
-}
-
