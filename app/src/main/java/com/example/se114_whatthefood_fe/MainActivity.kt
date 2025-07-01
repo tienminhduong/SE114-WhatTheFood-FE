@@ -113,6 +113,8 @@ class MainActivity : ComponentActivity() {
             val foodViewModel = remember {
                 FoodViewModel(foodModel = foodModel)
             }
+
+
             Box(modifier = Modifier.fillMaxSize()
                 .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
                 .systemBarsPadding()) {
@@ -127,12 +129,20 @@ class MainActivity : ComponentActivity() {
                 }) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = ScreenRoute.HomeScreen,
+                        startDestination = ScreenRoute.LoginOrRegisterScreen,
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable(ScreenRoute.AccountScreen) { AccountScreen(authViewModel = authViewModel,
                                                               navController = navController) }
-                        composable(ScreenRoute.OrderScreen) { OrderScreen(OrderViewModel()) }
+                        composable(ScreenRoute.OrderScreen) {
+                            val orderViewModel = remember {OrderViewModel(
+                                orderModel = com.example.se114_whatthefood_fe.model.OrderModel(
+                                    api = RetrofitInstance.instance,
+                                    dataStore = dataStore
+                                )
+                            )}
+                            OrderScreen(orderViewModel)
+                        }
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
                         composable(ScreenRoute.HomeScreen) {
                             //test home screen
