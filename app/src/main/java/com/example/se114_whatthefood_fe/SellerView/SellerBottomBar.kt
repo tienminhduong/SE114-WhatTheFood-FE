@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -73,7 +74,7 @@ fun SellerBottomBar(
             route = "SellerAccount"
         ),
         BottomSellerBarItem(
-            icon = Icons.Filled.Person,
+            icon = Icons.Filled.Notifications,
             label = "Thông Báo",
             route = "SellerNotification"
         ),

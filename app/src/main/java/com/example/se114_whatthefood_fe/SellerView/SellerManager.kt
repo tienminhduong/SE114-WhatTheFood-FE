@@ -51,7 +51,7 @@ fun SellerManager(modifier: Modifier = Modifier) {
 
 @Composable
 fun OrderStatusScreen() {
-    val tabs = listOf("Đang chuẩn bị", "Đang giao", "Đã giao")
+    val tabs = listOf("Chờ xác nhận", "Đang chuẩn bị", "Đang giao", "Đã giao")
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     Column(
@@ -94,10 +94,53 @@ fun OrderStatusScreen() {
 
         // Content for each tab
         when (selectedTabIndex) {
-            0 -> PreparingContent()
-            1 -> ShippingContent()
-            2 -> DeliveredContent()
+            0 -> ConfirmingContent()
+            1 -> PreparingContent()
+            2 -> ShippingContent()
+            3 -> DeliveredContent()
         }
+    }
+}
+
+@Composable
+fun ConfirmingContent() {
+    val ConfirmingDeals = listOf(
+        DealItem(
+            imageLink = "https://via.placeholder.com/150",
+            title = "Đơn hàng #001",
+            status = "Chờ xác nhận",
+            userId = "user_01",
+            userContact = "0912345678"
+        ),
+        DealItem(
+            imageLink = "https://via.placeholder.com/150",
+            title = "Đơn hàng #002",
+            status = "Chờ xác nhận",
+            userId = "user_02",
+            userContact = "0987654321"
+        )
+    )
+
+    if (!ConfirmingDeals.isEmpty()) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(ConfirmingDeals) { deal ->
+                DealItemCard(deal = deal)
+            }
+        }
+    } else {
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Chưa có đơn hàng nào đang giao",
+                color = Color.Black,
+                fontSize = 20.sp
+            )
+        }
+
+
     }
 }
 
@@ -252,7 +295,6 @@ fun ShippingContent() {
                 fontSize = 20.sp
             )
         }
-
 
     }
 }
