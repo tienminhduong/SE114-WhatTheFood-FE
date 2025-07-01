@@ -9,6 +9,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+
+import androidx.compose.foundation.layout.padding
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +44,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+
+import com.example.se114_whatthefood_fe.SellerView.SellerAccount
+import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
+import com.example.se114_whatthefood_fe.SellerView.SellerHome
+import com.example.se114_whatthefood_fe.SellerView.SellerManager
+import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
+import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
+import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
+
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.FoodModel
@@ -55,7 +67,6 @@ import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
-import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
@@ -78,7 +89,6 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
         setContent {
-            //HomeScreen()
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
@@ -145,8 +155,10 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
         }
     }
+}
 
     fun checkHaveBottomBar(route: String?, listScreenRoot: List<String>): Boolean {
         listScreenRoot.forEach { screenRoot ->
@@ -163,11 +175,10 @@ class MainActivity : ComponentActivity() {
             modifier = modifier
         )
 
-        Button(
-            onClick = { /* Do something */ },
-            modifier = modifier.padding(top = 16.dp)
-        ) {
-            Text(text = "Click Me")
-        }
+    Button(
+        onClick = { /* Do something */ },
+        modifier = modifier.padding(top = 16.dp)
+    ) {
+        Text(text = "Click Me")
     }
 }
