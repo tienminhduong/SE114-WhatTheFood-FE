@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -96,7 +98,8 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                     tint = LightGreen
                 )
             },
-            modifier = modifier
+            modifier = modifier,
+            keyBoardOption = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier.height(16.dp))
@@ -166,28 +169,7 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
 
         // combobox chon quyen
         CustomComboBox(authViewModel = authViewModel)
-
-        // text đồng ý điều khoản
-        Row(horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.fillMaxWidth()) {
-            Text(
-                text = "Tôi đồng ý với các điều khoản của WhatTheFood",
-                modifier = modifier,
-                color = DarkBlue,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = TextUnit(13f, TextUnitType.Sp),
-            )
-            // check box
-            Checkbox(checked = authViewModel.isAgreeToTerms,
-                onCheckedChange = {authViewModel.isAgreeToTerms = it},
-                colors = CheckboxDefaults.colors(
-                    checkedColor = LightGreen,
-                    uncheckedColor = Color.Gray,
-                    checkmarkColor = Color.White
-                )
-            )
-        }
+        Spacer(modifier.height(16.dp))
         // button dang ki
         RoundCornerButton(
             text = "Đăng ký",

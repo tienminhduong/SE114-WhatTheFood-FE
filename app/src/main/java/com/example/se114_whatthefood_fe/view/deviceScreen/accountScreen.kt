@@ -207,24 +207,8 @@ fun AccountScreen(authViewModel: AuthViewModel,
             value = authViewModel.isLoggedIn()
         }
 
-        // Khi chưa biết trạng thái → hiển thị loading hoặc trống
-        if (isLoggedIn == null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-            return
-        }
-
-        if (isLoggedIn == true) // check if user is logged in
-            HeaderWhenLoggedIn(modifier = Modifier.padding(16.dp),
-                authViewModel = authViewModel)
-        else
-            HeaderWhenNotLogIn(modifier = Modifier.padding(16.dp),
-                authViewModel = authViewModel,
-                clickLoginOrRegister = {
-                    // Navigate to login or register screen
-                    navController.navigate("LoginOrRegister")
-                })
+        HeaderWhenLoggedIn(modifier = Modifier.padding(16.dp),
+            authViewModel = authViewModel)
         Spacer(modifier = Modifier.height(16.dp))
         // vi voucher
         ButtonWithLeadingAndTrailingIcon(
@@ -246,27 +230,26 @@ fun AccountScreen(authViewModel: AuthViewModel,
         Button(onClick = { launcher.launch("image/*")}) {
             Text(text = "Đổi ảnh đại diện", color = LightGreen)
         }
-        if(isLoggedIn == true) {
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                onClick = {
-                    authViewModel.onLogoutClick()
-                    // Navigate to login or register screen after logout
-                    navController.navigate(ScreenRoute.AccountScreen)
-                          },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = White,
-                    contentColor = LightGreen
-                ),
-                shape = RoundedCornerShape(8.dp)
-            )
-            {
-                Text(text = "Đăng xuất", color = LightGreen)
-            }
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = {
+                authViewModel.onLogoutClick()
+                // Navigate to login or register screen after logout
+                navController.navigate(ScreenRoute.LoginOrRegisterScreen)
+                      },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = White,
+                contentColor = LightGreen
+            ),
+            shape = RoundedCornerShape(8.dp)
+        )
+        {
+            Text(text = "Đăng xuất", color = LightGreen)
         }
+
     }
 
 }
