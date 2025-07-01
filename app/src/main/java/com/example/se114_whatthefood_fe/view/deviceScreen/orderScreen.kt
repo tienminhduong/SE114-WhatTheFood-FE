@@ -56,6 +56,7 @@ import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.util.CustomPaginateList
 import com.example.se114_whatthefood_fe.view.card.BestSellerCardView
+import com.example.se114_whatthefood_fe.view.card.CardOrder
 import com.example.se114_whatthefood_fe.view.card.GoodRateCardView
 import com.example.se114_whatthefood_fe.view.card.NearByCardView
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
@@ -110,17 +111,14 @@ fun Content(indexTab: Int, orderViewModel: OrderViewModel, modifier: Modifier = 
         3->orderViewModel.allOrderList.items
         else ->orderViewModel.allOrderList.items
     }
-    LazyColumn(modifier = modifier.fillMaxSize()) {
+    LazyColumn(modifier = modifier.fillMaxSize()
+        .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
         itemsIndexed(list, key = { index, t -> index }) { index, item ->
             if(index >= list.size -1 && !orderViewModel.allOrderList.endReached && !orderViewModel.allOrderList.isLoading){
                 FetchData(orderViewModel, indexTab)
             }
-            Row{
-                Text(text = item.id.toString())
-                Text(text = item.orderTime.toString())
-                Text(text = item.restaurant.name.toString())
-                Text(text = item.status.toString())
-            }
+            CardOrder(order = item)
         }
         item{
             if(orderViewModel.allOrderList.isLoading)
