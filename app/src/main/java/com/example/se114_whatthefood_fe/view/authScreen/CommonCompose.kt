@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -97,7 +99,8 @@ fun RoundCornerTextFieldWithIcon( leadingIcon: @Composable () -> Unit,
                                     modifier: Modifier = Modifier,
                                     isPassword: Boolean = false,
                                   trailingIcon: @Composable (() -> Unit)? = null,
-                                    isPasswordVisibility: Boolean? = false)
+                                    isPasswordVisibility: Boolean? = false,
+                                  keyBoardOption: KeyboardOptions? = null)
 {
     TextField(
         value = value,
@@ -121,20 +124,8 @@ fun RoundCornerTextFieldWithIcon( leadingIcon: @Composable () -> Unit,
             unfocusedIndicatorColor = Color.Transparent, // Màu khi TextField không được focus
             disabledIndicatorColor = Color.Transparent
         ),
-        trailingIcon = trailingIcon
-            //{ // Icon con mắt ở cuối
-//            if (isPassword) {
-//                var passwordVisible by remember { mutableStateOf(false) }
-//                val image = if (!passwordVisible)
-//                    Icons.Filled.Visibility// Thay đổi thành biến để kiểm soát hiển thị
-//                else Icons.Filled.VisibilityOff
-//
-//                val description = if (passwordVisible) "Hide password" else "Show password"
-//
-//                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-//                    androidx.compose.material3.Icon(imageVector = image, null)
-//                }
-//            }
+        trailingIcon = trailingIcon,
+        keyboardOptions = keyBoardOption ?: KeyboardOptions.Default,
     )
 }
 

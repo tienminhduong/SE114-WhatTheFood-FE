@@ -78,62 +78,6 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
         setContent {
-//            // set bottom bar cho mot so man hinh
-//            val context = LocalContext.current
-//            val locationManager = remember{
-//                LocationManager(context = context,
-//                                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-//                )
-//            }
-//            val locationPermissions = rememberMultiplePermissionsState(
-//                permissions = listOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,
-//                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-//            )
-//
-//            var location by remember { mutableStateOf<Location?>(null) }
-//            val coroutineScope = rememberCoroutineScope()
-//
-//            LaunchedEffect(locationPermissions.allPermissionsGranted) {
-//                if (locationPermissions.allPermissionsGranted && location == null) {
-//                    Log.d("DEBUG", "Quyền vừa được cấp, gọi getLocation()")
-//                    coroutineScope.launch {
-//                        location = locationManager.getLocation()
-//                        Log.d("DEBUG", "Vị trí: ${location?.latitude}, ${location?.longitude}")
-//                    }
-//                }
-//            }
-//
-//            Column(modifier = Modifier.fillMaxSize(),
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-//                location?.let {
-//                    Text(
-//                        text = "Location: ${it.latitude}, ${it.longitude}",
-//                        modifier = Modifier.padding(16.dp),
-//                        fontSize = 32.sp,
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                }
-//                Button(onClick = {
-//                    Log.d("DEBUG", "Permissions granted: ${locationPermissions.allPermissionsGranted}")
-//
-//                    if(!locationPermissions.allPermissionsGranted || locationPermissions.shouldShowRationale)
-//                    {
-//                        locationPermissions.launchMultiplePermissionRequest()
-//                    }
-//                    else
-//                    {
-//                        coroutineScope.launch {
-//                            location = locationManager.getLocation()
-//                        }
-//
-//                    }
-//                })
-//                {
-//                    Text(text = "Get Location")
-//                }
-//
-//            }
             //HomeScreen()
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -159,6 +103,8 @@ class MainActivity : ComponentActivity() {
             val foodViewModel = remember {
                 FoodViewModel(foodModel = foodModel)
             }
+
+
             Box(modifier = Modifier.fillMaxSize()
                 .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
                 .systemBarsPadding()) {
@@ -173,12 +119,20 @@ class MainActivity : ComponentActivity() {
                 }) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = ScreenRoute.HomeScreen,
+                        startDestination = ScreenRoute.LoginOrRegisterScreen,
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable(ScreenRoute.AccountScreen) { AccountScreen(authViewModel = authViewModel,
                                                               navController = navController) }
-                        composable(ScreenRoute.OrderScreen) { OrderScreen(OrderViewModel()) }
+                        composable(ScreenRoute.OrderScreen) {
+                            val orderViewModel = remember {OrderViewModel(
+                                orderModel = com.example.se114_whatthefood_fe.model.OrderModel(
+                                    api = RetrofitInstance.instance,
+                                    dataStore = dataStore
+                                )
+                            )}
+                            OrderScreen(orderViewModel)
+                        }
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
                         composable(ScreenRoute.HomeScreen) {
                             //test home screen

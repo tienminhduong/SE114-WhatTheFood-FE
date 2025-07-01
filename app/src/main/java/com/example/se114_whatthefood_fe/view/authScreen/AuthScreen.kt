@@ -63,7 +63,7 @@ fun AuthScreen(authViewModel: AuthViewModel,
     // as well as any other necessary UI components.
     // For now, we can just display a simple text or a placeholder.
     val isLogin by authViewModel.isLogin
-    Column(modifier = Modifier.fillMaxSize()
+    Column(modifier = modifier.fillMaxSize()
         .background(
             brush = Brush.verticalGradient(colors = listOf(LightGreen, White))
         ))
@@ -71,9 +71,7 @@ fun AuthScreen(authViewModel: AuthViewModel,
         Scaffold(topBar = {
             TopBar(
                 isLogin = isLogin,
-                onTabClick = { authViewModel.onTabClick(it) },
-                onBack = { navController.popBackStack() },
-                onHelp = { authViewModel.onHelpClick() }
+                onTabClick = { authViewModel.onTabClick(it) }
             )
         },
             containerColor = Color.Transparent,
@@ -88,10 +86,11 @@ fun AuthScreen(authViewModel: AuthViewModel,
                 // Content of the AuthScreen will go here, such as LoginForm or RegisterForm
                 Column(
                     modifier = Modifier.padding(
-                        top = 100.dp,
-                        start = 16.dp,
-                        end = 16.dp
+                        horizontal = 16.dp
                     )
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AnimatedContent(
                         targetState = isLogin,
@@ -180,6 +179,7 @@ fun ScreenWhenLogin(authViewModel: AuthViewModel,
             // Handle success state, e.g., navigate to the main screen
             authViewModel.loginSuccess?.let { isLoginSuccess ->
                 if(isLoginSuccess) {
+                    authViewModel.loginSuccess = false
                     // Navigate to the main screen or show a success message
                     navController.navigate(ScreenRoute.HomeScreen) {
                         popUpTo(ScreenRoute.LoginOrRegisterScreen) { inclusive = true }
@@ -214,18 +214,9 @@ fun BottomBar(){
 fun TopBar(
     isLogin: Boolean,
     onTabClick: (Boolean) -> Unit,
-    onBack: () -> Unit,
-    onHelp: () -> Unit,
     modifier: Modifier = Modifier)
 {
     Row {
-        // Back button
-        ButtonIcon(icon = Icons.AutoMirrored.Filled.ArrowBack,
-            onClick = onBack,
-            colorBackGround = Color.Transparent,
-            colorIcon = White,
-            modifier = modifier
-        )
         // tabs
         Row(modifier = modifier.weight(1f),
             horizontalArrangement = Arrangement.Center){
@@ -246,14 +237,6 @@ fun TopBar(
                 modifier = Modifier
             )
         }
-        // Help button
-        ButtonIcon(
-            icon = Icons.AutoMirrored.Filled.Help,
-            onClick = onHelp,
-            colorBackGround = Color.Transparent,
-            colorIcon = White,
-            modifier = modifier,
-        )
 
     }
 }

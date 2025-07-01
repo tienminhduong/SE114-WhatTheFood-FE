@@ -157,7 +157,7 @@ class AuthViewModel(private val authModel: AuthModel,
             // Handle logout logic here, e.g., clear the token in DataStore
             authModel.clearToken()
             // Reset login state
-            loginSuccess = null
+            loginSuccess = false
             // Reset user info
             _userInfo.value = null
         }

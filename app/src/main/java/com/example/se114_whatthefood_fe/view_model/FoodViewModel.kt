@@ -11,7 +11,6 @@ import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.util.DefaultPaginator
 import com.example.se114_whatthefood_fe.util.CustomPaginateList
-import com.example.se114_whatthefood_fe.util.TestRepo
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
@@ -19,8 +18,6 @@ import kotlin.collections.plus
 
 class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
 
-    // test phan trang
-    val testRepo = TestRepo()
     // tab gan ban
     var location by mutableStateOf<Location?>(null)
     var ganBanList by mutableStateOf(CustomPaginateList<FoodItemNearByResponse>())

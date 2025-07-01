@@ -11,6 +11,30 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
+import java.time.LocalDateTime
+
+
+data class Address(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("longitude")
+    val longitude: Float,
+    @SerializedName("latitude")
+    val latitude: Float
+)
+// shipping info API
+data class ShippingInfo(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("orderTime")
+    val orderTime: String,
+    @SerializedName("totalPrice")
+    val totalPrice: Int,
+    @SerializedName("restaurant")
+    val restaurant: Restaurant,
+    @SerializedName("status")
+    val status: String
+)
 
 // auth API
 // login
@@ -69,8 +93,10 @@ data class Restaurant(
     val id: Int,
     @SerializedName("name")
     val name: String,
+    @SerializedName("cldnrUrl")
+    val cldnrUrl: String?,
     @SerializedName("addressDto")
-    val address: String?,
+    val address: Address?,
 )
 data class FoodItemResponse(
     @SerializedName("id")
@@ -167,4 +193,10 @@ interface ApiService {
     suspend fun getFoodItemsByRating(@Query("pageNumber") pageNumber: Int = 0,
                                          @Query("pageSize") pageSize: Int = 10,
     ): Response<List<FoodItemNearByResponse>>
+
+    // order API
+    @GET("shippinginfo")
+    suspend fun getAllOrder(@Header("Authorization") token: String,
+                            @Query("pageNumber") pageNumber: Int = 0,
+                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
 }
