@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.view.card
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,15 +41,20 @@ data class DealItem(
 )
 
 @Composable
-fun DealItemCard(deal: DealItem, modifier: Modifier = Modifier) {
+fun DealItemCard(
+    deal: DealItem,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White // 👈 Đặt màu nền ở đây
+            containerColor = Color.White
         )
     ) {
         Row(
@@ -90,7 +96,9 @@ fun DealItemCard(deal: DealItem, modifier: Modifier = Modifier) {
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = deal.status ?: "Không rõ trạng thái",
+                        text = deal.status?.let { mapStatusToVietnamese(it) }
+                            ?: "Không rõ trạng thái",
+                        //text = deal.status ?: "Không rõ trạng thái",
                         color = Color.White,
                         fontSize = 12.sp
                     )
@@ -118,12 +126,26 @@ fun DealItemCard(deal: DealItem, modifier: Modifier = Modifier) {
 
 fun getStatusColor(status: String?): Color {
     return when (status) {
-        "Đang chuẩn bị" -> Color(0xFFFFA726)
-        "Đang giao" -> Color(0xFF29B6F6)
-        "Hoàn thành" -> Color(0xFF63C467)
-        else -> Color.Gray
+        "Pending" -> Color.LightGray
+        "Approved" -> Color(0xFFFFA726)
+        "Delivering" -> Color(0xFF29B6F6)
+        "Delivered" -> Color(0xFF63C467)
+        "Completed" -> Color(0xFF63C467)
+        else -> Color.LightGray
     }
 }
+
+fun mapStatusToVietnamese(status: String): String {
+    return when (status.lowercase()) {
+        "pending", "chờ xác nhận" -> "Chờ xác nhận"
+        "approved", "đã xác nhận" -> "Đã xác nhận"
+        "delivering", "đang giao" -> "Đang giao"
+        "delivered", "đẫ giao" -> "Đã giao"
+        "completed", "hoàn thành", "delivered" -> "Đã giao"
+        else -> "Không rõ"
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

@@ -19,6 +19,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.view.card.DealItem
 import com.example.se114_whatthefood_fe.view.card.DealItemCard
 
@@ -45,13 +49,15 @@ fun SellerManagerPreview() {
 }
 
 @Composable
-fun SellerManager(modifier: Modifier = Modifier) {
-    OrderStatusScreen()
+fun SellerManager(modifier: Modifier = Modifier, navController: NavHostController) {
+    OrderStatusScreen(navController = navController)
 }
 
+
+
 @Composable
-fun OrderStatusScreen() {
-    val tabs = listOf("Chờ xác nhận", "Đang chuẩn bị", "Đang giao", "Đã giao")
+fun OrderStatusScreen(navController: NavHostController) {
+    val tabs = listOf("Chờ xác nhận", "Đã xác nhận", "Đang giao", "Đã giao")
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     Column(
@@ -92,10 +98,17 @@ fun OrderStatusScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        val viewModel: SellerManagerViewModel = viewModel()
+
+
         // Content for each tab
         when (selectedTabIndex) {
             0 -> ConfirmingContent()
-            1 -> PreparingContent()
+            1 -> PreparingContent(
+                viewModel,
+                navController = navController
+            )
+
             2 -> ShippingContent()
             3 -> DeliveredContent()
         }
@@ -145,104 +158,35 @@ fun ConfirmingContent() {
 }
 
 @Composable
-fun PreparingContent() {
-
-    var ongoingDeals by remember { mutableStateOf<List<DealItem>>(emptyList()) }
-
-    Column(modifier = Modifier.fillMaxSize())
-    {
-        // Nút thao tác
+fun PreparingContent(viewModel: SellerManagerViewModel, navController: NavHostController) {
+    val deals by viewModel.approvedDeals.collectAsState()
+    Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Button(onClick = {
-                // Đổ dữ liệu test
-                ongoingDeals = listOf(
-                    DealItem(
-                        imageLink = "https://via.placeholder.com/150",
-                        title = "001",
-                        status = "Đang chuẩn bị",
-                        userId = "user_01",
-                        userContact = "0912345678"
-                    ),
-                    DealItem(
-                        imageLink = "https://via.placeholder.com/150",
-                        title = "002",
-                        status = "Đang chuẩn bị",
-                        userId = "user_02",
-                        userContact = "0987654321"
-                    ),
-                    DealItem(
-                        imageLink = "https://via.placeholder.com/150",
-                        title = "001",
-                        status = "Đang chuẩn bị",
-                        userId = "user_01",
-                        userContact = "0912345678"
-                    ),
-                    DealItem(
-                        imageLink = "https://via.placeholder.com/150",
-                        title = "002",
-                        status = "Đang chuẩn bị",
-                        userId = "user_02",
-                        userContact = "0987654321"
-                    ),
-                    DealItem(
-                        imageLink = "https://via.placeholder.com/150",
-                        title = "001",
-                        status = "Đang chuẩn bị",
-                        userId = "user_01",
-                        userContact = "0912345678"
-                    ),
-                    DealItem(
-                        imageLink = "https://via.placeholder.com/150",
-                        title = "002",
-                        status = "Đang chuẩn bị",
-                        userId = "user_02",
-                        userContact = "0987654321"
-                    )
-                )
-            }) {
+            Button(onClick = { viewModel.loadTestPreparingDeals() }) {
                 Text("Tạo dữ liệu test")
             }
-
-            Button(onClick = {
-                // Xóa dữ liệu
-                ongoingDeals = emptyList()
-            }) {
+            Button(onClick = { viewModel.clearPreparingDeals() }) {
                 Text("Xóa")
             }
         }
 
-
-        //val ongoingDeals = listOf<DealItem>()
-        //listOf(
-//        DealItem(
-//            imageLink = "https://via.placeholder.com/150",
-//            title = "Đơn hàng #001",
-//            status = "Đang chuẩn bị",
-//            userId = "user_01",
-//            userContact = "0912345678"
-//        ),
-//        DealItem(
-//            imageLink = "https://via.placeholder.com/150",
-//            title = "Đơn hàng #002",
-//            status = "Đang chuẩn bị",
-//            userId = "user_02",
-//            userContact = "0987654321"
-//        )
-        //)
-
-        if (ongoingDeals.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(ongoingDeals) { deal ->
-                    DealItemCard(deal = deal)
+        if (deals.isNotEmpty()) {
+            LazyColumn {
+                items(deals) { deal ->
+                    DealItemCard(
+                        deal = deal,
+                        onClick = {
+                            navController.navigate("deal_detail/${deal.id}")
+                        }
+                    )
                 }
             }
         } else {
-
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -253,10 +197,10 @@ fun PreparingContent() {
                     fontSize = 20.sp
                 )
             }
-
         }
     }
 }
+
 
 @Composable
 fun ShippingContent() {
@@ -305,14 +249,14 @@ fun DeliveredContent() {
         DealItem(
             imageLink = "https://via.placeholder.com/150",
             title = "Đơn hàng #001",
-            status = "Hoàn thành",
+            status = "Delivered",
             userId = "user_01",
             userContact = "0912345678"
         ),
         DealItem(
             imageLink = "https://via.placeholder.com/150",
             title = "Đơn hàng #002",
-            status = "Hoàn thành",
+            status = "Delivered",
             userId = "user_02",
             userContact = "0987654321"
         )
