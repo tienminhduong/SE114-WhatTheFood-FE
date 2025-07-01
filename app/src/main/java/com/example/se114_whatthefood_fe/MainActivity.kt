@@ -56,6 +56,7 @@ import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.FoodModel
+import com.example.se114_whatthefood_fe.model.ImageModel
 import com.example.se114_whatthefood_fe.model.LocationManager
 import com.example.se114_whatthefood_fe.ui.theme.DarkGreen
 
@@ -65,17 +66,20 @@ import com.example.se114_whatthefood_fe.ui.theme.MintGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
+import com.example.se114_whatthefood_fe.view.card.SellerNotification
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
+import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.launch
+
+//import com.google.accompanist.permissions.rememberMultiplePermissionsState
+//import com.google.android.gms.location.LocationServices
+//import kotlinx.coroutines.launch
 
 val Context.dataStore by preferencesDataStore(name = "user_pref")
 
@@ -87,44 +91,53 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         // Cho phép Compose vẽ dưới system bar
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val screenRootHaveBottomBar = listOf("Home", "Account", "Orders", "Notifications", "Favorites")
+        val screenRootHaveBottomBar =
+            listOf("Home", "Account", "Orders", "Notifications", "Favorites")
         setContent {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
-            val authModel = remember{
-                AuthModel(api = RetrofitInstance.instance,
+            val authModel = remember {
+                AuthModel(
+                    api = RetrofitInstance.instance,
                     dataStore = dataStore
                 )
             }
             val imageModel = remember {
-                com.example.se114_whatthefood_fe.model.ImageModel(api = RetrofitInstance.instance,
+                ImageModel(
+                    api = RetrofitInstance.instance,
                     dataStore = dataStore
                 )
             }
 
-            val authViewModel = remember {AuthViewModel(authModel = authModel, imageModel = imageModel)}
+            val authViewModel =
+                remember { AuthViewModel(authModel = authModel, imageModel = imageModel) }
 
-            val foodModel = remember{
-                FoodModel(api = RetrofitInstance.instance,
+            val foodModel = remember {
+                FoodModel(
+                    api = RetrofitInstance.instance,
                     dataStore = dataStore
                 )
             }
             val foodViewModel = remember {
                 FoodViewModel(foodModel = foodModel)
             }
-            Box(modifier = Modifier.fillMaxSize()
-                .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
-                .systemBarsPadding()) {
-                Scaffold(containerColor = Color.Transparent,
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
+                    .systemBarsPadding()
+            ) {
+                Scaffold(
+                    containerColor = Color.Transparent,
                     bottomBar = {
-                        if(checkHaveBottomBar(currentRoute, screenRootHaveBottomBar)) {
+                        if (checkHaveBottomBar(currentRoute, screenRootHaveBottomBar)) {
                             BottomBarDeviceScreen(
                                 navController = navController,
                                 currentRoute = currentRoute
                             )
                         }
-                }) { innerPadding ->
+                    }) { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = ScreenRoute.HomeScreen,
@@ -142,28 +155,64 @@ class MainActivity : ComponentActivity() {
                         composable(ScreenRoute.LoginOrRegisterScreen) {
                             AuthScreen(authViewModel = authViewModel,
                                 navController = navController)}
+
                     }
                 }
             }
+//
+//            val navController = rememberNavController()
+//            val navBackStackEntry by navController.currentBackStackEntryAsState()
+//            val currentRoute = navBackStackEntry?.destination?.route
+//
+//            Scaffold(
+//                bottomBar = {
+//                    SellerBottomBar(
+//                        navController = navController,
+//                        currentRoute = currentRoute
+//                    )
+//                }
+//            ) { innerPadding ->
+//                NavHost(
+//                    navController = navController,
+//                    startDestination = "SellerHome",
+//                    modifier = Modifier.padding(innerPadding)
+//                ) {
+//                    composable("SellerHome") {
+//                        SellerHome(SellerHomeViewModel())
+//                    }
+//                    composable("SellerAccount") {
+//                        SellerAccount()
+//                    }
+//                    composable("SellerManager")
+//                    {
+//                        SellerManager()
+//                    }
+//                    composable("SellerNotification")
+//                    {
+//                        SellerNotificationContent()
+//                    }
+//                }
+//            }
 
         }
     }
 }
 
-    fun checkHaveBottomBar(route: String?, listScreenRoot: List<String>): Boolean {
-        listScreenRoot.forEach { screenRoot ->
-            if (route.equals(screenRoot)) {
-                return true
-            }
+fun checkHaveBottomBar(route: String?, listScreenRoot: List<String>): Boolean {
+    listScreenRoot.forEach { screenRoot ->
+        if (route.equals(screenRoot)) {
+            return true
         }
-        return false
     }
-    @Composable
-    fun Greeting(name: String, modifier: Modifier = Modifier) {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
+    return false
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
 
     Button(
         onClick = { /* Do something */ },
