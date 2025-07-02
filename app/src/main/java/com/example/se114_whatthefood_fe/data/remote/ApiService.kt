@@ -237,4 +237,6 @@ interface ApiService {
     suspend fun getOrderById(@Header("Authorization") token: String,
                              @Path("id") id: Int): Response<ShippingInfo>
 
+    @GET("fooditems/{id}")
+    suspend fun getFoodItemById(@Path("id") id: Int): Response<FoodItemResponse>
 }

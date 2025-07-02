@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
         // Cho phép Compose vẽ dưới system bar
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val screenRootHaveBottomBar =
-            listOf("Home", "Account", "Orders", "Notifications", "Favorites")
+            listOf("Home", "Account", "Orders", "Notifications")
         setContent {
 
 

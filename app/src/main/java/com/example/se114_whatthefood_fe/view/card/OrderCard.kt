@@ -33,6 +33,8 @@ import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.data.remote.Address
 import com.example.se114_whatthefood_fe.data.remote.Restaurant
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format.char
 
 object StatusOrder{
     val Pending = "Pending"
@@ -113,23 +115,44 @@ fun CardOrder(order: ShippingInfo, modifier: Modifier = Modifier){
             )
 
             Spacer(modifier = Modifier.height(4.dp))
+            Row(horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically){
+                // thoi gian
+                val time = LocalDateTime.parse(order.orderTime)
+                val timeFormat = LocalDateTime.Format {
+                    day()
+                    char('/')
+                    monthNumber()
+                    char('/')
+                    year()
+                    char(' ')
+                    hour()
+                    char(':')
+                    minute()
+                }
+                val timeString = timeFormat.format(time)
+                Text(text = timeString,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f))
 
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = getColorOrderStatus(order.status),
-                        shape = RoundedCornerShape(4.dp)
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = getColorOrderStatus(order.status),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        //.align(Alignment.End)
+                ) {
+                    // status don hang
+                    Text(
+                        text = order.status,
+                        color = Color.White,
+                        fontSize = 12.sp
                     )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .align(Alignment.End)
-            ) {
-                // status don hang
-                Text(
-                    text = order.status,
-                    color = Color.White,
-                    fontSize = 12.sp
-                )
+                }
             }
+
 
             Spacer(modifier = Modifier.height(8.dp))
 

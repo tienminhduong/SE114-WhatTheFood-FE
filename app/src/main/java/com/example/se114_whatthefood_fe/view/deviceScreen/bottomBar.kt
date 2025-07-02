@@ -69,13 +69,7 @@ fun BottomBarDeviceScreen(navController: NavHostController,
         BottomBarItem(
             icon = Icons.AutoMirrored.Filled.ReceiptLong,
             label = "Đơn hàng",
-            badgeCount = 10,
             route = "Orders",
-        ),
-        BottomBarItem(
-            icon = Icons.Filled.Favorite,
-            label = "Đã thích",
-            route = "Favorites",
         ),
         BottomBarItem(
             icon = Icons.Filled.Notifications,
