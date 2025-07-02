@@ -23,6 +23,16 @@ class FoodModel(
         return preferences[TOKEN_KEY]
     }
 
+    suspend fun getFoodById(id: Int): Response<FoodItemResponse>{
+        return try{
+            val response = api.getFoodItemById(id)
+            response
+        }
+        catch (e: Exception){
+            Response.error(500, "".toResponseBody(null))
+        }
+    }
+
     suspend fun getFoodItemNearBy(longtitude: Float,
                                   latitude: Float,
                                   pageNumber: Int = 0,

@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -66,7 +67,7 @@ fun NearByCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) 
     Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
                                        color = White)
         .fillMaxWidth()
-        .height(64.dp)
+        .height(88.dp)
         .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
         .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
         verticalAlignment = Alignment.CenterVertically) {
@@ -83,7 +84,7 @@ fun NearByCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) 
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(48.dp).clip(shape= RoundedCornerShape(8.dp))
+            modifier = modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
         )
         // information
         Column(modifier = Modifier.padding(horizontal = 8.dp)
@@ -95,9 +96,19 @@ fun NearByCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) 
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 1,
                 softWrap = false,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
             )
-
+            // ten nha hang
+            Text(
+                text = card.restaurantName,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = false,
+                textAlign = TextAlign.Center,
+                fontSize = TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp) // Set font size
+            )
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
@@ -136,7 +147,7 @@ fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByRespon
     Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
         color = White)
         .fillMaxWidth()
-        .height(64.dp)
+        .height(88.dp)
         .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
         .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
         verticalAlignment = Alignment.CenterVertically) {
@@ -153,7 +164,7 @@ fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByRespon
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(48.dp).clip(shape= RoundedCornerShape(8.dp))
+            modifier = modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
         )
         // information
         Column(modifier = Modifier.padding(horizontal = 8.dp)
@@ -161,14 +172,24 @@ fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByRespon
             verticalArrangement = Arrangement.SpaceAround){
             // title
 
-                androidx.compose.material3.Text(
-                    text = card.name,
-                    modifier = Modifier.fillMaxWidth(),
-                    maxLines = 1,
-                    softWrap = false,
-                    textAlign = TextAlign.Center
-                )
-
+            Text(
+                text = card.name,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 1,
+                softWrap = false,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+            // ten nha hang
+            Text(
+                text = card.restaurantName,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = false,
+                textAlign = TextAlign.Center,
+                fontSize = TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp) // Set font size
+            )
             Row(horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()) {
@@ -230,7 +251,16 @@ fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse
                 fontWeight = FontWeight.Bold,
                 fontSize = TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp) // Set font size
             )
-
+            // ten nha hang
+            Text(
+                text = card.restaurantName,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = false,
+                textAlign = TextAlign.Center,
+                fontSize = TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp) // Set font size
+            )
             Row(horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()) {

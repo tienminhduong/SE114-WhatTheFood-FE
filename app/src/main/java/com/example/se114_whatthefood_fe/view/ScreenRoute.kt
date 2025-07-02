@@ -6,4 +6,5 @@ object ScreenRoute {
     val NotificationScreen = "Notifications"
     val AccountScreen = "Account"
     val LoginOrRegisterScreen = "LoginOrRegister"
+    val DetailOrderScreen = "DetailOrder/{orderId}"
 }

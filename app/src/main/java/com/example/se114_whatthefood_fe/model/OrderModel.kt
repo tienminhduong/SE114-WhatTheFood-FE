@@ -22,6 +22,22 @@ class OrderModel(private val api: ApiService,
         val preferences = dataStore.data.first()
         return preferences[TOKEN_KEY]
     }
+
+    // get ordersById
+    suspend fun getOrdersById(orderId: Int): Response<ShippingInfo> {
+        return try {
+            val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
+            val response = api.getOrderById("Bearer $token", orderId)
+            if (response.isSuccessful) {
+                response
+            } else {
+                Response.error(response.code(), response.errorBody() ?: "".toResponseBody(null))
+            }
+        } catch (e: Exception){
+            Log.d("OrderModel", "getOrdersById: ${e.message}")
+            Response.error(500, "".toResponseBody(null))
+        }
+    }
     // get all orders
     suspend fun getAllOrders(pageNumber: Int = 0, pageSize: Int = 10): Response<List<ShippingInfo>> {
         return try {
