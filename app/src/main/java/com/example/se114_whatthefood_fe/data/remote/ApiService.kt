@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -159,6 +160,10 @@ data class FoodItemNearByResponse(
     @SerializedName("restaurantName")
     val restaurantName: String
 )
+data class NotificationTokenDto(
+    @SerializedName("deviceToken")
+    val deviceToken: String
+)
 
 interface ApiService {
     // auth API
@@ -166,6 +171,15 @@ interface ApiService {
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
+    @Headers("Content-Type: application/json")
+    @POST("users/device-token")
+    suspend fun registerDeviceToken(@Header("Authorization") token: String,
+                                    @Body request: NotificationTokenDto): Response<Unit>
+
+    @Headers("Content-Type: application/json")
+    @DELETE("users/device-token")
+    suspend fun deleteDeviceToken(@Header("Authorization") token: String,
+                                  @Query("deviceToken") deviceToken: String): Response<Unit>
 
     @GET("users/info")
     suspend fun getUserInfo(@Header("Authorization") token: String): Response<UserInfo>

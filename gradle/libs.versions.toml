@@ -4,6 +4,7 @@ agp = "8.9.3"
 coilCompose = "2.4.0"
 converterGson = "2.11.0"
 datastoreCore = "1.1.7"
+firebaseBom = "33.16.0"
 hiltAndroid = "2.51.1"
 hiltAndroidCompiler = "2.48"
 hiltNavigationCompose = "1.2.0"
@@ -26,6 +27,7 @@ identityJvm = "202411.1"
 retrofit = "2.11.0"
 play-services-location = "21.0.1"
 accompanist-permissions = "0.34.0"
+firebaseMessagingKtx = "24.1.2"
 
 
 [libraries]
@@ -39,6 +41,7 @@ androidx-material-icons-extended-v160 = { module = "androidx.compose.material:ma
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -63,6 +66,7 @@ identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
