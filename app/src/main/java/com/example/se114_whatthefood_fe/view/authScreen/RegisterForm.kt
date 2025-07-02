@@ -1,7 +1,9 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
 
+import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -68,115 +71,148 @@ fun RegisterFormPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+    val activity = LocalActivity.current
     Column {
-        // text tield for full name
-        RoundCornerTextFieldWithIcon(
-            placeholder = "Tên của bạn",
-            value = authViewModel.nameRegister,
-            onValueChange = { authViewModel.nameRegister = it },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Phone Icon",
-                    tint = LightGreen
-                )
-            },
-            modifier = modifier
-        )
-
-        Spacer(modifier.height(16.dp))
-
-        // text field for phone number
-        RoundCornerTextFieldWithIcon(
-            placeholder = "Số điện thoại",
-            value = authViewModel.phoneRegister,
-            onValueChange = { authViewModel.phoneRegister = it },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Phone,
-                    contentDescription = "Phone Icon",
-                    tint = LightGreen
-                )
-            },
-            modifier = modifier,
-            keyBoardOption = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        Spacer(modifier.height(16.dp))
-        // text field for password
-        RoundCornerTextFieldWithIcon(
-            placeholder = "Mật khẩu",
-            value = authViewModel.passwordRegister,
-            onValueChange = { authViewModel.passwordRegister = it },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "Password Icon",
-                    tint = LightGreen
-                )
-            },
-            isPassword = true,
-            modifier = modifier,
-            trailingIcon = {
-                IconButton(
-                    onClick = { authViewModel.clickVisiblePasswordInRegister() }
-                )
-                {
+        if (!authViewModel.otpSent) {
+            // text tield for full name
+            RoundCornerTextFieldWithIcon(
+                placeholder = "Tên của bạn",
+                value = authViewModel.nameRegister,
+                onValueChange = { authViewModel.nameRegister = it },
+                leadingIcon = {
                     Icon(
-                        imageVector = if(authViewModel.isVisiblePasswordInRegister)
-                                        Icons.Default.VisibilityOff
-                                      else Icons.Default.Visibility,
-                        contentDescription = "Toggle Password Visibility",
-                        tint = LightGreen,
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Phone Icon",
+                        tint = LightGreen
                     )
-                }
-            },
-            isPasswordVisibility = authViewModel.isVisiblePasswordInRegister
-        )
-        // text field for confirm password
-        Spacer(modifier.height(16.dp))
-        RoundCornerTextFieldWithIcon(
-            placeholder = "Nhập lại mật khẩu",
-            value = authViewModel.confirmPassword,
-            onValueChange = { authViewModel.confirmPassword = it },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "Confirm Password Icon",
-                    tint = LightGreen
-                )
-            },
-            isPassword = true,
-            modifier = modifier,
-            trailingIcon = {
-                IconButton(
-                    onClick = { authViewModel.clickVisibleConfirmPassword() }
-                )
-                {
+                },
+                modifier = modifier
+            )
+
+            Spacer(modifier.height(16.dp))
+
+            // text field for phone number
+            RoundCornerTextFieldWithIcon(
+                placeholder = "Số điện thoại",
+                value = authViewModel.phoneRegister,
+                onValueChange = { authViewModel.phoneRegister = it },
+                leadingIcon = {
                     Icon(
-                        imageVector = if(authViewModel.isVisibleConfirmPasswordInRegister)
-                            Icons.Default.VisibilityOff
-                        else Icons.Default.Visibility,
-                        contentDescription = "Toggle Password Visibility",
-                        tint = LightGreen,
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = "Phone Icon",
+                        tint = LightGreen
                     )
-                }
-            },
-            isPasswordVisibility = authViewModel.isVisibleConfirmPasswordInRegister
-        )
-        // spacer
-        Spacer(modifier.height(16.dp))
+                },
+                modifier = modifier,
+                keyBoardOption = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
 
-        // combobox chon quyen
-        CustomComboBox(authViewModel = authViewModel)
-        Spacer(modifier.height(16.dp))
-        // button dang ki
-        RoundCornerButton(
-            text = "Đăng ký",
-            onClick = { authViewModel.onRegisterClick() },
-            modifier = modifier
-        )
+            Spacer(modifier.height(16.dp))
+            // text field for password
+            RoundCornerTextFieldWithIcon(
+                placeholder = "Mật khẩu",
+                value = authViewModel.passwordRegister,
+                onValueChange = { authViewModel.passwordRegister = it },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Password Icon",
+                        tint = LightGreen
+                    )
+                },
+                isPassword = true,
+                modifier = modifier,
+                trailingIcon = {
+                    IconButton(
+                        onClick = { authViewModel.clickVisiblePasswordInRegister() }
+                    )
+                    {
+                        Icon(
+                            imageVector = if (authViewModel.isVisiblePasswordInRegister)
+                                Icons.Default.VisibilityOff
+                            else Icons.Default.Visibility,
+                            contentDescription = "Toggle Password Visibility",
+                            tint = LightGreen,
+                        )
+                    }
+                },
+                isPasswordVisibility = authViewModel.isVisiblePasswordInRegister
+            )
+            // text field for confirm password
+            Spacer(modifier.height(16.dp))
+            RoundCornerTextFieldWithIcon(
+                placeholder = "Nhập lại mật khẩu",
+                value = authViewModel.confirmPassword,
+                onValueChange = { authViewModel.confirmPassword = it },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Confirm Password Icon",
+                        tint = LightGreen
+                    )
+                },
+                isPassword = true,
+                modifier = modifier,
+                trailingIcon = {
+                    IconButton(
+                        onClick = { authViewModel.clickVisibleConfirmPassword() }
+                    )
+                    {
+                        Icon(
+                            imageVector = if (authViewModel.isVisibleConfirmPasswordInRegister)
+                                Icons.Default.VisibilityOff
+                            else Icons.Default.Visibility,
+                            contentDescription = "Toggle Password Visibility",
+                            tint = LightGreen,
+                        )
+                    }
+                },
+                isPasswordVisibility = authViewModel.isVisibleConfirmPasswordInRegister
+            )
+            // spacer
+            Spacer(modifier.height(16.dp))
 
+            // combobox chon quyen
+            CustomComboBox(authViewModel = authViewModel)
+            Spacer(modifier.height(16.dp))
+            // button dang ki
+//        RoundCornerButton(
+//            text = "Đăng ký",
+//            onClick = { authViewModel.onRegisterClick() },
+//            modifier = modifier
+//        )
+            RoundCornerButton(
+                text = "Đăng ký",
+                onClick = { authViewModel.sendVerificationCode(activity!!) },
+                modifier = modifier
+            )
+        }
+        else {
+            RoundCornerTextFieldWithIcon(
+                placeholder = "Nhập OTP",
+                value = authViewModel.otpCode,
+                onValueChange = { authViewModel.otpCode = it },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = "Phone Icon",
+                        tint = LightGreen
+                    )
+                },
+                modifier = modifier,
+                keyBoardOption = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            RoundCornerButton(
+                text = "Xác thực",
+                onClick = { authViewModel.verifyOtp(authViewModel.otpCode)},
+                modifier = modifier
+            )
+        }
+        authViewModel.authResult?.let {
+            Text("Signed in as: ${it.phoneNumber}")
+            Text("Role: ${authViewModel.optionRole.value}")
+            Text("Name: ${authViewModel.nameRegister}")
+        }
     }
 
 }

@@ -103,4 +103,5 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.okhttp)
     implementation(libs.commons.codec)
+    implementation(libs.firebase.auth.ktx)
 }

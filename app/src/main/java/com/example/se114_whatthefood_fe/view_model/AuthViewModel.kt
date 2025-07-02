@@ -11,11 +11,18 @@ import com.example.se114_whatthefood_fe.Api.CreateOrder
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.ImageModel
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import vn.zalopay.sdk.ZaloPayError
 import vn.zalopay.sdk.ZaloPaySDK
 import vn.zalopay.sdk.listeners.PayOrderListener
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AuthViewModel(private val authModel: AuthModel,
@@ -58,6 +65,7 @@ class AuthViewModel(private val authModel: AuthModel,
     var isVisiblePasswordInRegister by mutableStateOf(false)
     var isVisibleConfirmPasswordInRegister by mutableStateOf(false)
     var registerState by mutableStateOf<UIState>(UIState.IDLE)
+    var otpCode by mutableStateOf("")
 
     fun clickVisiblePasswordInRegister() {
         isVisiblePasswordInRegister = !isVisiblePasswordInRegister
@@ -225,4 +233,57 @@ class AuthViewModel(private val authModel: AuthModel,
             }
         })
     }
+
+    var verificationId by mutableStateOf<String?>(null)
+    var otpSent by mutableStateOf(false)
+    var authResult by mutableStateOf<FirebaseUser?>(null)
+
+    private val auth = FirebaseAuth.getInstance()
+
+
+    fun sendVerificationCode(activity: Activity) {
+        val phoneNumber = "+84${phoneRegister.removePrefix("0")}"
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(activity)
+            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    signInWithPhoneAuthCredential(credential)
+                }
+
+                override fun onVerificationFailed(e: FirebaseException) {
+                    Log.e("Auth", "Verification Failed: ${e.message}")
+                }
+
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken
+                ) {
+                    this@AuthViewModel.verificationId = verificationId
+                    otpSent = true
+                }
+            })
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    fun verifyOtp(code: String) {
+        val credential = PhoneAuthProvider.getCredential(verificationId ?: "", code)
+        signInWithPhoneAuthCredential(credential)
+    }
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    authResult = task.result?.user
+                    onRegisterClick()
+                } else {
+                    Log.e("Auth", "Sign in failed: ${task.exception?.message}")
+                }
+            }
+    }
+
 }
