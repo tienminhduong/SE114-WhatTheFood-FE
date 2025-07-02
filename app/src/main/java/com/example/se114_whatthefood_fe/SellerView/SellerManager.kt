@@ -33,13 +33,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.view.card.DealItem
 import com.example.se114_whatthefood_fe.view.card.DealItemCard
 
 
-//this screen is for the deals, isPreparing, onGoing, isDone.
+//this screen is for the deals, isApproved, onGoing, isDone.
 // In short is the state of all deals we have
 @Composable
 
@@ -49,95 +48,109 @@ fun SellerManagerPreview() {
 }
 
 @Composable
-fun SellerManager(modifier: Modifier = Modifier, navController: NavHostController) {
-    OrderStatusScreen(navController = navController)
+fun SellerManager(viewModel: SellerManagerViewModel, modifier: Modifier = Modifier) {
+    OrderStatusScreen(viewModel)
 }
 
 
-
 @Composable
-fun OrderStatusScreen(navController: NavHostController) {
+fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
     val tabs = listOf("Chờ xác nhận", "Đã xác nhận", "Đang giao", "Đã giao")
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF00FF7F), Color.White)
-                )
-            )
-    ) {
-        // Tabs
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-            containerColor = Color.Transparent,
-            contentColor = Color.Black,
-            indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                    color = Color.White
-                )
+    var selectedDeal by remember { mutableStateOf<DealItem?>(null) }
+
+    if (selectedDeal != null) {
+        SellerDealDetail(
+            deal = selectedDeal!!,
+            viewModel = viewModel,
+
+            onAccept = {
+
+            },
+            onBack = {
+                selectedDeal = null
             }
+        )
+    } else {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFF00FF7F), Color.White)
+                    )
+                )
         ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index },
-                    text = {
-                        Text(
-                            text = title,
-                            color = if (selectedTabIndex == index) Color.White else Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                )
+            // Tabs
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                containerColor = Color.Transparent,
+                contentColor = Color.Black,
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(
+                        Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                        color = Color.White
+                    )
+                }
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = {
+                            Text(
+                                text = title,
+                                color = if (selectedTabIndex == index) Color.White else Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    )
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        val viewModel: SellerManagerViewModel = viewModel()
+            val viewModel: SellerManagerViewModel = viewModel()
 
-
-        // Content for each tab
-        when (selectedTabIndex) {
-            0 -> ConfirmingContent()
-            1 -> PreparingContent(
-                viewModel,
-                navController = navController
-            )
-
-            2 -> ShippingContent()
-            3 -> DeliveredContent()
+            val onDealClick: (DealItem) -> Unit = { deal ->
+                selectedDeal = deal
+            }
+            // Content for each tab
+            when (selectedTabIndex) {
+                0 -> PendingContent(onDealClick, viewModel)
+                1 -> AprrovedContent(onDealClick, viewModel)
+                2 -> DeliveringContent(onDealClick, viewModel)
+                3 -> DeliveredContent(onDealClick, viewModel)
+            }
         }
     }
 }
 
 @Composable
-fun ConfirmingContent() {
-    val ConfirmingDeals = listOf(
+fun PendingContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
+    val pendingDeals = listOf(
         DealItem(
             imageLink = "https://via.placeholder.com/150",
             title = "Đơn hàng #001",
-            status = "Chờ xác nhận",
+            status = "Pending",
             userId = "user_01",
             userContact = "0912345678"
         ),
         DealItem(
             imageLink = "https://via.placeholder.com/150",
             title = "Đơn hàng #002",
-            status = "Chờ xác nhận",
+            status = "Pending",
             userId = "user_02",
             userContact = "0987654321"
         )
     )
 
-    if (!ConfirmingDeals.isEmpty()) {
+    if (!pendingDeals.isEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(ConfirmingDeals) { deal ->
-                DealItemCard(deal = deal)
+            items(pendingDeals) { deal ->
+                DealItemCard(deal = deal, onClick = { onDealClick(deal) })
             }
         }
     } else {
@@ -157,8 +170,12 @@ fun ConfirmingContent() {
     }
 }
 
+//fun onDealClick(deal: DealItem) {
+//
+//}
+
 @Composable
-fun PreparingContent(viewModel: SellerManagerViewModel, navController: NavHostController) {
+fun AprrovedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val deals by viewModel.approvedDeals.collectAsState()
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -167,10 +184,10 @@ fun PreparingContent(viewModel: SellerManagerViewModel, navController: NavHostCo
                 .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Button(onClick = { viewModel.loadTestPreparingDeals() }) {
+            Button(onClick = { viewModel.loadTestApprovedDeals() }) {
                 Text("Tạo dữ liệu test")
             }
-            Button(onClick = { viewModel.clearPreparingDeals() }) {
+            Button(onClick = { viewModel.clearApprovedDeals() }) {
                 Text("Xóa")
             }
         }
@@ -178,12 +195,7 @@ fun PreparingContent(viewModel: SellerManagerViewModel, navController: NavHostCo
         if (deals.isNotEmpty()) {
             LazyColumn {
                 items(deals) { deal ->
-                    DealItemCard(
-                        deal = deal,
-                        onClick = {
-                            navController.navigate("deal_detail/${deal.id}")
-                        }
-                    )
+                    DealItemCard(deal = deal, onClick = { onDealClick(deal) })
                 }
             }
         } else {
@@ -203,8 +215,8 @@ fun PreparingContent(viewModel: SellerManagerViewModel, navController: NavHostCo
 
 
 @Composable
-fun ShippingContent() {
-    val shippingDeals = listOf(
+fun DeliveringContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
+    val DeliveringDeals = listOf(
         DealItem(
             imageLink = "https://via.placeholder.com/150",
             title = "Đơn hàng #001",
@@ -221,10 +233,10 @@ fun ShippingContent() {
         )
     )
 
-    if (!shippingDeals.isEmpty()) {
+    if (!DeliveringDeals.isEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(shippingDeals) { deal ->
-                DealItemCard(deal = deal)
+            items(DeliveringDeals) { deal ->
+                DealItemCard(deal = deal, onClick = { onDealClick(deal) })
             }
         }
     } else {
@@ -243,8 +255,9 @@ fun ShippingContent() {
     }
 }
 
+
 @Composable
-fun DeliveredContent() {
+fun DeliveredContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val deliveredDeals = listOf(
         DealItem(
             imageLink = "https://via.placeholder.com/150",
@@ -265,7 +278,7 @@ fun DeliveredContent() {
     if (!deliveredDeals.isEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(deliveredDeals) { deal ->
-                DealItemCard(deal = deal)
+                DealItemCard(deal = deal, onClick = { onDealClick(deal) })
             }
         }
     } else {
@@ -280,8 +293,6 @@ fun DeliveredContent() {
                 fontSize = 20.sp
             )
         }
-
-
     }
 
 }

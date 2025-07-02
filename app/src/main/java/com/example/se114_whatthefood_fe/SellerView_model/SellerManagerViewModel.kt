@@ -1,10 +1,10 @@
 package com.example.se114_whatthefood_fe.SellerView_model
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import com.example.se114_whatthefood_fe.view.card.DealItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class SellerManagerViewModel : ViewModel() {
 
@@ -23,42 +23,42 @@ class SellerManagerViewModel : ViewModel() {
     private val _completedDeals = MutableStateFlow<List<DealItem>>(emptyList())
     val completedDeals: StateFlow<List<DealItem>> = _completedDeals
 
-    // Confirming
-    fun addConfirmingDeal(deal: DealItem) {
+    // Pending
+    fun addPendingDeal(deal: DealItem) {
 
     }
 
-    fun updateConfirmingDeal(deal: DealItem) {
+    fun updatePendingDeal(deal: DealItem) {
 
     }
 
-    fun clearConfirmingDeals() {
+    fun clearPendingDeals() {
 
     }
 
-    // Preparing
-    fun addPreparingDeal(deal: DealItem) {
+    // Approved
+    fun addApprovedDeal(deal: DealItem) {
 
     }
 
-    fun updatePreparingDeal(deal: DealItem) {
+    fun updateApprovedDeal(deal: DealItem) {
 
     }
 
-    fun clearPreparingDeals() {
+    fun clearApprovedDeals() {
         _pendingDeals.value = emptyList()
     }
 
-    // Shipping
-    fun addShippingDeal(deal: DealItem) {
+    // Delivering
+    fun addDeliveringDeal(deal: DealItem) {
 
     }
 
-    fun updateShippingDeal(deal: DealItem) {
+    fun updateDeliveringDeal(deal: DealItem) {
 
     }
 
-    fun clearShippingDeals() {
+    fun clearDeliveringDeals() {
 
     }
 
@@ -75,7 +75,7 @@ class SellerManagerViewModel : ViewModel() {
 
     }
 
-    fun loadTestPreparingDeals() {
+    fun loadTestApprovedDeals() {
         _pendingDeals.value = List(6) {
             DealItem(
                 imageLink = "https://via.placeholder.com/150",
@@ -124,6 +124,13 @@ class SellerManagerViewModel : ViewModel() {
         }
     }
 
+    fun handleAcceptDeal(
+        deal: DealItem,
+        selectedDeal: MutableState<DealItem?>
+    ) {
+        //UpdateDealStatus(deal.id, "Approved")
+        selectedDeal.value = null
+    }
 
 
 }
