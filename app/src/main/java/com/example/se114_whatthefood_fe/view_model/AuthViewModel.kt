@@ -1,14 +1,21 @@
 package com.example.se114_whatthefood_fe.view_model
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.se114_whatthefood_fe.Api.CreateOrder
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.ImageModel
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import vn.zalopay.sdk.ZaloPayError
+import vn.zalopay.sdk.ZaloPaySDK
+import vn.zalopay.sdk.listeners.PayOrderListener
 import javax.inject.Inject
 
 class AuthViewModel(private val authModel: AuthModel,
@@ -190,5 +197,32 @@ class AuthViewModel(private val authModel: AuthModel,
     fun onHelpClick() {
         // Handle help click logic here, e.g., show a dialog or navigate to a help screen
         // This could be implemented using a dialog or navigation controller
+    }
+
+    fun onPaymentClick(total: Int, activity: Activity) {
+        val orderApi = CreateOrder()
+        val data = orderApi.createOrder(total.toString())
+        val code = data.getString("return_code")
+
+        if (code != "1") {
+            // Handle error in creating order
+            return
+        }
+
+        ZaloPaySDK.getInstance().payOrder(activity, data.getString("zp_trans_token"), "demozpdk://app", object :
+            PayOrderListener {
+            override fun onPaymentCanceled(zpTransToken: String?, appTransID: String?) {
+                //Handle User Canceled
+                Log.d("Payment", "Payment canceled")
+            }
+            override fun onPaymentError(zaloPayErrorCode: ZaloPayError?, zpTransToken: String?, appTransID: String?) {
+                //Redirect to Zalo/ZaloPay Store when zaloPayError == ZaloPayError.PAYMENT_APP_NOT_FOUND
+                //Handle Error
+                Log.e("Payment", "Payment error: ${zaloPayErrorCode}")
+            }
+            override fun onPaymentSucceeded(transactionId: String, transToken: String, appTransID: String?) {
+                Log.d("Payment", "Payment succeeded")
+            }
+        })
     }
 }

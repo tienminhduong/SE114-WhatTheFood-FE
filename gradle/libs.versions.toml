@@ -2,6 +2,7 @@
 accompanistSystemuicontroller = "0.32.0"
 agp = "8.9.3"
 coilCompose = "2.4.0"
+commonsCodec = "1.14"
 converterGson = "2.11.0"
 datastoreCore = "1.1.7"
 firebaseBom = "33.16.0"
@@ -24,6 +25,7 @@ navigationCompose = "2.9.0"
 
 identityJvm = "202411.1"
 
+okhttp = "4.6.0"
 retrofit = "2.11.0"
 play-services-location = "21.0.1"
 accompanist-permissions = "0.34.0"
@@ -40,8 +42,10 @@ androidx-material-icons-extended = { module = "androidx.compose.material:materia
 androidx-material-icons-extended-v160 = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtendedVersion" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commonsCodec" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -63,6 +67,7 @@ material-icons-extended = { module = "androidx.compose.material:material-icons-e
 
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
 
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }

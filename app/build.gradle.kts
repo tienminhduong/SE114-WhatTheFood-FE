@@ -61,6 +61,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.identity.jvm)
     implementation(libs.firebase.messaging.ktx)
+    implementation(fileTree(mapOf(
+        "dir" to "C:\\Users\\ASUS\\Desktop\\SE114-WhatTheFood-FE\\ZaloPayLib",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -95,5 +100,7 @@ dependencies {
 
     implementation(libs.androidx.datastore.preferences)
     implementation(platform(libs.firebase.bom))
-    implementation("com.google.firebase:firebase-messaging")
+    implementation(libs.firebase.messaging)
+    implementation(libs.okhttp)
+    implementation(libs.commons.codec)
 }

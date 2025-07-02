@@ -1,6 +1,7 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -48,6 +49,8 @@ import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import android.net.Uri
+import androidx.activity.compose.LocalActivity
+import androidx.activity.result.ActivityResult
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -190,6 +193,7 @@ fun AccountScreen(authViewModel: AuthViewModel,
 
     // dung cho doi anh
     val context = LocalContext.current
+    val activity = LocalActivity.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -223,7 +227,7 @@ fun AccountScreen(authViewModel: AuthViewModel,
             "Thanh toán",
             leadingIcon = Icons.Default.Wallet,
             trailingIcon = Icons.Default.PlayArrow,
-            onClick = { /* TODO: Handle click */ },
+            onClick = { authViewModel.onPaymentClick(10000, activity = activity!!) },
             modifier = Modifier.padding(top = 5.dp)
         )
         // doi anh
