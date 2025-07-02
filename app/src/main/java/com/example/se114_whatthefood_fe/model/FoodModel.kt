@@ -24,8 +24,9 @@ class FoodModel(
     }
 
     suspend fun getFoodById(id: Int): Response<FoodItemResponse>{
+        val token = getToken()
         return try{
-            val response = api.getFoodItemById(id)
+            val response = api.getFoodItemById(token = "Bearer ${getToken() ?: ""}", id = id)
             response
         }
         catch (e: Exception){

@@ -3,19 +3,30 @@ package com.example.se114_whatthefood_fe.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
-import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
+import com.example.se114_whatthefood_fe.data.remote.RatingFood
 import com.example.se114_whatthefood_fe.model.FoodModel
+import com.example.se114_whatthefood_fe.model.RatingModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class FoodDetailViewModel(private val foodModel: FoodModel): ViewModel() {
+class FoodDetailViewModel(private val foodModel: FoodModel,
+    private val ratingModel: RatingModel): ViewModel() {
     private val _foodItem = MutableStateFlow<FoodItemResponse?>(null)
     val foodItem: StateFlow<FoodItemResponse?> = _foodItem
 
-    fun LoadById(Id: Int){
+    fun loadById(id: Int){
         viewModelScope.launch {
-            _foodItem.value = foodModel.getFoodById(id = Id).body()
+            _foodItem.value = foodModel.getFoodById(id = id).body()
         }
+    }
+    // rating
+    private val _rating = MutableStateFlow<List<RatingFood>>(emptyList())
+    val rating: StateFlow<List<RatingFood>> = _rating
+    fun loadRating(id: Int){
+        viewModelScope.launch {
+            _rating.value = ratingModel.getRatings(id)
+        }
+
     }
 }

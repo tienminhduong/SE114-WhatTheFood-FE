@@ -57,6 +57,7 @@ import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.model.ImageModel
 import com.example.se114_whatthefood_fe.model.LocationManager
 import com.example.se114_whatthefood_fe.model.OrderModel
+import com.example.se114_whatthefood_fe.model.RatingModel
 import com.example.se114_whatthefood_fe.ui.theme.DarkGreen
 
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
@@ -64,6 +65,7 @@ import com.example.se114_whatthefood_fe.ui.theme.MintGreen
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.card.SellerNotification
+import com.example.se114_whatthefood_fe.view.detailFoodScreen.DetailFoodScreen
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.DetailOrderScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
@@ -72,6 +74,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
@@ -167,7 +170,8 @@ class MainActivity : ComponentActivity() {
                         composable(ScreenRoute.HomeScreen) {
                             //test home screen
                             //HomeScreenTest(foodViewModel = foodViewModel)
-                            HomeScreen(foodViewModel = foodViewModel)
+                            HomeScreen(foodViewModel = foodViewModel,
+                                navController = navController)
                         }
                         composable(ScreenRoute.LoginOrRegisterScreen) {
                             AuthScreen(authViewModel = authViewModel,
@@ -184,6 +188,21 @@ class MainActivity : ComponentActivity() {
                             DetailOrderScreen(orderDetailViewModel = orderDetailViewModel,
                                 orderId = orderId,
                                 navController = navController)
+                        }
+                        composable(ScreenRoute.DetailFoodItemScreen,
+                            arguments = listOf(
+                                navArgument("foodItemId") { type = NavType.IntType}
+                            )) { backStackEntry ->
+                            val foodDetailViewModel = remember {
+                                FoodDetailViewModel(foodModel = FoodModel(api = RetrofitInstance.instance,
+                                    dataStore = dataStore),
+                                    ratingModel = RatingModel(api = RetrofitInstance.instance,
+                                        dataStore = dataStore))
+                            }
+                            val foodItemId = backStackEntry.arguments?.getInt("foodItemId")
+                            DetailFoodScreen(navController = navController,
+                                foodDetailViewModel = foodDetailViewModel,
+                                orderId = foodItemId)
                         }
 
                     }

@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.view.deviceScreen
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.data.remote.FoodItemNearByResponse
 import com.example.se114_whatthefood_fe.data.remote.Rating
 import com.example.se114_whatthefood_fe.model.LocationManager
@@ -69,7 +71,7 @@ fun HomeScreenPreview() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
+fun HomeScreen(navController: NavController,foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
     var selectedIndexTab by remember { mutableIntStateOf(0) }
     val tablist = listOf("Gần bạn", "Bán chạy", "Đánh giá tốt")
     // dung de lay vi tri hien tai cua nguoi dung
@@ -134,9 +136,18 @@ fun HomeScreen(foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
                 }
                 when(selectedIndexTab)
                 {
-                    0-> NearByCardView(card = listCard.items[index])
-                    1-> BestSellerCardView(card = listCard.items[index])
-                    2-> GoodRateCardView(card = listCard.items[index])
+                    0-> NearByCardView(card = listCard.items[index],
+                        modifier = Modifier.clickable{
+                            navController.navigate("DetailFoodItem/${listCard.items[index].foodId}")
+                        })
+                    1-> BestSellerCardView(card = listCard.items[index],
+                        modifier = Modifier.clickable{
+                            navController.navigate("DetailFoodItem/${listCard.items[index].foodId}")
+                        })
+                    2-> GoodRateCardView(card = listCard.items[index],
+                        modifier = Modifier.clickable{
+                            navController.navigate("DetailFoodItem/${listCard.items[index].foodId}")
+                        })
                 }
             }
             item{
