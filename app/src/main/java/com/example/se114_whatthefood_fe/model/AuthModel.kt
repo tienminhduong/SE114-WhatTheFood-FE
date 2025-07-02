@@ -11,6 +11,7 @@ import com.example.se114_whatthefood_fe.data.remote.RegisterRequest
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
@@ -27,9 +28,14 @@ class AuthModel (
 
 
     suspend fun clearToken() {
+        val token = dataStore.data.map { preferences -> preferences[TOKEN_KEY] }.first() ?: ""
+        val deviceToken = FirebaseMessaging.getInstance().token.await()
+        api.deleteDeviceToken("Bearer $token", deviceToken)
+
         dataStore.edit { preferences ->
             preferences.remove(TOKEN_KEY)
         }
+
     }
 
     suspend fun register(phoneNumber: String, password: String, name: String, role: String): Boolean {
