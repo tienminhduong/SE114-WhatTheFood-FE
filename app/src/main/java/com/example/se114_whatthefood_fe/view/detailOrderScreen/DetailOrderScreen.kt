@@ -241,7 +241,8 @@ fun StatusOrder(order: ShippingInfo?, modifier: Modifier = Modifier)
         }
         // dia chi nhan hang
         Column(horizontalAlignment = Alignment.Start,
-            modifier = Modifier.background(color = Color.White)){
+            modifier = Modifier.background(color = Color.White)
+                .padding(vertical = 5.dp)){
             Text(text = "Địa chỉ nhận hàng",
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
@@ -261,7 +262,7 @@ fun StatusOrder(order: ShippingInfo?, modifier: Modifier = Modifier)
                         .aspectRatio(1f)
                 )
                 Text(text = order?.address?.name ?: "",
-                    fontSize = 20.sp)
+                    fontSize = 15.sp)
             }
         }
     }
@@ -275,8 +276,11 @@ fun HeaderDetailOrderScreen(navController: NavHostController?, modifier: Modifie
         ButtonIcon(icon = Icons.AutoMirrored.Filled.ArrowBack,
             onClick = { navController?.popBackStack() },
             colorBackGround = Color.Transparent,
-            colorIcon = Color.Black,
+            colorIcon = Color.White,
             modifier = modifier)
-        Text(text = "Thông tin đơn hàng")
+        Text(text = "Thông tin đơn hàng",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White)
     }
 }

@@ -156,6 +156,8 @@ data class FoodItemNearByResponse(
     var imgUrl: String? = null,
     @SerializedName("soldAmount")
     val soldAmount: Int,
+    @SerializedName("restaurantName")
+    val restaurantName: String
 )
 
 interface ApiService {

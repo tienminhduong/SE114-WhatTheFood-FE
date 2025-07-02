@@ -251,7 +251,8 @@ fun ListRecommendFood(modifier: Modifier = Modifier) {
             distanceInKm = 1.2f,
             distanceInTime = 10,
             imgUrl = "https://example.com/banhmi.jpg",
-            soldAmount = 50
+            soldAmount = 50,
+            restaurantName = ""
         )
     )
     Column(verticalArrangement = Arrangement.spacedBy(6.dp),
