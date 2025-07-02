@@ -1,17 +1,10 @@
 package com.example.se114_whatthefood_fe.SellerView_model
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.se114_whatthefood_fe.view.card.Product
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 
 class SellerHomeViewModel : ViewModel() {
 
@@ -56,10 +49,21 @@ class SellerHomeViewModel : ViewModel() {
             )
         )
     }
+
     fun updateProduct(updated: Product) {
         products = products.map {
             if (it.id == updated.id) updated else it
         }
     }
+
+
+    fun addProduct(newProduct: Product) {
+        // Nếu chưa có id thì tự sinh id (giả lập)
+        val id = newProduct.id ?: (products.size + 1).toString()
+        val productWithId = newProduct.copy(id = id)
+
+        products = products + productWithId
+    }
+
 
 }
