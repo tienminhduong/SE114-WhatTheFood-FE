@@ -154,12 +154,21 @@ data class FoodItemNearByResponse(
     @SerializedName("soldAmount")
     val soldAmount: Int,
 )
+data class NotificationTokenDto(
+    @SerializedName("deviceToken")
+    val deviceToken: String
+)
 
 interface ApiService {
     // auth API
     @Headers("Content-Type: application/json")
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
+
+    @Headers("Content-Type: application/json")
+    @POST("users/device-token")
+    suspend fun registerDeviceToken(@Header("Authorization") token: String,
+                                    @Body request: NotificationTokenDto): Response<Unit>
 
 
     @GET("users/info")
