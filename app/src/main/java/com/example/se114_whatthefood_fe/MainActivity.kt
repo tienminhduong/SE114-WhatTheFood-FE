@@ -6,27 +6,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-
-import androidx.compose.foundation.layout.padding
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.preferencesDataStore
@@ -34,37 +21,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-
 import com.example.se114_whatthefood_fe.SellerView.SellerAccount
 import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
 import com.example.se114_whatthefood_fe.SellerView.SellerHome
 import com.example.se114_whatthefood_fe.SellerView.SellerManager
 import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
 import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
+import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
-import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
-
-import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
-import com.example.se114_whatthefood_fe.model.AuthModel
-import com.example.se114_whatthefood_fe.model.FoodModel
-import com.example.se114_whatthefood_fe.model.ImageModel
-import com.example.se114_whatthefood_fe.model.LocationManager
-import com.example.se114_whatthefood_fe.ui.theme.DarkGreen
-
-import com.example.se114_whatthefood_fe.ui.theme.LightGreen
-import com.example.se114_whatthefood_fe.ui.theme.MintGreen
-import com.example.se114_whatthefood_fe.view.ScreenRoute
-import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
-import com.example.se114_whatthefood_fe.view.card.SellerNotification
-import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
-import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
-import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
-import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
-import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
-import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
-import com.example.se114_whatthefood_fe.view_model.AuthViewModel
-import com.example.se114_whatthefood_fe.view_model.FoodViewModel
-import com.example.se114_whatthefood_fe.view_model.OrderViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 val Context.dataStore by preferencesDataStore(name = "user_pref")
@@ -193,8 +157,8 @@ class MainActivity : ComponentActivity() {
                     composable("SellerManager")
                     {
                         SellerManager(
+                            viewModel = SellerManagerViewModel(),
                             modifier = Modifier,
-                            navController = navController
                         )
                     }
                     composable("SellerNotification")
