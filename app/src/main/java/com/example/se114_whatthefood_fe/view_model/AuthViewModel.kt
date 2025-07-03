@@ -29,17 +29,6 @@ import javax.inject.Inject
 
 class AuthViewModel(private val authModel: AuthModel,
     private val imageModel: ImageModel? = null) : ViewModel() {
-
-    init{
-        // Initialize any necessary data or state here
-        // For example, you could check if the user is already logged in
-        viewModelScope.launch {
-            if (isLoggedIn()) {
-                getUserInfo() // Fetch user info if already logged in
-            }
-        }
-    }
-
     // upload image
     var isUploading by mutableStateOf(false)
     var uploadResult by mutableStateOf<Boolean?>(null)
@@ -104,7 +93,6 @@ class AuthViewModel(private val authModel: AuthModel,
     var phoneLogin by mutableStateOf("")
     var passwordLogin by mutableStateOf("")
     var isVisiblePasswordInLogin by mutableStateOf(false)
-    var isAgreeToTerms by mutableStateOf(true)
     var isLoading by mutableStateOf(false)
     var loginSuccess by mutableStateOf<Boolean?>(null) // null is for initial state, true for success, false for failure
     //var errorMessage by mutableStateOf<String?>(null)
@@ -121,22 +109,20 @@ class AuthViewModel(private val authModel: AuthModel,
         // This could be implemented using a navigation controller or similar mechanism
     }
 
-    fun getUserInfo(){
-        viewModelScope.launch {
+    suspend fun getUserInfo(){
             // Fetch user info from authModel
             val result = authModel.getUserInfo()
             if(result.isSuccessful)
                 _userInfo.value = result.body()
             else
                 _userInfo.value = null
-        }
     }
 
     fun onLoginClick() {
         loginState = UIState.LOADING
         viewModelScope.launch {
             // neu de trong thong tin
-            if( phoneLogin.isBlank() || passwordLogin.isBlank() || isAgreeToTerms == false) {
+            if( phoneLogin.isBlank() || passwordLogin.isBlank()) {
                 // Handle empty fields, e.g., show an error message
                 loginSuccess = false
                 loginState = UIState.ERROR
@@ -149,8 +135,8 @@ class AuthViewModel(private val authModel: AuthModel,
                 // neu thanh cong
                 if(result.isSuccessful)
                 {
-                    loginState = UIState.SUCCESS
                     loginSuccess = true
+                    loginState = UIState.SUCCESS
                     getUserInfo()
                 }
                 // neu that bai
@@ -174,9 +160,11 @@ class AuthViewModel(private val authModel: AuthModel,
             // Handle logout logic here, e.g., clear the token in DataStore
             authModel.clearToken()
             // Reset login state
-            loginSuccess = false
+            loginSuccess = null
             // Reset user info
             _userInfo.value = null
+            //
+            loginState = UIState.IDLE
         }
     }
 

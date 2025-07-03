@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.location.LocationManager
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -26,7 +27,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +48,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
-import com.example.se114_whatthefood_fe.view.ScreenRoute
+import com.example.se114_whatthefood_fe.view.ScaffoldRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import android.net.Uri
 import androidx.activity.compose.LocalActivity
@@ -192,7 +192,8 @@ fun ButtonWithLeadingAndTrailingIcon(
 @Composable
 fun AccountScreen(authViewModel: AuthViewModel,
                   modifier: Modifier = Modifier,
-                  navController: NavHostController) {
+                  navController: NavHostController,
+                  navControllerWhenLogout: NavHostController) {
 
     // dung cho doi anh
     val context = LocalContext.current
@@ -250,8 +251,7 @@ fun AccountScreen(authViewModel: AuthViewModel,
             onClick = {
                 authViewModel.onLogoutClick()
                 // Navigate to login or register screen after logout
-                navController.navigate(ScreenRoute.LoginOrRegisterScreen)
-                      },
+                navControllerWhenLogout.navigate(ScaffoldRoute.LoginOrRegisterScaffold) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),

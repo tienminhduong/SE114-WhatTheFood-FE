@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
     id("com.google.gms.google-services")
+    id ("kotlin-kapt")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -62,6 +64,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.material)
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -117,4 +121,12 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.commons.codec)
     implementation(libs.firebase.auth.ktx)
+
+    // room
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
+    // pull to refresh
+    implementation (libs.accompanist.swiperefresh)
+    implementation(platform(libs.androidx.compose.bom.v20230300))
 }

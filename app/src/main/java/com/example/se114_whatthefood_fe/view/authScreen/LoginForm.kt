@@ -29,8 +29,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.model.AuthModel
+import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
+import com.example.se114_whatthefood_fe.view.ScaffoldRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.UIState
 import kotlin.math.log
@@ -42,7 +44,8 @@ fun LoginFormPreview() {
 }
 
 @Composable
-fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier,
+              navControllerRole: NavController) {
 
     val loginState = authViewModel.loginState
     Column(modifier = modifier.fillMaxSize(),
@@ -116,7 +119,9 @@ fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
 
         // login button
         RoundCornerButton(
-            onClick = { authViewModel.onLoginClick() },
+            onClick = {
+                authViewModel.onLoginClick()
+            },
             modifier = Modifier,
             text = "Đăng nhập"
         )

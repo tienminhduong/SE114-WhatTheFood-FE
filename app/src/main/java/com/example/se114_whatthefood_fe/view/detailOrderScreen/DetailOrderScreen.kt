@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -42,10 +41,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import com.example.se114_whatthefood_fe.data.remote.Address
-import com.example.se114_whatthefood_fe.data.remote.FoodCategory
-import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
-import com.example.se114_whatthefood_fe.data.remote.Restaurant
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfoDetail
 import com.example.se114_whatthefood_fe.view.authScreen.ButtonIcon
@@ -55,80 +50,86 @@ import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
 
 @Preview
 @Composable
-fun DetailOrderScreenPreview()
-{
-    val order = ShippingInfo(
-        id = 1,
-        orderTime = "2023-06-01T12:00:00",
-        arrivedTime = "2023-06-01T13:00:00",
-        totalPrice = 100000,
-        userNote = "Ghi chú đơn hàng",
-        restaurant = Restaurant(
-            id = 1,
-            name = "Nhà hàng Affffffffffffffff",
-            cldnrUrl = "https://example.com/image.jpg",
-            address = null
-        ),
-        status = "Đang giao",
-        paymentMethod = "Thanh toán khi nhận hàng",
-        address = Address(
-            name = "Địa chỉ giao hàng",
-            longitude = 10.7f,
-            latitude = 106.6f),
-        shippingInfoDetails = listOf(ShippingInfoDetail(
-            foodItem = FoodItemResponse(
-                id = 0,
-                foodName = "hello 123 ",
-                description = "",
-                soldAmount = 1,
-                available = true,
-                price = 200000,
-                foodCategory = FoodCategory(2,"hi 1345234"),
-                restaurant = Restaurant(0,"","",null),
-                cldnrUrl = ""
-            ),
-            amount = 1
-        ))
-    )
+fun DetailOrderScreenPreview() {
+//    val order = ShippingInfo(
+//        id = 1,
+//        orderTime = "2023-06-01T12:00:00",
+//        arrivedTime = "2023-06-01T13:00:00",
+//        totalPrice = 100000,
+//        userNote = "Ghi chú đơn hàng",
+//        restaurant = Restaurant(
+//            id = 1,
+//            name = "Nhà hàng Affffffffffffffff",
+//            cldnrUrl = "https://example.com/image.jpg",
+//            address = null
+//        ),
+//        status = "Đang giao",
+//        paymentMethod = "Thanh toán khi nhận hàng",
+//        address = Address(
+//            name = "Địa chỉ giao hàng",
+//            longitude = 10.7f,
+//            latitude = 106.6f),
+//        shippingInfoDetails = listOf(ShippingInfoDetail(
+//            foodItem = FoodItemResponse(
+//                id = 0,
+//                foodName = "hello 123 ",
+//                description = "",
+//                soldAmount = 1,
+//                available = true,
+//                price = 200000,
+//                foodCategory = FoodCategory(2,"hi 1345234"),
+//                restaurant = Restaurant(0,"","",null),
+//                cldnrUrl = ""
+//            ),
+//            amount = 1
+//        ))
+//    )
     //DetailOrderScreen(order = order)
 }
 
 @Composable
-fun DetailOrderScreen(modifier: Modifier = Modifier,
-                      navController: NavHostController? = null,
-                      orderId: Int? = null,
-                      orderDetailViewModel: OrderDetailViewModel
-                      )
-{
-    val order =  orderDetailViewModel.order.collectAsState().value
+fun DetailOrderScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController? = null,
+    orderId: Int? = null,
+    orderDetailViewModel: OrderDetailViewModel
+) {
+    val order = orderDetailViewModel.order.collectAsState().value
     LaunchedEffect(orderId) {
         if (orderId != null) {
             orderDetailViewModel.LoadById(orderId)
         }
     }
-    Scaffold(topBar = {
-        HeaderDetailOrderScreen(navController = navController)
-    },
-        containerColor = Color.Transparent) { innerPadding ->
-        Column(modifier = modifier.padding(innerPadding)
-            .fillMaxSize()) {
+    Scaffold(
+        topBar = {
+            HeaderDetailOrderScreen(navController = navController)
+        },
+        containerColor = Color.Transparent
+    ) { innerPadding ->
+        Column(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
             StatusOrder(order = order, modifier = Modifier.padding(10.dp))
             CardDetailOrderInfo(
-                orderDetail = order?.shippingInfoDetails[0],
-                modifier = Modifier.padding(10.dp))
+                orderDetail = order?.shippingInfoDetails?.get(0),
+                modifier = Modifier.padding(10.dp)
+            )
         }
 
     }
 }
 
 @Composable
-fun CardDetailOrderInfo(orderDetail: ShippingInfoDetail?, modifier: Modifier = Modifier)
-{
+fun CardDetailOrderInfo(orderDetail: ShippingInfoDetail?, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.White,
-                shape = RoundedCornerShape(10.dp))
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(10.dp)
+            )
             .height(IntrinsicSize.Max) // 👈 Row cao bằng nội dung cao nhất
             .padding(10.dp)
     ) {
@@ -146,7 +147,8 @@ fun CardDetailOrderInfo(orderDetail: ShippingInfoDetail?, modifier: Modifier = M
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.clip(shape= RoundedCornerShape(8.dp))
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(8.dp))
                 .fillMaxHeight()            // 👈 Chiều cao bằng với Column bên cạnh
                 .aspectRatio(1f)            // 👈 Tự động đặt chiều rộng = chiều cao → vuông
         )
@@ -164,7 +166,7 @@ fun CardDetailOrderInfo(orderDetail: ShippingInfoDetail?, modifier: Modifier = M
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Start,
-                modifier= Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -176,7 +178,7 @@ fun CardDetailOrderInfo(orderDetail: ShippingInfoDetail?, modifier: Modifier = M
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Start,
-                modifier= Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -192,95 +194,120 @@ fun CardDetailOrderInfo(orderDetail: ShippingInfoDetail?, modifier: Modifier = M
             )
             // tong tien
             Text(
-                text = MoneyFormat(orderDetail?.foodItem?.price?.times(orderDetail.amount) ?: 0) + "đ",
+                text = MoneyFormat(
+                    orderDetail?.foodItem?.price?.times(orderDetail.amount) ?: 0
+                ) + "đ",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth())
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
 
-fun MoneyFormat(money: Int): String
-{
-    return DecimalFormat("#,###").format(money).replace(",",".")
+fun MoneyFormat(money: Int): String {
+    return DecimalFormat("#,###").format(money).replace(",", ".")
 }
 
 @Composable
-fun StatusOrder(order: ShippingInfo?, modifier: Modifier = Modifier)
-{
-    Column(modifier = modifier.fillMaxWidth()
-        .clip(shape = RoundedCornerShape(10.dp))
-        .background(color = Color.Magenta),
+fun StatusOrder(order: ShippingInfo?, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape = RoundedCornerShape(10.dp))
+            .background(color = Color.Magenta),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
+        verticalArrangement = Arrangement.Center
+    ) {
         // trang thai don hang
-        Box(modifier = Modifier.fillMaxWidth()
-            .background(color = getColorOrderStatus(order?.status ?: "Pending"))
-            .padding(5.dp)){
-            Text(text =
-                if(order?.status != null)
-                {
-                    when(order.status)
-                    {
-                        StatusOrder.Pending -> "Đang chờ xác nhận"
-                        StatusOrder.Approved -> "Đã xác nhận"
-                        StatusOrder.Delivering -> "Đang giao"
-                        StatusOrder.Delivered -> "Đã giao"
-                        StatusOrder.Completed -> "Đã hoàn thành"
-                        else -> ""
-                    }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = getColorOrderStatus(order?.status ?: "Pending"))
+                .padding(5.dp)
+        ) {
+            Text(
+                text =
+                    if (order?.status != null) {
+                        when (order.status) {
+                            StatusOrder.Pending -> "Đang chờ xác nhận"
+                            StatusOrder.Approved -> "Đã xác nhận"
+                            StatusOrder.Delivering -> "Đang giao"
+                            StatusOrder.Delivered -> "Đã giao"
+                            StatusOrder.Completed -> "Đã hoàn thành"
+                            else -> ""
+                        }
 
-                } else {
-                    ""
-                },
+                    } else {
+                        ""
+                    },
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold
+            )
         }
         // dia chi nhan hang
-        Column(horizontalAlignment = Alignment.Start,
-            modifier = Modifier.background(color = Color.White)
-                .padding(vertical = 5.dp)){
-            Text(text = "Địa chỉ nhận hàng",
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .background(color = Color.White)
+                .padding(vertical = 5.dp)
+        ) {
+            Text(
+                text = "Địa chỉ nhận hàng",
                 textAlign = TextAlign.Start,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(start = 10.dp),
                 fontSize = 15.sp,
-                fontWeight = FontWeight.Bold)
-            Row(horizontalArrangement = Arrangement.Center,
+                fontWeight = FontWeight.Bold
+            )
+            Row(
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier
+                    .padding(start = 10.dp)
                     .height(IntrinsicSize.Max)
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.LocationOn,
                     contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier
+                        .padding(end = 8.dp)
                         .fillMaxHeight()
                         .aspectRatio(1f)
                 )
-                Text(text = order?.address?.name ?: "",
-                    fontSize = 15.sp)
+                Text(
+                    text = order?.address?.name ?: "",
+                    fontSize = 15.sp
+                )
             }
         }
     }
 }
 
 @Composable
-fun HeaderDetailOrderScreen(navController: NavHostController?, modifier: Modifier = Modifier)
-{
-    Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().background(color = Color.Transparent)){
-        ButtonIcon(icon = Icons.AutoMirrored.Filled.ArrowBack,
+fun HeaderDetailOrderScreen(navController: NavHostController?, modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(color = Color.Transparent)
+    ) {
+        ButtonIcon(
+            icon = Icons.AutoMirrored.Filled.ArrowBack,
             onClick = { navController?.popBackStack() },
             colorBackGround = Color.Transparent,
             colorIcon = Color.White,
-            modifier = modifier)
-        Text(text = "Thông tin đơn hàng",
+            modifier = modifier
+        )
+        Text(
+            text = "Thông tin đơn hàng",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White)
+            color = Color.White
+        )
     }
 }

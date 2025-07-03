@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.view.card
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,32 +24,42 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import java.util.UUID
+import com.example.se114_whatthefood_fe.data.remote.Address
+import com.example.se114_whatthefood_fe.data.remote.UserInfo
 
 @Immutable
+
 data class DealItem(
-    val id: UUID? = UUID.randomUUID(),
-    val imageLink: String? = null,
-    val title: String? = null,
-    val status: String? = null,
-    val userId: String? = null,
-    val userContact: String? = null
+    val id: Int,                      // từ ShippingInfo.id
+    val imageLink: String?,          // từ restaurant.image hoặc restaurant.avatar
+    val title: String?,              // ví dụ: "Đơn hàng tại ${restaurant.name}"
+    val status: String?,             // từ ShippingInfo.status
+    val userContact: String?,        // phone number
+    val paymentMethod: String?,      // thêm nếu muốn show thông tin thanh toán
+    val totalPrice: Int?,             // thêm nếu muốn hiển thị tổng tiền
+    val userNote: String?,
+    val address: Address,
+    val user: UserInfo?
 )
 
 @Composable
-fun DealItemCard(deal: DealItem, modifier: Modifier = Modifier) {
+fun DealItemCard(
+    deal: DealItem,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White // 👈 Đặt màu nền ở đây
+            containerColor = Color.White
         )
     ) {
         Row(
@@ -90,7 +101,9 @@ fun DealItemCard(deal: DealItem, modifier: Modifier = Modifier) {
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = deal.status ?: "Không rõ trạng thái",
+                        text = deal.status?.let { mapStatusToVietnamese(it) }
+                            ?: "Không rõ trạng thái",
+                        //text = deal.status ?: "Không rõ trạng thái",
                         color = Color.White,
                         fontSize = 12.sp
                     )
@@ -118,23 +131,23 @@ fun DealItemCard(deal: DealItem, modifier: Modifier = Modifier) {
 
 fun getStatusColor(status: String?): Color {
     return when (status) {
-        "Đang chuẩn bị" -> Color(0xFFFFA726)
-        "Đang giao" -> Color(0xFF29B6F6)
-        "Hoàn thành" -> Color(0xFF63C467)
-        else -> Color.Gray
+        "Pending" -> Color.LightGray
+        "Approved" -> Color(0xFFFFA726)
+        "Delivering" -> Color(0xFF29B6F6)
+        "Delivered" -> Color(0xFF63C467)
+        "Completed" -> Color(0xFF63C467)
+        else -> Color.LightGray
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DealItemCardPreview() {
-    DealItemCard(
-        deal = DealItem(
-            imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Đơn hàng ",
-            status = "Đang giao",
-            userId = "01029",
-            userContact = "0905283353"
-        )
-    )
+fun mapStatusToVietnamese(status: String): String {
+    return when (status.lowercase()) {
+        "pending", "chờ xác nhận" -> "Chờ xác nhận"
+        "approved", "đã xác nhận" -> "Đã xác nhận"
+        "delivering", "đang giao" -> "Đang giao"
+        "delivered", "đẫ giao" -> "Đã giao"
+        "completed", "hoàn thành", "delivered" -> "Đã giao"
+        else -> "Không rõ"
+    }
 }
+
