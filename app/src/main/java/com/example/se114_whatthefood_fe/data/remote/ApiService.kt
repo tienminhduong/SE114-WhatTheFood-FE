@@ -282,6 +282,13 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Response<UserInfo>
 
+    @POST("images/fooditem")
+    suspend fun uploadFooditem(
+        @Header("Authorization") token: String?,
+        @Part image: MultipartBody.Part,
+        @Query("foodItemId") foodItemId: Int
+    ): Response<FoodItemResponse>
+
     // food API
     @Headers("Content-Type: application/json")
     @GET("fooditems")

@@ -1,23 +1,45 @@
 package com.example.se114_whatthefood_fe.SellerView
 
 
-import androidx.compose.foundation.layout.*
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.se114_whatthefood_fe.view.card.Product
+import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 @Composable
 fun EditProductScreen(
     product: Product,
+    viewModel: AuthViewModel,
     onSave: (Product) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -27,6 +49,26 @@ fun EditProductScreen(
     var price by remember { mutableStateOf(product.price?.toString() ?: "") }
     var imgUrl by remember { mutableStateOf(product.imgUrl ?: "") }
     var isAvailable by remember { mutableStateOf(product.isAvailable ?: false) }
+    var description by remember { mutableStateOf(product.description ?: "") }
+
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            product.id?.let { id -> viewModel.uploadProductImage(context, it, foodId = id) }
+        }
+    }
+
+    // Khi ảnh mới được upload thì cập nhật imgUrl từ ViewModel
+    val foodImageUrl by viewModel.foodImageUrl
+
+    LaunchedEffect(foodImageUrl) {
+        if (!foodImageUrl.isNullOrBlank()) {
+            imgUrl = foodImageUrl!!
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -40,7 +82,6 @@ fun EditProductScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Ảnh sản phẩm
         AsyncImage(
             model = imgUrl.ifEmpty { "https://via.placeholder.com/150" },
             contentDescription = name,
@@ -51,12 +92,12 @@ fun EditProductScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = imgUrl,
-            onValueChange = { imgUrl = it },
-            label = { Text("Link hình ảnh") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Button(
+            onClick = { launcher.launch("image/*") },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Đổi hình ảnh")
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -79,6 +120,15 @@ fun EditProductScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Mô tả món ăn") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = isAvailable, onCheckedChange = { isAvailable = it })
             Text("Còn hàng")
@@ -96,7 +146,8 @@ fun EditProductScreen(
                         name = name,
                         price = price.toDoubleOrNull() ?: 0.0,
                         imgUrl = imgUrl,
-                        isAvailable = isAvailable
+                        isAvailable = isAvailable,
+                        description = description
                     )
                     onSave(updated)
                     focusManager.clearFocus()

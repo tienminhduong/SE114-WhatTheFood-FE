@@ -28,13 +28,14 @@ import coil.compose.AsyncImage
 
 @Immutable
 data class Product(
-    val id: String? = null,
+    val id: Int? = 0,
     val name: String? = null,
     val price: Double? = 0.0,
     val soldAmount: Int? = 0,
     val isAvailable: Boolean? = false,
     val imgUrl: String? = "",
     val categoryId: Int? = 0,
+    val description: String? = "Không có mô tả chi tiết cho món ăn",
     val restaurantId: Int? = 0
 )
 

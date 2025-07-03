@@ -38,7 +38,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.se114_whatthefood_fe.Constant.AppInfo
-import com.example.se114_whatthefood_fe.SellerView.SellerAccount
 import com.example.se114_whatthefood_fe.SellerView.SellerAccountScreen
 import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
 import com.example.se114_whatthefood_fe.SellerView.SellerHome
@@ -213,9 +212,11 @@ fun checkHaveBottomBar(route: String?, listScreenRoot: List<String>): Boolean {
 }
 
 @Composable
-fun SellerScaffold(dataStore: DataStore<Preferences>,
-                   authViewModel: AuthViewModel,
-                   navControllerWhenLogout: NavHostController) {
+fun SellerScaffold(
+    dataStore: DataStore<Preferences>,
+    authViewModel: AuthViewModel,
+    navControllerWhenLogout: NavHostController
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -262,7 +263,7 @@ fun SellerScaffold(dataStore: DataStore<Preferences>,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(SellerRoute.HomeScreen) {
-                    SellerHome(viewModel = sellerHomeViewModel)
+                    SellerHome(HviewModel = sellerHomeViewModel, AviewModel = authViewModel)
                 }
                 composable(SellerRoute.AccountScreen) {
                     SellerAccountScreen(
@@ -425,7 +426,7 @@ fun UserScaffold(
                         orderId = foodItemId
                     )
                 }
-                composable(ScreenRoute.MapScreen){
+                composable(ScreenRoute.MapScreen) {
                     MapScreen(modifier = Modifier, navHostController = navController)
                 }
 

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
 import com.example.se114_whatthefood_fe.view.card.Product
 import com.example.se114_whatthefood_fe.view.card.ProductItem
+import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 
 //@SuppressLint("ViewModelConstructorInComposable")
@@ -42,21 +43,23 @@ fun SellerHomePreview() {
 
 @Composable
 fun SellerHome(
-    viewModel: SellerHomeViewModel
+    HviewModel: SellerHomeViewModel,
+    AviewModel: AuthViewModel,
 ) {
     var editingProduct by remember { mutableStateOf<Product?>(null) }
     var isAddingProduct by remember { mutableStateOf(false) }
 
-    val isLoading = viewModel.isLoading
-    val error = viewModel.errorMessage
-    val products = viewModel.products
+    val isLoading = HviewModel.isLoading
+    val error = HviewModel.errorMessage
+    val products = HviewModel.products
 
     when {
         editingProduct != null -> {
             EditProductScreen(
                 product = editingProduct!!,
+                viewModel = AviewModel,
                 onSave = { updatedProduct ->
-                    viewModel.updateProduct(updatedProduct)
+                    HviewModel.updateProduct(updatedProduct)
                     editingProduct = null
                 },
                 onCancel = { editingProduct = null }
@@ -66,8 +69,9 @@ fun SellerHome(
         isAddingProduct -> {
             AddProductScreen(
                 product = Product(),
+                viewModel = AviewModel,
                 onSave = { newProduct ->
-                    viewModel.addProduct(newProduct)
+                    HviewModel.addProduct(newProduct)
                     isAddingProduct = false
                 },
                 onCancel = { isAddingProduct = false }
@@ -85,7 +89,7 @@ fun SellerHome(
                     )
             ) {
                 SellerHeaderHome(
-                    viewModel,
+                    HviewModel,
                     onAddClick = { isAddingProduct = true }
                 )
 

@@ -36,7 +36,7 @@ class SellerHomeViewModel(
                     val foodItems = response.body() ?: emptyList()
                     products = foodItems.map {
                         Product(
-                            id = it.id.toString(),
+                            id = it.id,
                             name = it.foodName,
                             price = it.price.toDouble(),
                             soldAmount = it.soldAmount,
@@ -63,7 +63,7 @@ class SellerHomeViewModel(
             errorMessage = null
             try {
                 val response = foodModel.updateFoodItem(
-                    id = updated.id ?: return@launch,
+                    id = (updated.id ?: return@launch).toString(),
                     updated = UpdateFoodItemRequest(
                         name = updated.name ?: "",
                         description = "Cập nhật từ app", // Có thể nhận từ UI
