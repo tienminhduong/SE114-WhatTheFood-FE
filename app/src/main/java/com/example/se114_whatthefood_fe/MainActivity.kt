@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -24,15 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -41,15 +38,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.se114_whatthefood_fe.Constant.AppInfo
-
-import com.example.se114_whatthefood_fe.SellerView.SellerAccount
-import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
-import com.example.se114_whatthefood_fe.SellerView.SellerHome
-import com.example.se114_whatthefood_fe.SellerView.SellerManager
-import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
-import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
-import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
-import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.CartModel
@@ -74,28 +62,16 @@ import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.CartViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
+import com.example.se114_whatthefood_fe.view_model.NotiViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
-import com.example.se114_whatthefood_fe.SellerView.SellerAccount
-import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
-import com.example.se114_whatthefood_fe.SellerView.SellerHome
-import com.example.se114_whatthefood_fe.SellerView.SellerManager
-import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
-import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
-import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
-import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
-import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
-import com.example.se114_whatthefood_fe.model.FoodModel
-import com.example.se114_whatthefood_fe.model.OrderModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.here.sdk.core.engine.AuthenticationMode
 import com.here.sdk.core.engine.SDKNativeEngine
 import com.here.sdk.core.engine.SDKOptions
 import com.here.sdk.core.errors.InstantiationErrorException
-import com.here.sdk.mapview.MapView
 import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPaySDK
-import kotlinx.coroutines.launch
 
 val Context.dataStore by preferencesDataStore(name = "user_pref")
 
@@ -150,6 +126,25 @@ class MainActivity : ComponentActivity() {
         ZaloPaySDK.getInstance().onResult(intent)
     }
 
+    private fun askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
     private fun initializeHERESDK() {
         // Set your credentials for the HERE SDK.
         val accessKeyID = BuildConfig.HERE_API_KEY
@@ -175,9 +170,6 @@ class MainActivity : ComponentActivity() {
             // FCM SDK (and your app) can post notifications.
         } else {
             // TODO: Inform user that that your app will not show notifications.
-        }
-    }
-
         }
     }
 }
@@ -231,7 +223,12 @@ fun UserScaffold(dataStore: DataStore<Preferences>,
                     )}
                     OrderScreen(orderViewModel = orderViewModel, navController = navController)
                 }
-                composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
+                composable(ScreenRoute.NotificationScreen) {
+                    val notiViewModel = remember {
+                        NotiViewModel(RetrofitInstance.instance,dataStore)
+                    }
+                    NotificationScreen(viewModel = notiViewModel)
+                }
                 composable(ScreenRoute.CartScreen) {
                     val cartModel = remember {
                         CartModel(api = RetrofitInstance.instance,
@@ -253,6 +250,7 @@ fun UserScaffold(dataStore: DataStore<Preferences>,
                     val foodViewModel = remember {
                         FoodViewModel(foodModel = foodModel)
                     }
+
                     HomeScreen(foodViewModel = foodViewModel,
                         navController = navController)
                 }
