@@ -1,7 +1,7 @@
 package com.example.se114_whatthefood_fe.view.authScreen
 
-import android.R
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
-import com.example.se114_whatthefood_fe.view.ScreenRoute
+import com.example.se114_whatthefood_fe.view.ScaffoldRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.UIState
 
@@ -98,7 +95,8 @@ fun AuthScreen(authViewModel: AuthViewModel,
                             (fadeIn() + slideInHorizontally { it }).togetherWith(fadeOut() + slideOutHorizontally { -it })
                         }
                     ) { target ->
-                        if (target) LoginForm(authViewModel)
+                        if (target) LoginForm(authViewModel = authViewModel,
+                            navControllerRole = navController)
                         else RegisterForm(authViewModel)
                     }
                 }
@@ -108,7 +106,7 @@ fun AuthScreen(authViewModel: AuthViewModel,
     if(isLogin)
     {
         ScreenWhenLogin(authViewModel = authViewModel,
-            navController = navController)
+            navControllerRole = navController)
     }
     else
     {
@@ -155,7 +153,7 @@ fun ScreenWhenRegister(authViewModel: AuthViewModel,
 
 @Composable
 fun ScreenWhenLogin(authViewModel: AuthViewModel,
-                    navController: NavController){
+                    navControllerRole: NavController){
     val loginState = authViewModel.loginState
     when(loginState)
     {
@@ -179,23 +177,32 @@ fun ScreenWhenLogin(authViewModel: AuthViewModel,
             // Handle success state, e.g., navigate to the main screen
             authViewModel.loginSuccess?.let { isLoginSuccess ->
                 if(isLoginSuccess) {
-                    authViewModel.loginSuccess = false
+                    //authViewModel.loginSuccess = false
                     // Navigate to the main screen or show a success message
-                    navController.navigate(ScreenRoute.HomeScreen) {
-                        popUpTo(ScreenRoute.LoginOrRegisterScreen) { inclusive = true }
+                    when (authViewModel.userInfo.value?.role) {
+                        "User" -> navControllerRole.navigate(ScaffoldRoute.UserScaffold)
+                        "Owner" -> navControllerRole.navigate(ScaffoldRoute.SellerScaffold)
+                        "Admin" -> navControllerRole.navigate(ScaffoldRoute.SellerScaffold)
                     }
                 }
+                else {
+                    Log.d("Login", "Login failed")
+                }
+                authViewModel.loginSuccess = null
+                authViewModel.loginState = UIState.IDLE
             }
         }
         UIState.ERROR -> {
             // Handle error state, e.g., show an error message
-            authViewModel.loginSuccess = null // Reset login success state
+            authViewModel.loginSuccess = false // Reset login success state
+            authViewModel.loginState = UIState.IDLE
         }
         UIState.IDLE -> {
             // Do nothing, this is the initial state
         }
         UIState.NETWORK_ERROR -> {
             Toast.makeText(LocalView.current.context, "Network Error", Toast.LENGTH_SHORT).show()
+            authViewModel.loginState = UIState.IDLE
         }
     }
 }

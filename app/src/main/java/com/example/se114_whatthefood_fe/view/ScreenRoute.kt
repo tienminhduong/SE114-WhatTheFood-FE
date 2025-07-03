@@ -7,4 +7,12 @@ object ScreenRoute {
     val AccountScreen = "Account"
     val LoginOrRegisterScreen = "LoginOrRegister"
     val DetailOrderScreen = "DetailOrder/{orderId}"
+    val DetailFoodItemScreen = "DetailFoodItem/{foodItemId}"
+    val CartScreen = "Cart"
+}
+
+object ScaffoldRoute{
+    val UserScaffold = "UserScaffold"
+    val SellerScaffold = "SellerScaffold"
+    val LoginOrRegisterScaffold = "LoginOrRegisterScaffold"
 }

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -70,6 +71,11 @@ fun BottomBarDeviceScreen(navController: NavHostController,
             icon = Icons.AutoMirrored.Filled.ReceiptLong,
             label = "Đơn hàng",
             route = "Orders",
+        ),
+        BottomBarItem(
+            icon = Icons.Filled.ShoppingCart,
+            label = "Giỏ hàng",
+            route = "Cart",
         ),
         BottomBarItem(
             icon = Icons.Filled.Notifications,

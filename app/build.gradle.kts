@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
     id("com.google.gms.google-services")
+    id ("kotlin-kapt")
     id("kotlin-parcelize")
 }
 
@@ -98,5 +99,14 @@ dependencies {
 
     implementation(libs.androidx.datastore.preferences)
     implementation(platform(libs.firebase.bom))
-    implementation("com.google.firebase:firebase-messaging")
+    implementation(libs.firebase.messaging)
+
+    // room
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
+    // pull to refresh
+    implementation (libs.accompanist.swiperefresh)
+    implementation(platform(libs.androidx.compose.bom.v20230300))
+
 }

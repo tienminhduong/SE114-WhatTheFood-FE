@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.view.card
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -63,8 +65,9 @@ fun CardPreview() {
 }
 
 @Composable
-fun NearByCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
-    Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
+fun NearByCardView(modifier: Modifier = Modifier,
+                   card: FoodItemNearByResponse) {
+    Row(modifier = modifier.background(shape = RoundedCornerShape(8.dp),
                                        color = White)
         .fillMaxWidth()
         .height(88.dp)
@@ -84,7 +87,7 @@ fun NearByCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) 
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
+            modifier = Modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
         )
         // information
         Column(modifier = Modifier.padding(horizontal = 8.dp)
@@ -144,7 +147,7 @@ fun NearByCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) 
 
 @Composable
 fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
-    Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
+    Row(modifier = modifier.background(shape = RoundedCornerShape(8.dp),
         color = White)
         .fillMaxWidth()
         .height(88.dp)
@@ -214,7 +217,7 @@ fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByRespon
 
 @Composable
 fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
-    Row(modifier = Modifier.background(shape = RoundedCornerShape(8.dp),
+    Row(modifier = modifier.background(shape = RoundedCornerShape(8.dp),
         color = White)
         .fillMaxWidth()
         .height(88.dp)
