@@ -22,6 +22,14 @@ class CartModel(val api: ApiService,
         return preferences[TOKEN_KEY]
     }
 
+    suspend fun deleteItemInCart(id: Int): Boolean{
+        val token = getToken() ?: return false
+        val response = api.deleteCart(token = "Bearer $token", restaurantId = id)
+        if(response == null)
+            return false
+        return response.isSuccessful
+    }
+
     suspend fun getAllItemsInCart(): Response<List<CartItem>>{
         return try {
             val token = getToken() ?: return Response.error(401, "".toResponseBody(null))

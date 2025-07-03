@@ -1,6 +1,7 @@
 package com.example.se114_whatthefood_fe.view.cart
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.se114_whatthefood_fe.data.remote.CartItem
 import com.example.se114_whatthefood_fe.data.remote.FoodCategory
@@ -64,49 +66,7 @@ fun CartScreenPreview() {
 @Composable
 fun CartScreen(cartViewModel: CartViewModel, navController: NavHostController){
     val listCartItems by cartViewModel.listItemsInCart
-    val listCartItemsTest = listOf(
-        CartItem(
-            restaurant = Restaurant(
-                id = 1,
-                name = "Bánh Mì Hạnh Phúc",
-                cldnrUrl = "",
-                address = null
 
-            ),
-            orderDetails = listOf(
-                ShippingInfoDetail(
-                    foodItem = FoodItemResponse(
-                        id = 1,
-                        foodName = "Bánh Mì",
-                        description = "Bánh mì ngọt",
-                        soldAmount = 10,
-                        available = true,
-                        price = 25000,
-                        foodCategory = FoodCategory(id = 1, name = "Bánh Mì"),
-                        restaurant = Restaurant(id = 1, name = "Bánh Mì Hạnh Phúc", cldnrUrl = "", address = null),
-                        cldnrUrl = ""
-                    ),
-                    amount = 2
-                ),
-                ShippingInfoDetail(
-                    foodItem = FoodItemResponse(
-                        id = 1,
-                        foodName = "Bánh Mì",
-                        description = "Bánh mì ngọt",
-                        soldAmount = 10,
-                        available = true,
-                        price = 25000,
-                        foodCategory = FoodCategory(id = 1, name = "Bánh Mì"),
-                        restaurant = Restaurant(id = 1, name = "Bánh Mì Hạnh Phúc", cldnrUrl = "", address = null),
-                        cldnrUrl = ""
-                    ),
-                    amount = 2
-                ),
-            ),
-            totalAmount = 2 * 25000 + 15000 // 65000,
-
-        ),
-    )
     LaunchedEffect(Unit) {
         cartViewModel.loadListItemsInCart()
     }
@@ -137,7 +97,7 @@ fun CartScreen(cartViewModel: CartViewModel, navController: NavHostController){
 //        }
         PullToRefreshLazyColumn<CartItem>(
             items = listCartItems,
-            content = { item -> OrderInCart(cartItem = item)},
+            content = { item -> OrderInCart(cartItem = item, cartViewModel = cartViewModel)},
             onRefresh = {
                 coroutineScope.launch {
                     isRefreshing = true
@@ -162,35 +122,10 @@ fun TopBar(modifier: Modifier = Modifier){
             color = Color.White)
     }
 }
-@Composable
-@Preview
-fun preview(){
-    OrderInCart(cartItem = CartItem(restaurant = Restaurant(id = 1, name = "hello", cldnrUrl = "", address = null),
-        orderDetails = listOf(ShippingInfoDetail(foodItem = FoodItemResponse(id = 1,
-            foodName = "hello",
-            description = "hello",
-            soldAmount = 1,
-            available = true,
-            price = 1000,
-            foodCategory = FoodCategory(id = 1, name = "hello"),
-            restaurant = Restaurant(id = 1, name = "hello", cldnrUrl = "", address = null),
-            cldnrUrl = "",
-        ), amount = 1),
-            ShippingInfoDetail(foodItem = FoodItemResponse(id = 1,
-                foodName = "hello",
-                description = "hello",
-                soldAmount = 1,
-                available = true,
-                price = 1000,
-                foodCategory = FoodCategory(id = 1, name = "hello"),
-                restaurant = Restaurant(id = 1, name = "hello", cldnrUrl = "", address = null),
-                cldnrUrl = "",
-            ), amount = 1)),
-        totalAmount = 5))
-}
+
 
 @Composable
-fun OrderInCart(cartItem: CartItem){
+fun OrderInCart(cartItem: CartItem, cartViewModel: CartViewModel){
     Column(modifier = Modifier.padding(10.dp)
         .clip(shape = RoundedCornerShape(10.dp))
         .background(Color.White)){
@@ -224,8 +159,17 @@ fun OrderInCart(cartItem: CartItem){
                 Text(text = "Chi tiết")
             }
             Spacer(modifier = Modifier.width(10.dp))
-            //  thanh toan button
-            Button(onClick = {},
+            //  xoa button
+            val context = LocalContext.current
+            Button(onClick = {
+
+                cartViewModel.viewModelScope.launch {
+                    val result = cartViewModel.deleteItemInCart(cartItem.restaurant.id)
+                    Toast.makeText(context, if(result) "Xóa thành công"
+                    else
+                    "Xóa thất bại", Toast.LENGTH_SHORT).show()
+                }
+            },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEE636D),
                     contentColor = Color.White),
                 shape = RoundedCornerShape(10.dp),

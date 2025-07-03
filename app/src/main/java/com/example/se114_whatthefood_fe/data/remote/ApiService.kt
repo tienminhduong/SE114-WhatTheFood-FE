@@ -409,6 +409,9 @@ interface ApiService {
                           @Query("foodItemId") foodItemId: Int,
                           @Query("amount") amount: Int = 0): Response<Unit>
 
+    @DELETE("cart/ordered")
+    suspend fun deleteCart(@Header("Authorization") token: String,
+                           @Query("restaurantId") restaurantId: Int): Response<Unit>
 
     @GET("users/notifications")
     suspend fun getAllNotifications(@Header("Authorization") token: String): List<Notification>

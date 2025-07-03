@@ -13,4 +13,19 @@ class CartViewModel(private val cartModel: CartModel): ViewModel() {
     suspend fun loadListItemsInCart() {
         _listItemCard.value = cartModel.getAllItemsInCart().body() ?: emptyList()
     }
+
+    suspend fun deleteItemInCart(id: Int): Boolean{
+
+        val result =  cartModel.deleteItemInCart(id)
+        if(result == true)
+        {
+            _listItemCard.value.forEach {
+                if(it.restaurant.id == id)
+                {
+                    _listItemCard.value = _listItemCard.value.minus(it)
+                }
+            }
+        }
+        return result
+    }
 }
