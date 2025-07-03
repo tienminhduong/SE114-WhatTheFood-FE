@@ -74,7 +74,7 @@ fun SellerHome(
                     HviewModel.addProduct(newProduct)
                     isAddingProduct = false
                 },
-                onCancel = { isAddingProduct = false }
+                onCancel = { isAddingProduct = false },
             )
         }
 

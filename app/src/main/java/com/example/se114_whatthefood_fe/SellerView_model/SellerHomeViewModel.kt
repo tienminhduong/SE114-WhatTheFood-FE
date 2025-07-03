@@ -70,7 +70,8 @@ class SellerHomeViewModel(
                         categoryName = "Đồ ăn",          // Ánh xạ từ categoryId nếu cần
                         price = updated.price?.toInt() ?: 0,
                         soldAmount = updated.soldAmount ?: 0,
-                        available = updated.isAvailable ?: true
+                        available = updated.isAvailable ?: true,
+                        imgUrl = updated.imgUrl ?: ""
                     )
                 )
                 if (response.isSuccessful) {
@@ -101,7 +102,8 @@ class SellerHomeViewModel(
                         name = newProduct.name ?: "Tên món",
                         description = "Thêm từ app",
                         categoryName = "Đồ ăn", // hoặc ánh xạ từ categoryId
-                        price = newProduct.price?.toInt() ?: 0
+                        price = newProduct.price?.toInt() ?: 0,
+                        imgUrl = newProduct.imgUrl ?: ""
                     )
                 )
                 if (response != null) {

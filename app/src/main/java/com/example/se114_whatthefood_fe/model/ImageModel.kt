@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
+import com.example.se114_whatthefood_fe.data.remote.UploadImageResponse
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.example.se114_whatthefood_fe.util.FileUtils
 import kotlinx.coroutines.flow.first
@@ -26,6 +27,23 @@ class ImageModel(
             val token = preferences[TOKEN_KEY]
             val multipart = FileUtils.createMultipartFromUri(context, uri, "image")
             val response = api.uploadProfileImage(token = "Bearer ${token}", image = multipart!!)
+            return if (response.isSuccessful) {
+                response.body()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.i("Loi", "PushImageAndGetUrl: ${e.message}")
+            return null
+        }
+    }
+
+    suspend fun PushImageAndGetUrlCustom(context: Context, uri: Uri): UploadImageResponse? {
+        try {
+            val preferences = dataStore.data.first()
+            val token = preferences[TOKEN_KEY]
+            val multipart = FileUtils.createMultipartFromUri(context, uri, "image")
+            val response = api.uploadFoodImageCustom(token = "Bearer ${token}", image = multipart!!)
             return if (response.isSuccessful) {
                 response.body()
             } else {

@@ -27,7 +27,9 @@ data class NewFoodItemRequest(
     @SerializedName("categoryName")
     val categoryName: String,
     @SerializedName("price")
-    val price: Int
+    val price: Int,
+    @SerializedName("imgUrl")
+    val imgUrl: String
 )
 
 
@@ -202,7 +204,8 @@ data class UpdateFoodItemRequest(
     val categoryName: String,
     val price: Int,
     val soldAmount: Int,
-    val available: Boolean
+    val available: Boolean,
+    val imgUrl: String
 )
 
 
@@ -247,6 +250,11 @@ data class Notification(
     val isRead: Boolean = false
 ) : Parcelable
 
+data class UploadImageResponse(
+    @SerializedName("url")
+    val imgUrl: String
+)
+
 interface ApiService {
     // auth API
     @Headers("Content-Type: application/json")
@@ -281,6 +289,13 @@ interface ApiService {
         @Header("Authorization") token: String?,
         @Part image: MultipartBody.Part
     ): Response<UserInfo>
+
+    @Multipart
+    @POST("images/custom/food")
+    suspend fun uploadFoodImageCustom(
+        @Header("Authorization") token: String?,
+        @Part image: MultipartBody.Part
+    ): Response<UploadImageResponse>
 
     @POST("images/fooditem")
     suspend fun uploadFooditem(

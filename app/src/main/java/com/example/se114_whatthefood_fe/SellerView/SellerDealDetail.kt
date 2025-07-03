@@ -74,7 +74,7 @@ fun SellerDealDetail(
             Column {
                 Text(deal.title ?: "Không có tên đơn hàng", fontWeight = FontWeight.SemiBold)
                 deal.paymentMethod?.let {
-                    Text("Phương thức thanh toán: $it")
+                    //Text("Phương thức thanh toán: $it")
                 }
             }
         }
@@ -107,7 +107,7 @@ fun SellerDealDetail(
                     onClick = onAccept,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Tiếp nhận đơn")
+                    Text("Xác nhận")
                 }
             }
         }

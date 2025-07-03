@@ -57,12 +57,16 @@ fun EditProductScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            product.id?.let { id -> viewModel.uploadProductImage(context, it, foodId = id) }
+            viewModel.uploadImageCustom(context, it)
         }
     }
 
     // Khi ảnh mới được upload thì cập nhật imgUrl từ ViewModel
     val foodImageUrl by viewModel.foodImageUrl
+
+    viewModel.imageCustomUrl?.let {
+        imgUrl = it.value ?: ""
+    }
 
     LaunchedEffect(foodImageUrl) {
         if (!foodImageUrl.isNullOrBlank()) {
@@ -147,7 +151,7 @@ fun EditProductScreen(
                         price = price.toDoubleOrNull() ?: 0.0,
                         imgUrl = imgUrl,
                         isAvailable = isAvailable,
-                        description = description
+                        description = description,
                     )
                     onSave(updated)
                     focusManager.clearFocus()

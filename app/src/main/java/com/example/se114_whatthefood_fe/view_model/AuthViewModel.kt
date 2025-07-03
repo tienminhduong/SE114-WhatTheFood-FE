@@ -47,6 +47,20 @@ class AuthViewModel(
         }
     }
 
+    fun uploadImageCustom(context: Context, uri: Uri) {
+        val imgUrlStr: String
+        viewModelScope.launch {
+            isUploading = true
+            val result = imageModel?.PushImageAndGetUrlCustom(context, uri)
+            uploadResult = result != null
+            if (uploadResult == true)
+                imageCustomUrl.value = result?.imgUrl ?: ""
+            isUploading = false
+        }
+    }
+
+    var imageCustomUrl = mutableStateOf<String?>(null)
+
 //    fun uploadProductImage(context: Context, uri: Uri, foodId: Int?) {
 //        viewModelScope.launch {
 //            isUploading = true

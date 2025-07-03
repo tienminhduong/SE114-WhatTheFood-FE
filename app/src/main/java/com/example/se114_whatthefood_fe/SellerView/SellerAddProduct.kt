@@ -58,8 +58,12 @@ fun AddProductScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            product.id?.let { it1 -> viewModel.uploadProductImage(context, it, foodId = it1) }
+            viewModel.uploadImageCustom(context, it)
         }
+    }
+
+    viewModel.imageCustomUrl?.let {
+        imgUrl = it.value ?: ""
     }
 
     val scrollState = rememberScrollState()
