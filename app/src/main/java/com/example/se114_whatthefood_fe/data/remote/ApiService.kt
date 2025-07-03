@@ -1,5 +1,6 @@
 package com.example.se114_whatthefood_fe.data.remote
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -13,7 +14,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.time.LocalDateTime
+import kotlinx.android.parcel.Parcelize
 
 data class ShippingInfoDetail(
     @SerializedName("foodItem")
@@ -165,6 +166,15 @@ data class NotificationTokenDto(
     val deviceToken: String
 )
 
+@Parcelize
+data class Notification(
+    val id: Int,
+    val title: String,
+    val content: String,
+    val dateTime: String,
+    val isRead: Boolean = false
+): Parcelable
+
 interface ApiService {
     // auth API
     @Headers("Content-Type: application/json")
@@ -253,4 +263,7 @@ interface ApiService {
 
     @GET("fooditems/{id}")
     suspend fun getFoodItemById(@Path("id") id: Int): Response<FoodItemResponse>
+
+    @GET("users/notifications")
+    suspend fun getAllNotifications(@Header("Authorization") token: String): List<Notification>
 }
