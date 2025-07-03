@@ -9,6 +9,7 @@ object ScreenRoute {
     val DetailOrderScreen = "DetailOrder/{orderId}"
     val DetailFoodItemScreen = "DetailFoodItem/{foodItemId}"
     val CartScreen = "Cart"
+    val MapScreen = "Map"
 }
 
 object ScaffoldRoute{
