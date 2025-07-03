@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.se114_whatthefood_fe.R
 import com.example.se114_whatthefood_fe.model.LocationManager
+import com.example.se114_whatthefood_fe.view_model.MapViewModel
 import com.google.android.gms.location.LocationServices
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.core.GeoCoordinatesUpdate
@@ -30,7 +31,8 @@ import com.here.sdk.mapview.MapMarker
 
 
 @Composable
-fun MapViewContainer(modifier: Modifier = Modifier) {
+fun MapViewContainer(modifier: Modifier = Modifier,
+                     mapViewModel: MapViewModel) {
     val context = LocalContext.current
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val locationManager = remember { LocationManager(context, fusedLocationClient) }
@@ -51,7 +53,7 @@ fun MapViewContainer(modifier: Modifier = Modifier) {
                 onCreate(null)
                 onResume()
                 loadMapScene { }
-                setTapGestureHandler(this, context, markers)
+                setTapGestureHandler(this, context, markers, mapViewModel)
             }
         },
         modifier = modifier,
@@ -61,6 +63,7 @@ fun MapViewContainer(modifier: Modifier = Modifier) {
                 userLocation?.let { coords ->
                     val mapMeasureZoom = MapMeasure(MapMeasure.Kind.DISTANCE, 10000.0)
                     mapView.camera.lookAt(coords, mapMeasureZoom)
+                    mapViewModel.updateMapLocation(userLocation?.latitude?: 52.530932, userLocation?.longitude?: 13.384915)
                 }
             }
         }
@@ -88,7 +91,7 @@ fun MapCamera.flyTo(geoCoordinates: GeoCoordinates) {
 }
 
 
-private fun setTapGestureHandler(mapView: MapView, context: Context, markers: MutableList<MapMarker>) {
+private fun setTapGestureHandler(mapView: MapView, context: Context, markers: MutableList<MapMarker>, mapViewModel: MapViewModel) {
     mapView.gestures.tapListener = TapListener { touchPoint ->
         val geoCoordinates = mapView.viewToGeoCoordinates(touchPoint)
         geoCoordinates?.let {
@@ -107,6 +110,8 @@ private fun setTapGestureHandler(mapView: MapView, context: Context, markers: Mu
 
                 val mapMarker = MapMarker(it, mapImage)
                 mapView.mapScene.addMapMarker(mapMarker)
+
+                mapViewModel.updateMapLocation(it.latitude, it.longitude)
 
                 markers.add(mapMarker)
 

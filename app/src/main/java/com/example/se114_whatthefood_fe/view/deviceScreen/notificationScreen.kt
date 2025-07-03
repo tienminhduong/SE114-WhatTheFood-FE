@@ -93,7 +93,7 @@ fun NotiItem(
             .fillMaxWidth()
             .padding(12.dp,12.dp,12.dp),
         elevation = 10.dp,
-        backgroundColor = Color.White,
+        backgroundColor = if (!item.isRead) Color.White else Color.LightGray,
         shape = RoundedCornerShape(20)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
