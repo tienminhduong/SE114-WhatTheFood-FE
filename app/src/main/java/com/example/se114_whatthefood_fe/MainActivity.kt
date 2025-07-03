@@ -152,6 +152,13 @@ class MainActivity : ComponentActivity() {
                 SellerManagerViewModel(orderModel, sellerId = 1)
             }
 
+            val api = RetrofitInstance.instance
+            val sellerNotificationViewModel = remember {
+                SellerNotificationViewModel(api = api, dataStore = dataStore)
+            }
+
+
+
 
             Scaffold(
                 modifier = Modifier.systemBarsPadding(),
@@ -179,7 +186,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("SellerNotification")
                     {
-                        SellerNotificationContent(SellerNotificationViewModel())
+                        SellerNotificationContent(viewModel = sellerNotificationViewModel)
                     }
                 }
             }
