@@ -61,6 +61,7 @@ import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.SellerRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.cart.CartScreen
+import com.example.se114_whatthefood_fe.view.confirmScreen.ConfirmOrderScreen
 import com.example.se114_whatthefood_fe.view.detailFoodScreen.DetailFoodScreen
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.DetailOrderScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
@@ -71,6 +72,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view.map.MapScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.CartViewModel
+import com.example.se114_whatthefood_fe.view_model.ConfirmOrderViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.example.se114_whatthefood_fe.view_model.NotiViewModel
@@ -377,10 +379,23 @@ fun UserScaffold(
                         navController = navController
                     )
                 }
-                ScreenRoute.LoginOrRegisterScreen
-//                composable(ScreenRoute.LoginOrRegisterScreen) {
-//                    AuthScreen(authViewModel = authViewModel,
-//                        navController = navController)}
+
+                composable(ScreenRoute.ConfirmOrderScreen,
+                    arguments = listOf(
+                        navArgument("restaurantId") { type = NavType.IntType }
+                    )) {
+                    backStackEntry ->
+                    val confirmOrderViewModel = remember {
+                        ConfirmOrderViewModel(cartModel = CartModel(api = RetrofitInstance.instance, dataStore = dataStore),
+                            authModel = AuthModel(api = RetrofitInstance.instance, dataStore = dataStore),
+                            navController = navController)
+                    }
+                    val restaurantId = backStackEntry.arguments?.getInt("restaurantId")
+                    ConfirmOrderScreen(navController = navController,
+                        confirmOrderViewModel = confirmOrderViewModel,
+                        id = restaurantId!!)
+                }
+
                 composable(
                     ScreenRoute.DetailOrderScreen,
                     arguments = listOf(

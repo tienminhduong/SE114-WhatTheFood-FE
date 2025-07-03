@@ -37,4 +37,8 @@ class FoodDetailViewModel(private val foodModel: FoodModel,
             _ratingFoodItem.value = ratingModel.getAverageRatingFoodItem(id)
         }
     }
+
+    suspend fun addToCart(idFoodItem: Int): Boolean{
+        return foodModel.addToCart(idFoodItem)
+    }
 }

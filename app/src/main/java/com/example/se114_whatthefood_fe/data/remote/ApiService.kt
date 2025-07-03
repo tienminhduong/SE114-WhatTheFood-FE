@@ -17,6 +17,19 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+data class NewOrder(
+    @SerializedName("restaurantId")
+    val restaurantId: Int,
+    @SerializedName("shippingInfoDetails")
+    val shippingInfoDetails: MutableList<ShippingInfoDetailDto>,
+    @SerializedName("userNote")
+    val userNote: String,
+    @SerializedName("paymentMethod")
+    val paymentMethod: String,
+    @SerializedName("address")
+    val address: Address
+)
+
 data class NewFoodItemRequest(
     @SerializedName("restaurantId")
     val restaurantId: Int,
@@ -61,6 +74,13 @@ data class RatingFood(
 data class ShippingInfoDetail(
     @SerializedName("foodItem")
     val foodItem: FoodItemResponse,
+    @SerializedName("amount")
+    val amount: Int
+)
+
+data class ShippingInfoDetailDto(
+    @SerializedName("foodItemId")
+    val foodItemId: Int,
     @SerializedName("amount")
     val amount: Int
 )
@@ -409,6 +429,9 @@ interface ApiService {
                           @Query("foodItemId") foodItemId: Int,
                           @Query("amount") amount: Int = 0): Response<Unit>
 
+    @DELETE("cart/ordered")
+    suspend fun deleteCart(@Header("Authorization") token: String,
+                           @Query("restaurantId") restaurantId: Int): Response<Unit>
 
     @GET("users/notifications")
     suspend fun getAllNotifications(@Header("Authorization") token: String): List<Notification>
@@ -482,4 +505,8 @@ interface ApiService {
         @Query("pageNumber") pageNumber: Int = 0,
         @Query("pageSize") pageSize: Int = 10
     ): Response<List<ShippingInfo>>
+
+    @POST("shippinginfo/order")
+    suspend fun createOrder(@Header("Authorization") token: String,
+                            @Body request: NewOrder): Response<Unit>
 }
