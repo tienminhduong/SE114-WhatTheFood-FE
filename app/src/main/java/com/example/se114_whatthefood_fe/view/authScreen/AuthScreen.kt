@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -61,9 +62,8 @@ fun AuthScreen(authViewModel: AuthViewModel,
     // For now, we can just display a simple text or a placeholder.
     val isLogin by authViewModel.isLogin
     Column(modifier = modifier.fillMaxSize()
-        .background(
-            brush = Brush.verticalGradient(colors = listOf(LightGreen, White))
-        ))
+        .background(brush = Brush.verticalGradient(colors = listOf(LightGreen, White)))
+        .systemBarsPadding())
     {
         Scaffold(topBar = {
             TopBar(
@@ -195,7 +195,7 @@ fun ScreenWhenLogin(authViewModel: AuthViewModel,
         UIState.ERROR -> {
             // Handle error state, e.g., show an error message
             authViewModel.loginSuccess = false // Reset login success state
-            authViewModel.loginState = UIState.IDLE
+            authViewModel.loginState = UIState.ERROR
         }
         UIState.IDLE -> {
             // Do nothing, this is the initial state

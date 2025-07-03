@@ -342,6 +342,13 @@ interface ApiService {
         @Query("pageSize") pageSize: Int = 10
     ): Response<List<ShippingInfo>>
 
+    @GET("shippinginfo/delivered")
+    suspend fun getDeliveredOrder(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
     @GET("shippinginfo/completed")
     suspend fun getCompletedOrder(
         @Header("Authorization") token: String,

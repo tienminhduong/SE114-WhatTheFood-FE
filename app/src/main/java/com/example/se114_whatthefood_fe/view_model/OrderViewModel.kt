@@ -130,6 +130,34 @@ class OrderViewModel(private val orderModel: OrderModel) : ViewModel(){
         }
     }
 
+    // da giao hang
+    // lich su don hang
+    var deliveredOrderList by mutableStateOf(CustomPaginateList<ShippingInfo>())
+    private val paginatorDeliveredOrder = DefaultPaginator<Int, ShippingInfo>(
+        initializeKey = deliveredOrderList.page,
+        onLoadUpdated = { isLoading ->
+            deliveredOrderList.isLoading = isLoading // Cập nhật trạng thái isLoading
+        },
+        onRequest = { nextPage, location ->
+            //testRepo.getItems(nextPage, 15)
+            orderModel.getDeliveredOrders(pageNumber = nextPage) // Giả sử mỗi trang có 15 mục
+        },
+        getNextKey = { items ->
+            deliveredOrderList.page + 1
+        },
+        onError = { error ->
+            Log.d("Paginator", "onError: ${error.localizedMessage}")
+            deliveredOrderList.error = error.localizedMessage // Cập nhật lỗi
+        },
+        onSuccess = { items, newKey ->
+            Log.d("Paginator", "onSuccess received ${items.size} items for page $newKey")
+            deliveredOrderList.items.addAll(items)
+            Log.d("Paginator", "allOrderList.items new size: ${deliveredOrderList.items.size}")
+            deliveredOrderList.page = newKey
+            deliveredOrderList.endReached = items.isEmpty()
+        }
+    )
+
     fun loadNextItems(selectedTab: Int){
         viewModelScope.launch{
             when(selectedTab) {
@@ -144,6 +172,11 @@ class OrderViewModel(private val orderModel: OrderModel) : ViewModel(){
                     }
                 }
                 2->{
+                    if (!deliveredOrderList.endReached && !deliveredOrderList.isLoading) {
+                        paginatorDeliveredOrder.loadNextItems()
+                    }
+                }
+                3->{
                     if (!completedOrderList.endReached && !completedOrderList.isLoading) {
                         paginatorCompletedOrder.loadNextItems()
                     }
