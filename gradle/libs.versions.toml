@@ -40,7 +40,6 @@ appcompat = "1.7.1"
 roomCompiler = "2.5.0"
 roomKtx = "2.5.0"
 roomRuntime = "2.5.0"
-material3 = "1.4.0-alpha01"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
