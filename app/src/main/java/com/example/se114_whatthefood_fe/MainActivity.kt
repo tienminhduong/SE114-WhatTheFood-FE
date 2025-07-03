@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
@@ -29,6 +30,8 @@ import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
 import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
+import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
+import com.example.se114_whatthefood_fe.model.FoodModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 val Context.dataStore by preferencesDataStore(name = "user_pref")
@@ -133,6 +136,15 @@ class MainActivity : ComponentActivity() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
+
+            val foodModel = remember {
+                val api = RetrofitInstance.instance
+                FoodModel(api, dataStore)
+            }
+            val sellerHomeViewModel = remember { SellerHomeViewModel(foodModel, sellerId = 1) }
+
+
+
             Scaffold(
                 bottomBar = {
                     SellerBottomBar(
@@ -149,7 +161,7 @@ class MainActivity : ComponentActivity() {
                         .systemBarsPadding()
                 ) {
                     composable("SellerHome") {
-                        SellerHome(SellerHomeViewModel())
+                        SellerHome(viewModel = sellerHomeViewModel)
                     }
                     composable("SellerAccount") {
                         SellerAccount()

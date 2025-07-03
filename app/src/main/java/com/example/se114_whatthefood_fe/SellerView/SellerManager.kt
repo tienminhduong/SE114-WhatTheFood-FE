@@ -130,22 +130,7 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
 
 @Composable
 fun PendingContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
-    val pendingDeals = listOf(
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #001",
-            status = "Pending",
-            userId = "user_01",
-            userContact = "0912345678"
-        ),
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #002",
-            status = "Pending",
-            userId = "user_02",
-            userContact = "0987654321"
-        )
-    )
+    val pendingDeals by viewModel.pendingDeals.collectAsState()
 
     if (!pendingDeals.isEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -216,22 +201,7 @@ fun AprrovedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerVie
 
 @Composable
 fun DeliveringContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
-    val DeliveringDeals = listOf(
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #001",
-            status = "Đang giao",
-            userId = "user_01",
-            userContact = "0912345678"
-        ),
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #002",
-            status = "Đang giao",
-            userId = "user_02",
-            userContact = "0987654321"
-        )
-    )
+    val DeliveringDeals by viewModel.deleveredDeals.collectAsState()
 
     if (!DeliveringDeals.isEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -258,22 +228,7 @@ fun DeliveringContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerV
 
 @Composable
 fun DeliveredContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
-    val deliveredDeals = listOf(
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #001",
-            status = "Delivered",
-            userId = "user_01",
-            userContact = "0912345678"
-        ),
-        DealItem(
-            imageLink = "https://via.placeholder.com/150",
-            title = "Đơn hàng #002",
-            status = "Delivered",
-            userId = "user_02",
-            userContact = "0987654321"
-        )
-    )
+    val deliveredDeals by viewModel.deliveredDeals.collectAsState()
 
     if (!deliveredDeals.isEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {

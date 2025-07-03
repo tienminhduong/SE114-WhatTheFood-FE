@@ -44,59 +44,81 @@ fun SellerHomePreview() {
 fun SellerHome(
     viewModel: SellerHomeViewModel
 ) {
-    // Trạng thái: đang chỉnh sản phẩm nào?
     var editingProduct by remember { mutableStateOf<Product?>(null) }
-
     var isAddingProduct by remember { mutableStateOf(false) }
 
+    val isLoading = viewModel.isLoading
+    val error = viewModel.errorMessage
+    val products = viewModel.products
 
-
-    if (editingProduct != null) {
-        // Mở màn hình chỉnh sửa
-        EditProductScreen(
-            product = editingProduct!!,
-            onSave = { updatedProduct ->
-                viewModel.updateProduct(updatedProduct)
-                editingProduct = null // đóng màn
-            },
-            onCancel = {
-                editingProduct = null // hủy sửa
-            }
-        )
-    } else if (isAddingProduct) {
-        // ✅ Màn thêm sản phẩm mới
-        AddProductScreen(
-            product = Product(), // Khởi tạo rỗng
-            onSave = { newProduct ->
-                viewModel.addProduct(newProduct)
-                isAddingProduct = false // quay về danh sách
-            },
-            onCancel = {
-                isAddingProduct = false
-            }
-        )
-    } else {
-        // Màn hình danh sách sản phẩm
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        listOf(Color(0xFF00FF7F), Color.White)
-                    )
-                )
-        ) {
-            SellerHeaderHome(
-                viewModel,
-                onAddClick = { isAddingProduct = true }
+    when {
+        editingProduct != null -> {
+            EditProductScreen(
+                product = editingProduct!!,
+                onSave = { updatedProduct ->
+                    viewModel.updateProduct(updatedProduct)
+                    editingProduct = null
+                },
+                onCancel = { editingProduct = null }
             )
+        }
 
-            LazyColumn {
-                items(viewModel.products) { product ->
-                    ProductItem(
-                        item = product,
-                        onClick = { editingProduct = product } // Khi click vào sẽ mở chỉnh sửa
+        isAddingProduct -> {
+            AddProductScreen(
+                product = Product(),
+                onSave = { newProduct ->
+                    viewModel.addProduct(newProduct)
+                    isAddingProduct = false
+                },
+                onCancel = { isAddingProduct = false }
+            )
+        }
+
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            listOf(Color(0xFF00FF7F), Color.White)
+                        )
                     )
+            ) {
+                SellerHeaderHome(
+                    viewModel,
+                    onAddClick = { isAddingProduct = true }
+                )
+
+                when {
+                    isLoading -> {
+                        Text(
+                            text = "Đang tải sản phẩm...",
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(16.dp)
+                        )
+                    }
+
+                    error != null -> {
+                        Text(
+                            text = error,
+                            color = Color.Red,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(16.dp)
+                        )
+                    }
+
+                    else -> {
+                        LazyColumn {
+                            items(products) { product ->
+                                ProductItem(
+                                    item = product,
+                                    onClick = { editingProduct = product }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

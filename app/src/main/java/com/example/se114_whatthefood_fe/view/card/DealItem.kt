@@ -24,20 +24,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import java.util.UUID
+import com.example.se114_whatthefood_fe.data.remote.Address
+import com.example.se114_whatthefood_fe.data.remote.UserInfo
 
 @Immutable
+
 data class DealItem(
-    val id: UUID? = UUID.randomUUID(),
-    val imageLink: String? = null,
-    val title: String? = null,
-    val status: String? = null,
-    val userId: String? = null,
-    val userContact: String? = null
+    val id: Int,                      // từ ShippingInfo.id
+    val imageLink: String?,          // từ restaurant.image hoặc restaurant.avatar
+    val title: String?,              // ví dụ: "Đơn hàng tại ${restaurant.name}"
+    val status: String?,             // từ ShippingInfo.status
+    val userContact: String?,        // phone number
+    val paymentMethod: String?,      // thêm nếu muốn show thông tin thanh toán
+    val totalPrice: Int?,             // thêm nếu muốn hiển thị tổng tiền
+    val userNote: String?,
+    val address: Address,
+    val user: UserInfo
 )
 
 @Composable
@@ -146,17 +151,3 @@ fun mapStatusToVietnamese(status: String): String {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun DealItemCardPreview() {
-    DealItemCard(
-        deal = DealItem(
-            imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-            title = "Đơn hàng ",
-            status = "Đang giao",
-            userId = "01029",
-            userContact = "0905283353"
-        )
-    )
-}
