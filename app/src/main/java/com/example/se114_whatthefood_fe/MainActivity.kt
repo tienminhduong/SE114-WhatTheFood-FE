@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -73,6 +74,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
+import com.example.se114_whatthefood_fe.view_model.NotiViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -119,6 +121,8 @@ class MainActivity : ComponentActivity() {
                 FoodViewModel(foodModel = foodModel)
             }
 
+            val notiViewModel: NotiViewModel = NotiViewModel(RetrofitInstance.instance,dataStore)
+
             var isLoggedIn by rememberSaveable { mutableStateOf<Boolean?>(null) }
             LaunchedEffect(Unit) {
                 // check valid token
@@ -163,7 +167,7 @@ class MainActivity : ComponentActivity() {
                             )}
                             OrderScreen(orderViewModel = orderViewModel, navController = navController)
                         }
-                        composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
+                        composable(ScreenRoute.NotificationScreen) { NotificationScreen(viewModel = notiViewModel) }
                         composable(ScreenRoute.HomeScreen) {
                             //test home screen
                             //HomeScreenTest(foodViewModel = foodViewModel)
