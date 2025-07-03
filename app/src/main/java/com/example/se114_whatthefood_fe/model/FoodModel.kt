@@ -25,20 +25,21 @@ class FoodModel(
         return preferences[TOKEN_KEY]
     }
 
-    suspend fun getFoodById(id: Int): Response<FoodItemResponse>{
-        return try{
+    suspend fun getFoodById(id: Int): Response<FoodItemResponse> {
+        return try {
             val response = api.getFoodItemById(id)
             response
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             Response.error(500, "".toResponseBody(null))
         }
     }
 
-    suspend fun getFoodItemNearBy(longtitude: Float,
-                                  latitude: Float,
-                                  pageNumber: Int = 0,
-                                  pageSize: Int = 10): Response<List<FoodItemNearByResponse>> {
+    suspend fun getFoodItemNearBy(
+        longtitude: Float,
+        latitude: Float,
+        pageNumber: Int = 0,
+        pageSize: Int = 10
+    ): Response<List<FoodItemNearByResponse>> {
         return try {
             val response = api.getFoodItemsNearBy(longtitude, latitude, pageNumber, pageSize)
             response
@@ -105,21 +106,29 @@ class FoodModel(
     suspend fun getFoodItemsBySeller(
         sellerId: Int,
         pageNumber: Int = 0,
-        pageSize: Int = 30,
-        token: String? = null
+        pageSize: Int = 30
     ): Response<List<FoodItemResponse>> {
         return try {
+            //val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
+            val token =
+                "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ"
             val response = api.getFoodItems(
+                token = "Bearer $token",
                 pageNumber = pageNumber,
                 pageSize = pageSize,
-                restaurantId = sellerId,
-                token = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ"
+                restaurantId = sellerId
             )
-            response
+
+            if (response.isSuccessful) {
+                response
+            } else {
+                Response.error(response.code(), response.errorBody() ?: "".toResponseBody(null))
+            }
         } catch (e: Exception) {
             Response.error(500, "".toResponseBody(null))
         }
     }
+
 
     suspend fun updateFoodItem(id: String, updated: UpdateFoodItemRequest): Response<Unit> {
         return try {
