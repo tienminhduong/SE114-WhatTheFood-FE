@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.SellerView_model
 
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
+import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
 import com.example.se114_whatthefood_fe.view.card.DealItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,15 +77,7 @@ class SellerManagerViewModel : ViewModel() {
     }
 
     fun loadTestApprovedDeals() {
-        _pendingDeals.value = List(6) {
-            DealItem(
-                imageLink = "https://via.placeholder.com/150",
-                title = "Đơn hàng #00${it + 1}",
-                status = "Approved",
-                userId = "user_0${it % 2 + 1}",
-                userContact = if (it % 2 == 0) "0912345678" else "0987654321"
-            )
-        }
+
     }
 
     fun getNextStatus(currentStatus: String): String {
@@ -132,5 +125,20 @@ class SellerManagerViewModel : ViewModel() {
         selectedDeal.value = null
     }
 
+
+    fun ShippingInfo.toDealItem(): DealItem {
+        return DealItem(
+            id = this.id,
+            imageLink = this.user.pfpUrl,
+            title = "Đơn hàng của ${this.user.name}",
+            status = this.status,
+            userContact = this.user.phoneNumber,
+            paymentMethod = this.paymentMethod,
+            totalPrice = this.totalPrice,
+            userNote = this.userNote,
+            address = this.address,
+            user = this.user
+        )
+    }
 
 }

@@ -17,14 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.view.card.DealItem
 import com.example.se114_whatthefood_fe.view.card.mapStatusToVietnamese
-import java.util.UUID
+
 
 @Composable
 fun SellerDealDetail(
@@ -32,7 +30,6 @@ fun SellerDealDetail(
     viewModel: SellerManagerViewModel,
     onBack: () -> Unit,
     onAccept: () -> Unit
-
 ) {
     Column(
         modifier = Modifier
@@ -42,7 +39,7 @@ fun SellerDealDetail(
         Text("Thông tin đơn hàng", fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
 
-
+        // Trạng thái
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,27 +56,41 @@ fun SellerDealDetail(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Thông tin vận chuyển
         DetailSection(title = "Thông tin vận chuyển") {
             DetailItem("Mã vận đơn", deal.id.toString())
-            DetailItem("Người nhận", deal.userId ?: "N/A")
-            DetailItem("SĐT", deal.userContact ?: "N/A")
-            DetailItem("Địa chỉ", "Địa chỉ giả lập - bạn thêm sau")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DetailSection(title = "Sản phẩm") {
-            Column {
-                Text(deal.title ?: "Không có tên sản phẩm", fontWeight = FontWeight.SemiBold)
-                Text("Số lượng: 1")
-                Text("Giá: bạn tự thêm", color = Color.Red)
+            DetailItem("Người nhận", deal.user.name ?: "Không rõ")
+            DetailItem("SĐT", deal.userContact ?: "Không rõ")
+            DetailItem("Địa chỉ", deal.address.name ?: "Không rõ")
+            deal.userNote?.let {
+                DetailItem("Ghi chú", it)
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Tổng thanh toán: 999.999đ", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
+        // Sản phẩm
+        DetailSection(title = "Thông tin đơn hàng") {
+            Column {
+                Text(deal.title ?: "Không có tên đơn hàng", fontWeight = FontWeight.SemiBold)
+                deal.paymentMethod?.let {
+                    Text("Phương thức thanh toán: $it")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Tổng thanh toán
+        Text(
+            "Tổng thanh toán: ${deal.totalPrice ?: 0}đ",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+
         Spacer(modifier = Modifier.weight(1f))
 
+        // Button
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
@@ -129,22 +140,3 @@ fun getStatusColor(status: String?): Color {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SellerDealDetailPreview() {
-    val sampleDeal = DealItem(
-        id = UUID.randomUUID(),
-        title = "Đơn hàng #001",
-        status = "pending",
-        userId = "Nguyễn Văn A",
-        userContact = "0912345678",
-        imageLink = null
-    )
-
-    SellerDealDetail(
-        deal = sampleDeal,
-        viewModel = viewModel(),
-        onBack = {},
-        onAccept = {}
-    )
-}

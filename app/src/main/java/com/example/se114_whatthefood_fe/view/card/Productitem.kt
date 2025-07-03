@@ -44,6 +44,12 @@ fun ProductItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    val name = item.name ?: "Sản phẩm không tên"
+    val price = item.price ?: 0.0
+    val sold = item.soldAmount ?: 0
+    val available = item.isAvailable ?: false
+    val imageUrl = item.imgUrl ?: "https://via.placeholder.com/100"
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -52,13 +58,12 @@ fun ProductItem(
         elevation = CardDefaults.cardElevation(6.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F8F8))
-
     ) {
-        Row(modifier = Modifier.padding(12.dp))  {
-            // Hình ảnh
+        Row(modifier = Modifier.padding(12.dp)) {
+            // Ảnh sản phẩm
             AsyncImage(
-                model = item.imgUrl ?: "https://via.placeholder.com/100",
-                contentDescription = item.name,
+                model = imageUrl,
+                contentDescription = name,
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(12.dp)),
@@ -67,38 +72,40 @@ fun ProductItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Thông tin
+            // Thông tin sản phẩm
             Column(modifier = Modifier.weight(1f)) {
+                // Tên và giá
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = item.name ?: "Tên sản phẩm",
+                        text = name,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         maxLines = 1
                     )
                     Text(
-                        text = "${item.price?.toInt()} VND",
-                        color = Color(0xFF43A047),
-                        style = MaterialTheme.typography.bodyLarge
+                        text = "${price.toInt()} đ",
+                        color = Color(0xFF388E3C),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
+                // Đã bán + trạng thái
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Đã bán: ${item.soldAmount}",
-                        style = MaterialTheme.typography.bodySmall
+                        text = "Đã bán: $sold",
+                        style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
                     )
                     Text(
-                        text = if (item.isAvailable == true) "Còn hàng" else "Hết hàng",
-                        color = if (item.isAvailable == true) Color(0xFF2E7D32) else Color.Red,
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
+                        text = if (available) "Còn hàng" else "Hết hàng",
+                        color = if (available) Color(0xFF2E7D32) else Color.Red,
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
                     )
                 }
             }

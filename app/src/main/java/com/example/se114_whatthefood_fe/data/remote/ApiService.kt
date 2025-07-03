@@ -9,9 +9,10 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
-import java.time.LocalDateTime
 
 data class ShippingInfoDetail(
     @SerializedName("foodItem")
@@ -19,6 +20,7 @@ data class ShippingInfoDetail(
     @SerializedName("amount")
     val amount: Int
 )
+
 data class Address(
     @SerializedName("name")
     val name: String,
@@ -27,6 +29,7 @@ data class Address(
     @SerializedName("latitude")
     val latitude: Float
 )
+
 // shipping info API
 data class ShippingInfo(
     @SerializedName("id")
@@ -48,7 +51,9 @@ data class ShippingInfo(
     @SerializedName("address")
     val address: Address,
     @SerializedName("shippingInfoDetails")
-    val shippingInfoDetails: List<ShippingInfoDetail>
+    val shippingInfoDetails: List<ShippingInfoDetail>,
+    @SerializedName("user")
+    val user: UserInfo
 )
 
 // auth API
@@ -64,6 +69,7 @@ data class LoginResponse(
     @SerializedName("accessToken")
     val token: String
 )
+
 // register
 data class RegisterRequest(
     @SerializedName("phoneNumber")
@@ -75,6 +81,7 @@ data class RegisterRequest(
     @SerializedName("role")
     val role: String
 )
+
 data class RegisterResponse(
     @SerializedName("id")
     val id: Int,
@@ -85,6 +92,7 @@ data class RegisterResponse(
     @SerializedName("pfpUrl")
     val pfpUrl: String? = null
 )
+
 // user info API
 data class UserInfo(
     @SerializedName("name")
@@ -96,6 +104,7 @@ data class UserInfo(
     @SerializedName("pfpUrl")
     var pfpUrl: String?
 )
+
 // food API
 data class FoodCategory(
     @SerializedName("id")
@@ -103,6 +112,7 @@ data class FoodCategory(
     @SerializedName("name")
     val name: String
 )
+
 data class Restaurant(
     @SerializedName("id")
     val id: Int,
@@ -113,6 +123,7 @@ data class Restaurant(
     @SerializedName("addressDto")
     val address: Address?,
 )
+
 data class FoodItemResponse(
     @SerializedName("id")
     val id: Int,
@@ -129,8 +140,22 @@ data class FoodItemResponse(
     @SerializedName("foodCategory")
     val foodCategory: FoodCategory,
     @SerializedName("restaurant")
-    val restaurant: Restaurant
+    val restaurant: Restaurant,
+    @SerializedName("cldnrUrl")
+    val cldnrUrl: String?
 )
+
+
+data class UpdateFoodItemRequest(
+    val name: String,
+    val description: String,
+    val categoryName: String,
+    val price: Int,
+    val soldAmount: Int,
+    val available: Boolean
+)
+
+
 // cac quan an gan day
 data class Rating(
     @SerializedName("avgRating")
@@ -138,6 +163,7 @@ data class Rating(
     @SerializedName("number")
     val number: Int
 )
+
 data class FoodItemNearByResponse(
     @SerializedName("foodId")
     val foodId: Int,
@@ -172,60 +198,91 @@ interface ApiService {
     // user's image
     @Multipart
     @POST("images/profile")
-    suspend fun uploadProfileImage(@Header("Authorization") token: String?,
-                                   @Part image: MultipartBody.Part
+    suspend fun uploadProfileImage(
+        @Header("Authorization") token: String?,
+        @Part image: MultipartBody.Part
     ): Response<UserInfo>
 
     // food API
     @Headers("Content-Type: application/json")
     @GET("fooditems")
-    suspend fun getFoodItems(@Header("Authorization") token: String,
-                             @Query("pageNumber") pageNumber: Int = 0,
-                             @Query("pageSize") pageSize: Int = 30,
-                             @Query("categoryId") categoryId: Int = -1,
-                             @Query("nameContains") nameContains: String = "",
-                             @Query("restaurantId") restaurantId: Int = -1,
-                             @Query("isAvailableOnly") isAvailableOnly: Boolean = true,
-                             @Query("priceLowerThan") priceLowerThan: Int = Int.MAX_VALUE,
-                             @Query("priceHigherThan") priceHigherThan: Int = 0,
-                             @Query("sortBy") sortBy: String = "priceAsc"
+    suspend fun getFoodItems(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 30,
+        @Query("categoryId") categoryId: Int = -1,
+        @Query("nameContains") nameContains: String = "",
+        @Query("restaurantId") restaurantId: Int = -1,
+        @Query("isAvailableOnly") isAvailableOnly: Boolean = true,
+        @Query("priceLowerThan") priceLowerThan: Int = Int.MAX_VALUE,
+        @Query("priceHigherThan") priceHigherThan: Int = 0,
+        @Query("sortBy") sortBy: String = "priceAsc"
     ): Response<List<FoodItemResponse>>
 
     // get food item nearby
     @GET("fooditems/recommended/bylocation")
-    suspend fun getFoodItemsNearBy(@Query("latitude") latitude: Float,
-                                   @Query("longitude") longitude: Float,
-                                   @Query("pageNumber") pageNumber: Int = 0,
-                                   @Query("pageSize") pageSize: Int = 10)
-    : Response<List<FoodItemNearByResponse>>
+    suspend fun getFoodItemsNearBy(
+        @Query("latitude") latitude: Float,
+        @Query("longitude") longitude: Float,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    )
+            : Response<List<FoodItemNearByResponse>>
 
     @GET("fooditems/recommended/bysoldamount")
-    suspend fun getFoodItemsBySoldAmount(@Query("pageNumber") pageNumber: Int = 0,
-                                         @Query("pageSize") pageSize: Int = 10,
+    suspend fun getFoodItemsBySoldAmount(
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10,
     ): Response<List<FoodItemNearByResponse>>
 
     @GET("fooditems/recommended/byrating")
-    suspend fun getFoodItemsByRating(@Query("pageNumber") pageNumber: Int = 0,
-                                         @Query("pageSize") pageSize: Int = 10,
+    suspend fun getFoodItemsByRating(
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10,
     ): Response<List<FoodItemNearByResponse>>
 
     // order API
     @GET("shippinginfo")
-    suspend fun getAllOrder(@Header("Authorization") token: String,
-                            @Query("pageNumber") pageNumber: Int = 0,
-                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+    suspend fun getAllOrder(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
 
     @GET("shippinginfo/pending")
-    suspend fun getPendingOrder(@Header("Authorization") token: String,
-                            @Query("pageNumber") pageNumber: Int = 0,
-                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+    suspend fun getPendingOrder(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
     @GET("shippinginfo/delivering")
-    suspend fun getDeliveringOrder(@Header("Authorization") token: String,
-                            @Query("pageNumber") pageNumber: Int = 0,
-                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+    suspend fun getDeliveringOrder(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
     @GET("shippinginfo/completed")
-    suspend fun getCompletedOrder(@Header("Authorization") token: String,
-                            @Query("pageNumber") pageNumber: Int = 0,
-                            @Query("pageSize") pageSize: Int = 10): Response<List<ShippingInfo>>
+    suspend fun getCompletedOrder(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
+    @GET("shippinginfo/approved")
+    suspend fun getApprovedOrder(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
+
+    @PUT("fooditems/{id}")
+    suspend fun updateFoodItem(
+        @Header("Authorization") token: String,
+        @Path("id") id: String,
+        @Body updatedFood: UpdateFoodItemRequest
+    ): Response<Unit>
 
 }
