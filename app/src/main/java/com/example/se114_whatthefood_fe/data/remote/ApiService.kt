@@ -31,7 +31,6 @@ data class NewFoodItemRequest(
 )
 
 
-
 data class CartItem(
     @SerializedName("restaurant")
     val restaurant: Restaurant,
@@ -47,6 +46,7 @@ data class AverageRating(
     @SerializedName("avgRating")
     val avgRating: Float
 )
+
 data class RatingFood(
     @SerializedName("userName")
     val userName: String,
@@ -385,29 +385,39 @@ interface ApiService {
     ): Response<ShippingInfo>
 
     @GET("fooditems/{id}")
-    suspend fun getFoodItemById(@Header("Authorization") token: String,
-                                @Path("id") id: Int): Response<FoodItemResponse>
+    suspend fun getFoodItemById(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<FoodItemResponse>
 
     @GET("fooditems/{id}/ratings")
-    suspend fun getRatingFood(@Header("Authorization") token: String,
-                                @Path("id") id: Int): Response<List<RatingFood>>
+    suspend fun getRatingFood(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<List<RatingFood>>
 
     @GET("fooditems/{id}/ratings/summary")
-    suspend fun getSummaryRatingFoodItem(@Header("Authorization") token: String,
-                                            @Path("id") id: Int) : Response<AverageRating>
+    suspend fun getSummaryRatingFoodItem(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<AverageRating>
 
     @GET("cart")
     suspend fun getAllItemsInCart(@Header("Authorization") token: String): Response<List<CartItem>>
 
     // id truyen vao
     @GET("cart/{restaurantId}")
-    suspend fun getCartById(@Header("Authorization") token: String,
-                            @Path("restaurantId") restaurantId: Int): Response<CartItem>
+    suspend fun getCartById(
+        @Header("Authorization") token: String,
+        @Path("restaurantId") restaurantId: Int
+    ): Response<CartItem>
 
     @POST("cart")
-    suspend fun addToCart(@Header("Authorization") token: String,
-                          @Query("foodItemId") foodItemId: Int,
-                          @Query("amount") amount: Int = 0): Response<Unit>
+    suspend fun addToCart(
+        @Header("Authorization") token: String,
+        @Query("foodItemId") foodItemId: Int,
+        @Query("amount") amount: Int = 0
+    ): Response<Unit>
 
 
     @GET("users/notifications")
@@ -482,4 +492,10 @@ interface ApiService {
         @Query("pageNumber") pageNumber: Int = 0,
         @Query("pageSize") pageSize: Int = 10
     ): Response<List<ShippingInfo>>
+
+    @GET("users/notifications/{id}")
+    suspend fun readNotification(
+        @Header("Authorization") token: String,
+        @Path("id") notiId: Int
+    ): Response<Notification>
 }
