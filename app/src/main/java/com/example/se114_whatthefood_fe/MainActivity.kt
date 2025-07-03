@@ -38,6 +38,15 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.se114_whatthefood_fe.Constant.AppInfo
+import com.example.se114_whatthefood_fe.SellerView.SellerAccount
+import com.example.se114_whatthefood_fe.SellerView.SellerAccountScreen
+import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
+import com.example.se114_whatthefood_fe.SellerView.SellerHome
+import com.example.se114_whatthefood_fe.SellerView.SellerManager
+import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
+import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
+import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
+import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.CartModel
@@ -49,6 +58,7 @@ import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.MintGreen
 import com.example.se114_whatthefood_fe.view.ScaffoldRoute
 import com.example.se114_whatthefood_fe.view.ScreenRoute
+import com.example.se114_whatthefood_fe.view.SellerRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.cart.CartScreen
 import com.example.se114_whatthefood_fe.view.detailFoodScreen.DetailFoodScreen
@@ -94,28 +104,43 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             val navController = rememberNavController()
-            val authModel = remember{
-                AuthModel(api = RetrofitInstance.instance,
+            val authModel = remember {
+                AuthModel(
+                    api = RetrofitInstance.instance,
                     dataStore = dataStore
                 )
             }
             val imageModel = remember {
-                ImageModel(api = RetrofitInstance.instance,
+                ImageModel(
+                    api = RetrofitInstance.instance,
                     dataStore = dataStore
                 )
             }
-            val authViewModel = remember {AuthViewModel(authModel = authModel, imageModel = imageModel)}
+            val authViewModel =
+                remember { AuthViewModel(authModel = authModel, imageModel = imageModel) }
             // viết ở đây
-            NavHost(navController = navController, startDestination = ScaffoldRoute.LoginOrRegisterScaffold){
-                composable(ScaffoldRoute.LoginOrRegisterScaffold){
+            NavHost(
+                navController = navController,
+                startDestination = ScaffoldRoute.LoginOrRegisterScaffold
+            ) {
+                composable(ScaffoldRoute.LoginOrRegisterScaffold) {
                     AuthScreen(authViewModel = authViewModel, navController = navController)
                 }
 
-                composable(ScaffoldRoute.UserScaffold){
-                    UserScaffold(dataStore = dataStore, authViewModel = authViewModel, navControllerWhenLogout = navController)
+                composable(ScaffoldRoute.UserScaffold) {
+                    UserScaffold(
+                        dataStore = dataStore,
+                        authViewModel = authViewModel,
+                        navControllerWhenLogout = navController
+                    )
                 }
 
-                composable(ScaffoldRoute.SellerScaffold){
+                composable(ScaffoldRoute.SellerScaffold) {
+                    SellerScaffold(
+                        dataStore = dataStore,
+                        authViewModel = authViewModel,
+                        navControllerWhenLogout = navController
+                    )
                 }
             }
         }
@@ -162,6 +187,7 @@ class MainActivity : ComponentActivity() {
             throw RuntimeException("Initialization of HERE SDK failed: " + e.error.name)
         }
     }
+
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -184,21 +210,99 @@ fun checkHaveBottomBar(route: String?, listScreenRoot: List<String>): Boolean {
 }
 
 @Composable
-fun UserScaffold(dataStore: DataStore<Preferences>,
-                 authViewModel: AuthViewModel,
-                 navControllerWhenLogout: NavHostController){
+fun SellerScaffold(dataStore: DataStore<Preferences>,
+                   authViewModel: AuthViewModel,
+                   navControllerWhenLogout: NavHostController) {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+
+    val foodModel = remember {
+        val api = RetrofitInstance.instance
+        FoodModel(api, dataStore)
+    }
+    val sellerHomeViewModel = remember { SellerHomeViewModel(foodModel, sellerId = 1) }
+
+    val orderModel = remember {
+        val api = RetrofitInstance.instance
+        OrderModel(api, dataStore)
+    }
+    val sellerManagerViewModel = remember {
+        SellerManagerViewModel(orderModel, sellerId = 1)
+    }
+
+    val api = RetrofitInstance.instance
+    val sellerNotificationViewModel = remember {
+        SellerNotificationViewModel(api = api, dataStore = dataStore)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
+            .systemBarsPadding()
+    ) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            modifier = Modifier.systemBarsPadding(),
+            bottomBar = {
+                SellerBottomBar(
+                    navController = navController,
+                    currentRoute = currentRoute
+                )
+            }
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = SellerRoute.HomeScreen,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(SellerRoute.HomeScreen) {
+                    SellerHome(viewModel = sellerHomeViewModel)
+                }
+                composable(SellerRoute.AccountScreen) {
+                    SellerAccountScreen(
+                        authViewModel = authViewModel,
+                        navController = navController,
+                        navControllerWhenLogout = navControllerWhenLogout
+                    )
+                }
+                composable(SellerRoute.ManagerScreen)
+                {
+                    SellerManager(viewModel = sellerManagerViewModel)
+                }
+                composable(SellerRoute.NotificationScreen)
+                {
+                    SellerNotificationContent(viewModel = sellerNotificationViewModel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun UserScaffold(
+    dataStore: DataStore<Preferences>,
+    authViewModel: AuthViewModel,
+    navControllerWhenLogout: NavHostController
+) {
     val screenRootHaveBottomBar = remember {
-        listOf("Home", "Account", "Cart","Orders", "Notifications")
+        listOf("Home", "Account", "Cart", "Orders", "Notifications")
     }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    Box(modifier = Modifier.fillMaxSize()
-        .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
-        .systemBarsPadding()) {
-        Scaffold(containerColor = Color.Transparent,
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(colors = listOf(LightGreen, MintGreen)))
+            .systemBarsPadding()
+    ) {
+        Scaffold(
+            containerColor = Color.Transparent,
             bottomBar = {
-                if(checkHaveBottomBar(currentRoute, screenRootHaveBottomBar)) {
+                if (checkHaveBottomBar(currentRoute, screenRootHaveBottomBar)) {
                     BottomBarDeviceScreen(
                         navController = navController,
                         currentRoute = currentRoute
@@ -211,39 +315,53 @@ fun UserScaffold(dataStore: DataStore<Preferences>,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(ScreenRoute.AccountScreen) {
-                    AccountScreen(authViewModel = authViewModel,
-                    navController = navController,
-                        navControllerWhenLogout = navControllerWhenLogout) }
+                    AccountScreen(
+                        authViewModel = authViewModel,
+                        navController = navController,
+                        navControllerWhenLogout = navControllerWhenLogout
+                    )
+                }
                 composable(ScreenRoute.OrderScreen) {
-                    val orderViewModel = remember {OrderViewModel(
-                        orderModel = OrderModel(
-                            api = RetrofitInstance.instance,
-                            dataStore = dataStore
+                    val orderViewModel = remember {
+                        OrderViewModel(
+                            orderModel = OrderModel(
+                                api = RetrofitInstance.instance,
+                                dataStore = dataStore
+                            )
                         )
-                    )}
-                    OrderScreen(orderViewModel = orderViewModel, navController = navController)
+                    }
+                    OrderScreen(
+                        orderViewModel = orderViewModel,
+                        navController = navController
+                    )
                 }
                 composable(ScreenRoute.NotificationScreen) {
                     val notiViewModel = remember {
-                        NotiViewModel(RetrofitInstance.instance,dataStore)
+                        NotiViewModel(RetrofitInstance.instance, dataStore)
                     }
                     NotificationScreen(viewModel = notiViewModel)
                 }
                 composable(ScreenRoute.CartScreen) {
                     val cartModel = remember {
-                        CartModel(api = RetrofitInstance.instance,
-                            dataStore = dataStore)
+                        CartModel(
+                            api = RetrofitInstance.instance,
+                            dataStore = dataStore
+                        )
                     }
                     val cartViewModel = remember {
                         CartViewModel(cartModel = cartModel)
                     }
-                    CartScreen(cartViewModel = cartViewModel, navController = navController)
+                    CartScreen(
+                        cartViewModel = cartViewModel,
+                        navController = navController
+                    )
                 }
                 composable(ScreenRoute.HomeScreen) {
                     //test home screen
                     //HomeScreenTest(foodViewModel = foodViewModel)
-                    val foodModel = remember{
-                        FoodModel(api = RetrofitInstance.instance,
+                    val foodModel = remember {
+                        FoodModel(
+                            api = RetrofitInstance.instance,
                             dataStore = dataStore
                         )
                     }
@@ -251,44 +369,61 @@ fun UserScaffold(dataStore: DataStore<Preferences>,
                         FoodViewModel(foodModel = foodModel)
                     }
 
-                    HomeScreen(foodViewModel = foodViewModel,
-                        navController = navController)
+                    HomeScreen(
+                        foodViewModel = foodViewModel,
+                        navController = navController
+                    )
                 }
                 ScreenRoute.LoginOrRegisterScreen
 //                composable(ScreenRoute.LoginOrRegisterScreen) {
 //                    AuthScreen(authViewModel = authViewModel,
 //                        navController = navController)}
-                composable(ScreenRoute.DetailOrderScreen,
+                composable(
+                    ScreenRoute.DetailOrderScreen,
                     arguments = listOf(
-                        navArgument("orderId") { type = NavType.IntType}
+                        navArgument("orderId") { type = NavType.IntType }
                     )) { backStackEntry ->
                     val orderDetailViewModel = remember {
-                        OrderDetailViewModel(orderModel = OrderModel(api = RetrofitInstance.instance,
-                            dataStore = dataStore))
+                        OrderDetailViewModel(
+                            orderModel = OrderModel(
+                                api = RetrofitInstance.instance,
+                                dataStore = dataStore
+                            )
+                        )
                     }
                     val orderId = backStackEntry.arguments?.getInt("orderId")
-                    DetailOrderScreen(orderDetailViewModel = orderDetailViewModel,
+                    DetailOrderScreen(
+                        orderDetailViewModel = orderDetailViewModel,
                         orderId = orderId,
-                        navController = navController)
+                        navController = navController
+                    )
                 }
-                composable(ScreenRoute.DetailFoodItemScreen,
+                composable(
+                    ScreenRoute.DetailFoodItemScreen,
                     arguments = listOf(
-                        navArgument("foodItemId") { type = NavType.IntType}
+                        navArgument("foodItemId") { type = NavType.IntType }
                     )) { backStackEntry ->
                     val foodDetailViewModel = remember {
-                        FoodDetailViewModel(foodModel = FoodModel(api = RetrofitInstance.instance,
-                            dataStore = dataStore),
-                            ratingModel = RatingModel(api = RetrofitInstance.instance,
-                                dataStore = dataStore))
+                        FoodDetailViewModel(
+                            foodModel = FoodModel(
+                                api = RetrofitInstance.instance,
+                                dataStore = dataStore
+                            ),
+                            ratingModel = RatingModel(
+                                api = RetrofitInstance.instance,
+                                dataStore = dataStore
+                            )
+                        )
                     }
                     val foodItemId = backStackEntry.arguments?.getInt("foodItemId")
-                    DetailFoodScreen(navController = navController,
+                    DetailFoodScreen(
+                        navController = navController,
                         foodDetailViewModel = foodDetailViewModel,
-                        orderId = foodItemId)
+                        orderId = foodItemId
+                    )
                 }
 
             }
         }
     }
-
 }
