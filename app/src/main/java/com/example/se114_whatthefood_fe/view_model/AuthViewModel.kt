@@ -135,9 +135,14 @@ class AuthViewModel(private val authModel: AuthModel,
                 // neu thanh cong
                 if(result.isSuccessful)
                 {
-                    loginSuccess = true
-                    loginState = UIState.SUCCESS
                     getUserInfo()
+                    if(userInfo.value != null)
+                    {
+                        loginSuccess = true
+                        loginState = UIState.SUCCESS
+                    }
+
+
                 }
                 // neu that bai
                 else
