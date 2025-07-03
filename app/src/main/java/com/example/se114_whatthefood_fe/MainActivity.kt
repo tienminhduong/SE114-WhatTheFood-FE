@@ -154,6 +154,7 @@ class MainActivity : ComponentActivity() {
 
 
             Scaffold(
+                modifier = Modifier.systemBarsPadding(),
                 bottomBar = {
                     SellerBottomBar(
                         navController = navController,
@@ -164,9 +165,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(
                     navController = navController,
                     startDestination = "SellerHome",
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .systemBarsPadding()
+                    modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("SellerHome") {
                         SellerHome(viewModel = sellerHomeViewModel)
