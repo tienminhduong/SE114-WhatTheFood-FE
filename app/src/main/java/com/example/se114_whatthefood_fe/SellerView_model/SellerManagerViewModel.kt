@@ -124,6 +124,7 @@ class SellerManagerViewModel(
     fun updateDealToNextStatus(deal: DealItem) {
         viewModelScope.launch {
             isLoading.value = true
+            errorMessage.value = null
             try {
                 val status = deal.status?.lowercase()
                 val response = when (status) {

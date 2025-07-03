@@ -92,6 +92,7 @@ data class OwnedRestaurantInfo(
     val restaurantId: Int
 )
 
+
 // register
 data class RegisterRequest(
     @SerializedName("phoneNumber")
@@ -424,6 +425,6 @@ interface ApiService {
         @Query("pageNumber") pageNumber: Int = 0,
         @Query("pageSize") pageSize: Int = 10
     ): Response<List<ShippingInfo>>
-    
+
 
 }
