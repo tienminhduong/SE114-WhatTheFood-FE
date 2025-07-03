@@ -66,7 +66,8 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
             viewModel = viewModel,
 
             onAccept = {
-
+                viewModel.updateDealToNextStatus(selectedDeal!!)
+                selectedDeal = null
             },
             onBack = {
                 selectedDeal = null
@@ -125,7 +126,7 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
                 1 -> AprrovedContent(onDealClick, viewModel)
                 2 -> DeliveringContent(onDealClick, viewModel)
                 3 -> DeliveredContent(onDealClick, viewModel)
-                4 -> DeliveringContent(onDealClick, viewModel)
+                4 -> CompletedContent(onDealClick, viewModel)
             }
         }
     }
@@ -153,7 +154,7 @@ fun PendingContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerView
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Chưa có đơn hàng nào đang giao",
+                text = "Chưa có đơn hàng nào cần duyệt",
                 color = Color.Black,
                 fontSize = 20.sp
             )
@@ -234,11 +235,36 @@ fun DeliveredContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerVi
             contentAlignment = Alignment.Center
         ) {
             Text(
+                text = "Chưa có đơn hàng nào đã giao",
+                color = Color.Black,
+                fontSize = 20.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun CompletedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
+    val compeletedDeals by viewModel.completedDeals.collectAsState()
+
+    if (compeletedDeals.isNotEmpty()) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(compeletedDeals) { deal ->
+                DealItemCard(deal = deal, onClick = { onDealClick(deal) })
+            }
+        }
+    } else {
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
                 text = "Chưa có đơn hàng nào hoàn thành",
                 color = Color.Black,
                 fontSize = 20.sp
             )
         }
     }
-
 }
+

@@ -37,49 +37,116 @@ class SellerManagerViewModel(
     }
 
     fun loadAllDeals() {
+        loadPendingDeals()
+        loadApprovedDeals()
+        loadDeliveringDeals()
+        loadDeliveredDeals()
+        loadCompletedDeals()
+    }
+
+
+    fun loadPendingDeals() {
         viewModelScope.launch {
-            isLoading.value = true
-            errorMessage.value = null
             try {
-                val response = orderModel.getAllOrders()
-                if (response.isSuccessful) {
-                    val apiDeals = response.body() ?: emptyList()
-                    loadDealsFromApi(apiDeals)
+                val res = orderModel.getOwnerPendingOrders()
+                if (res.isSuccessful) {
+                    _pendingDeals.value = res.body()?.map { it.toDealItem() } ?: emptyList()
                 } else {
-                    errorMessage.value = "Lỗi khi tải đơn hàng: ${response.code()}"
+                    errorMessage.value = "Lỗi tải đơn chờ: ${res.code()}"
                 }
             } catch (e: Exception) {
-                errorMessage.value = "Lỗi ngoại lệ khi tải đơn hàng: ${e.message}"
+                errorMessage.value = "Lỗi đơn chờ: ${e.message}"
+            }
+        }
+    }
+
+    fun loadApprovedDeals() {
+        viewModelScope.launch {
+            try {
+                val res = orderModel.getOwnerApprovedOrders()
+                if (res.isSuccessful) {
+                    _approvedDeals.value = res.body()?.map { it.toDealItem() } ?: emptyList()
+                } else {
+                    errorMessage.value = "Lỗi tải đơn đã duyệt: ${res.code()}"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Lỗi đơn đã duyệt: ${e.message}"
+            }
+        }
+    }
+
+    fun loadDeliveringDeals() {
+        viewModelScope.launch {
+            try {
+                val res = orderModel.getOwnerDeliveringOrders()
+                if (res.isSuccessful) {
+                    _deliveringDeals.value = res.body()?.map { it.toDealItem() } ?: emptyList()
+                } else {
+                    errorMessage.value = "Lỗi tải đơn đang giao: ${res.code()}"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Lỗi đơn đang giao: ${e.message}"
+            }
+        }
+    }
+
+    fun loadDeliveredDeals() {
+        viewModelScope.launch {
+            try {
+                val res = orderModel.getOwnerDeliveredOrders()
+                if (res.isSuccessful) {
+                    _deliveredDeals.value = res.body()?.map { it.toDealItem() } ?: emptyList()
+                } else {
+                    errorMessage.value = "Lỗi tải đơn đã giao: ${res.code()}"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Lỗi đơn đã giao: ${e.message}"
+            }
+        }
+    }
+
+    fun loadCompletedDeals() {
+        viewModelScope.launch {
+            try {
+                val res = orderModel.getOwnerCompletedOrders()
+                if (res.isSuccessful) {
+                    _completedDeals.value = res.body()?.map { it.toDealItem() } ?: emptyList()
+                } else {
+                    errorMessage.value = "Lỗi tải đơn hoàn tất: ${res.code()}"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Lỗi đơn hoàn tất: ${e.message}"
+            }
+        }
+    }
+
+
+    fun updateDealToNextStatus(deal: DealItem) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                val status = deal.status?.lowercase()
+                val response = when (status) {
+                    "pending" -> orderModel.approveOrder(deal.id)
+                    "approved" -> orderModel.startDelivery(deal.id)
+                    "delivering" -> orderModel.markDelivered(deal.id)
+                    //"delivered" -> orderModel.completeOrder(deal.id)
+                    else -> null
+                }
+
+                if (response != null && response.isSuccessful) {
+                    loadAllDeals()
+                } else {
+                    errorMessage.value = "Lỗi cập nhật trạng thái: ${response?.code()}"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Lỗi ngoại lệ: ${e.message}"
             } finally {
                 isLoading.value = false
             }
         }
     }
 
-    fun loadDealsFromApi(apiDeals: List<ShippingInfo>) {
-        val pending = mutableListOf<DealItem>()
-        val approved = mutableListOf<DealItem>()
-        val delivering = mutableListOf<DealItem>()
-        val delivered = mutableListOf<DealItem>()
-        val completed = mutableListOf<DealItem>()
-
-        apiDeals.forEach { info ->
-            val deal = info.toDealItem()
-            when (deal.status?.lowercase()) {
-                "pending" -> pending.add(deal)
-                "approved" -> approved.add(deal)
-                "delivering" -> delivering.add(deal)
-                "delivered" -> delivered.add(deal)
-                "completed" -> completed.add(deal)
-            }
-        }
-
-        _pendingDeals.value = pending
-        _approvedDeals.value = approved
-        _deliveringDeals.value = delivering
-        _deliveredDeals.value = delivered
-        _completedDeals.value = completed
-    }
 
     fun getNextStatus(currentStatus: String): String {
         return when (currentStatus.lowercase()) {

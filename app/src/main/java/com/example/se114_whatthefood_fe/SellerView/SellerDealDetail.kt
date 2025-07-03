@@ -102,11 +102,13 @@ fun SellerDealDetail(
                 Text("Quay lại")
             }
 
-            Button(
-                onClick = onAccept,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Tiếp nhận đơn")
+            if (!(deal.status == "Delivered" || deal.status == "Completed")) {
+                Button(
+                    onClick = onAccept,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Tiếp nhận đơn")
+                }
             }
         }
     }
@@ -135,7 +137,7 @@ fun getStatusColor(status: String?): Color {
         "Approved" -> Color(0xFFFFA726)
         "Delivering" -> Color(0xFF29B6F6)
         "Delivered" -> Color(0xFF63C467)
-        "Completed" -> Color(0xFF63C467)
+        "Completed" -> Color(0xFF19821D)
         else -> Color.LightGray
     }
 }

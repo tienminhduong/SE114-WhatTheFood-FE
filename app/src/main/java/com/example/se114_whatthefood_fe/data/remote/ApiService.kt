@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.data.remote
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -15,7 +16,6 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-import kotlinx.android.parcel.Parcelize
 
 data class NewFoodItemRequest(
     @SerializedName("restaurantId")
@@ -85,6 +85,11 @@ data class LoginRequest(
 data class LoginResponse(
     @SerializedName("accessToken")
     val token: String
+)
+
+data class OwnedRestaurantInfo(
+    @SerializedName("restaurantId")
+    val restaurantId: Int
 )
 
 // register
@@ -199,6 +204,7 @@ data class FoodItemNearByResponse(
     @SerializedName("restaurantName")
     val restaurantName: String
 )
+
 data class NotificationTokenDto(
     @SerializedName("deviceToken")
     val deviceToken: String
@@ -211,7 +217,7 @@ data class Notification(
     val content: String,
     val dateTime: String,
     val isRead: Boolean = false
-): Parcelable
+) : Parcelable
 
 interface ApiService {
     // auth API
@@ -221,13 +227,17 @@ interface ApiService {
 
     @Headers("Content-Type: application/json")
     @POST("users/device-token")
-    suspend fun registerDeviceToken(@Header("Authorization") token: String,
-                                    @Body request: NotificationTokenDto): Response<Unit>
+    suspend fun registerDeviceToken(
+        @Header("Authorization") token: String,
+        @Body request: NotificationTokenDto
+    ): Response<Unit>
 
     @Headers("Content-Type: application/json")
     @DELETE("users/device-token")
-    suspend fun deleteDeviceToken(@Header("Authorization") token: String,
-                                  @Query("deviceToken") deviceToken: String): Response<Unit>
+    suspend fun deleteDeviceToken(
+        @Header("Authorization") token: String,
+        @Query("deviceToken") deviceToken: String
+    ): Response<Unit>
 
     @GET("users/info")
     suspend fun getUserInfo(@Header("Authorization") token: String): Response<UserInfo>
@@ -334,12 +344,86 @@ interface ApiService {
 
 
     @GET("shippinginfo/detail/{id}")
-    suspend fun getOrderById(@Header("Authorization") token: String,
-                             @Path("id") id: Int): Response<ShippingInfo>
+    suspend fun getOrderById(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<ShippingInfo>
 
     @GET("fooditems/{id}")
     suspend fun getFoodItemById(@Path("id") id: Int): Response<FoodItemResponse>
 
     @GET("users/notifications")
     suspend fun getAllNotifications(@Header("Authorization") token: String): List<Notification>
+
+    @POST("shippinginfo/{shippingInfoId}/approve")
+    suspend fun setOrderApprove(
+        @Header("Authorization") token: String,
+        @Path("shippingInfoId") orderId: Int
+    ): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/approve")
+    suspend fun setOrderApproved(
+        @Header("Authorization") token: String,
+        @Path("shippingInfoId") orderId: Int
+    ): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/deliver")
+    suspend fun setOrderDelivering(
+        @Header("Authorization") token: String,
+        @Path("shippingInfoId") orderId: Int
+    ): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/setdelivered")
+    suspend fun setOrderDelivered(
+        @Header("Authorization") token: String,
+        @Path("shippingInfoId") orderId: Int
+    ): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/setcompleted")
+    suspend fun setOrderCompleted(
+        @Header("Authorization") token: String,
+        @Path("shippingInfoId") orderId: Int
+    ): Response<Unit>
+
+    @GET("users/ownedrestaurant")
+    suspend fun getOwnedRestaurant(
+        @Header("Authorization") token: String
+    ): Response<OwnedRestaurantInfo>
+
+    @GET("shippinginfo/owner/pending")
+    suspend fun getOwnerPendingOrders(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
+    @GET("shippinginfo/owner/approved")
+    suspend fun getOwnerApprovedOrders(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
+    @GET("shippinginfo/owner/delivering")
+    suspend fun getOwnerDeliveringOrders(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
+    @GET("shippinginfo/owner/delivered")
+    suspend fun getOwnerDeliveredOrders(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+
+    @GET("shippinginfo/owner/completed")
+    suspend fun getOwnerCompletedOrders(
+        @Header("Authorization") token: String,
+        @Query("pageNumber") pageNumber: Int = 0,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<List<ShippingInfo>>
+    
+
 }
