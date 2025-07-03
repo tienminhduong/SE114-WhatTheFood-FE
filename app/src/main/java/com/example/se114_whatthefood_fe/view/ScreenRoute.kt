@@ -11,7 +11,14 @@ object ScreenRoute {
     val CartScreen = "Cart"
 }
 
-object ScaffoldRoute{
+object SellerRoute {
+    val HomeScreen = "SellerHome"
+    val ManagerScreen = "SellerManager"
+    val NotificationScreen = "SellerNotification"
+    val AccountScreen = "SellerAccount"
+}
+
+object ScaffoldRoute {
     val UserScaffold = "UserScaffold"
     val SellerScaffold = "SellerScaffold"
     val LoginOrRegisterScaffold = "LoginOrRegisterScaffold"
