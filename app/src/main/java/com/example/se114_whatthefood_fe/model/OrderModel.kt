@@ -84,6 +84,24 @@ class OrderModel(
             Response.error(500, "".toResponseBody(null))
         }
     }
+    // getDeleveredOrder
+    suspend fun getDeliveredOrders(
+        pageNumber: Int = 0,
+        pageSize: Int = 10
+    ): Response<List<ShippingInfo>> {
+        return try {
+            val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
+            val response = api.getDeliveredOrder("Bearer $token", pageNumber, pageSize)
+            if (response.isSuccessful) {
+                response
+            } else {
+                Response.error(response.code(), response.errorBody() ?: "".toResponseBody(null))
+            }
+        } catch (e: Exception) {
+            Log.d("OrderModel", "getAllOrders: ${e.message}")
+            Response.error(500, "".toResponseBody(null))
+        }
+    }
 
     //getCompletedOrder
     suspend fun getCompletedOrders(

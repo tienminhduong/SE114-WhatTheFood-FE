@@ -9,19 +9,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -82,8 +77,9 @@ fun Content(navController: NavController? = null, indexTab: Int, orderViewModel:
     val list = when(indexTab) {
         0->orderViewModel.pendingOrderList.items
         1->orderViewModel.deliveringOrderList.items
-        2->orderViewModel.completedOrderList.items
-        3->orderViewModel.allOrderList.items
+        2->orderViewModel.deliveredOrderList.items
+        3->orderViewModel.completedOrderList.items
+        4->orderViewModel.allOrderList.items
         else ->orderViewModel.allOrderList.items
     }
     LazyColumn(modifier = modifier.fillMaxSize()
@@ -126,7 +122,7 @@ fun SwipeTabs(navController: NavController? = null, orderViewModel: OrderViewMod
 @Composable
 fun OrderScreen(navController: NavController? = null, orderViewModel: OrderViewModel, modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState(initialPage = 0,
-        pageCount = { 4 }) // Assuming there are 5 tabs
+        pageCount = { 5 }) // Assuming there are 5 tabs
     Column(modifier = Modifier.fillMaxSize())
     {
         // header
@@ -134,7 +130,7 @@ fun OrderScreen(navController: NavController? = null, orderViewModel: OrderViewM
 
 //        CustomScrollTab(listOf("Đơn đã mua", "Lịch sử", "Đánh giá", "Đang đến", "Giỏ hàng"),
 //           pagerState = pagerState)
-        ScrollTab(listOf("Chờ xác nhận", "Đang giao", "Đã hoàn thành","Lịch sử"),
+        ScrollTab(listOf("Chờ xác nhận", "Đang giao", "Đã giao","Đã hoàn thành","Lịch sử"),
             pagerState = pagerState,
             modifier = Modifier.fillMaxWidth(),
             orderViewModel = orderViewModel)
@@ -152,9 +148,10 @@ fun ScrollTab(tabTitles: List<String>,
               modifier: Modifier = Modifier,
               orderViewModel: OrderViewModel){
     val coroutineScope = rememberCoroutineScope()
-    TabRow(selectedTabIndex = pagerState.currentPage,
+    ScrollableTabRow(selectedTabIndex = pagerState.currentPage,
         modifier = modifier,
         containerColor = Color.Transparent,
+        edgePadding = 0.dp,
         indicator = { tabPositions ->
             TabRowDefaults.SecondaryIndicator(Modifier. tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                 color = Color.White)}
