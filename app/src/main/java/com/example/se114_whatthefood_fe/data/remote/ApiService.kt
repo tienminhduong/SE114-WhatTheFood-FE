@@ -15,6 +15,13 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import java.time.LocalDateTime
 
+
+data class AverageRating(
+    @SerializedName("number")
+    val number: Int,
+    @SerializedName("avgRating")
+    val avgRating: Float
+)
 data class RatingFood(
     @SerializedName("userName")
     val userName: String,
@@ -123,7 +130,7 @@ data class Restaurant(
     val name: String,
     @SerializedName("cldnrUrl")
     val cldnrUrl: String?,
-    @SerializedName("addressDto")
+    @SerializedName("address")
     val address: Address?,
 )
 data class FoodItemResponse(
@@ -269,4 +276,8 @@ interface ApiService {
     @GET("fooditems/{id}/ratings")
     suspend fun getRatingFood(@Header("Authorization") token: String,
                                 @Path("id") id: Int): Response<List<RatingFood>>
+
+    @GET("fooditems/{id}/ratings/summary")
+    suspend fun getSummaryRatingFoodItem(@Header("Authorization") token: String,
+                                            @Path("id") id: Int) : Response<AverageRating>
 }

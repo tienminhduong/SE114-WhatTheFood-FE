@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.se114_whatthefood_fe.data.remote.AverageRating
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.data.remote.RatingFood
 import com.example.se114_whatthefood_fe.model.FoodModel
@@ -27,6 +28,13 @@ class FoodDetailViewModel(private val foodModel: FoodModel,
         viewModelScope.launch {
             _rating.value = ratingModel.getRatings(id)
         }
-
+    }
+    // get summery rating
+    private val _ratingFoodItem = MutableStateFlow<AverageRating?>(null)
+    val ratingFoodItem: StateFlow<AverageRating?> = _ratingFoodItem
+    fun loadRatingFoodItem(id: Int) {
+        viewModelScope.launch {
+            _ratingFoodItem.value = ratingModel.getAverageRatingFoodItem(id)
+        }
     }
 }

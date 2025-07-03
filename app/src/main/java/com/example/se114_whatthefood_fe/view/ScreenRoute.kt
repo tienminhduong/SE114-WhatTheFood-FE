@@ -8,4 +8,5 @@ object ScreenRoute {
     val LoginOrRegisterScreen = "LoginOrRegister"
     val DetailOrderScreen = "DetailOrder/{orderId}"
     val DetailFoodItemScreen = "DetailFoodItem/{foodItemId}"
+    val CartScreen = "Cart"
 }

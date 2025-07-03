@@ -167,6 +167,9 @@ class MainActivity : ComponentActivity() {
                             OrderScreen(orderViewModel = orderViewModel, navController = navController)
                         }
                         composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
+                        composable(ScreenRoute.CartScreen) {
+                            
+                        }
                         composable(ScreenRoute.HomeScreen) {
                             //test home screen
                             //HomeScreenTest(foodViewModel = foodViewModel)

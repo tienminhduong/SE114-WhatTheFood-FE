@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.se114_whatthefood_fe.data.remote.ApiService
-import com.example.se114_whatthefood_fe.data.remote.Rating
+import com.example.se114_whatthefood_fe.data.remote.AverageRating
 import com.example.se114_whatthefood_fe.data.remote.RatingFood
 import kotlinx.coroutines.flow.first
 
@@ -29,6 +29,21 @@ class RatingModel(private val api: ApiService,
         {
             emptyList()
 
+        }
+    }
+
+    suspend fun getAverageRatingFoodItem(foodItemId: Int): AverageRating?{
+        val token = getToken()
+        val result = api.getSummaryRatingFoodItem(token = "Bearer $token", id = foodItemId)
+        return try {
+            if(result.isSuccessful)
+                result.body()
+            else
+                null
+        }
+        catch (e: Exception)
+        {
+            null
         }
     }
 
