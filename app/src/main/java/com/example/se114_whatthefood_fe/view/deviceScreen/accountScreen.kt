@@ -2,6 +2,8 @@ package com.example.se114_whatthefood_fe.view.deviceScreen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.location.LocationManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -51,6 +53,7 @@ import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import android.net.Uri
 import androidx.activity.compose.LocalActivity
 import androidx.activity.result.ActivityResult
+import androidx.compose.material.icons.filled.LocationOn
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -228,6 +231,14 @@ fun AccountScreen(authViewModel: AuthViewModel,
             leadingIcon = Icons.Default.Wallet,
             trailingIcon = Icons.Default.PlayArrow,
             onClick = { authViewModel.onPaymentClick(10000, activity = activity!!) },
+            modifier = Modifier.padding(top = 5.dp)
+        )
+        ButtonWithLeadingAndTrailingIcon(
+            "Map",
+            leadingIcon = Icons.Default.LocationOn,
+            trailingIcon = Icons.Default.PlayArrow,
+            onClick = {
+            },
             modifier = Modifier.padding(top = 5.dp)
         )
         // doi anh

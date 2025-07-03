@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.view_model
 
 import android.app.Activity
 import android.content.Context
+import com.example.se114_whatthefood_fe.BuildConfig
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -80,6 +81,11 @@ import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.here.sdk.core.engine.AuthenticationMode
+import com.here.sdk.core.engine.SDKNativeEngine
+import com.here.sdk.core.engine.SDKOptions
+import com.here.sdk.core.errors.InstantiationErrorException
+import com.here.sdk.mapview.MapView
 import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPaySDK
 
@@ -93,9 +99,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         askNotificationPermission()
 
+        // Initialize ZaloPay SDK
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
         ZaloPaySDK.init(AppInfo.APP_ID, Environment.SANDBOX)
+
+        initializeHERESDK()
 
         // Cho phép Compose vẽ dưới system bar
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -207,6 +216,24 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         ZaloPaySDK.getInstance().onResult(intent)
+    }
+
+    private fun initializeHERESDK() {
+        // Set your credentials for the HERE SDK.
+        val accessKeyID = BuildConfig.HERE_API_KEY
+        val accessKeySecret = BuildConfig.HERE_API_SECRET_KEY
+
+        Log.d("HERE SDK", accessKeyID)
+        Log.d("HERE SDK", accessKeySecret)
+
+        val authenticationMode = AuthenticationMode.withKeySecret(accessKeyID, accessKeySecret)
+        val options = SDKOptions(authenticationMode)
+        try {
+            val context = this
+            SDKNativeEngine.makeSharedInstance(context, options)
+        } catch (e: InstantiationErrorException) {
+            throw RuntimeException("Initialization of HERE SDK failed: " + e.error.name)
+        }
     }
 
     // Declare the launcher at the top of your Activity/Fragment:
