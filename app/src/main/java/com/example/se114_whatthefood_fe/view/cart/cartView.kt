@@ -47,6 +47,7 @@ import com.example.se114_whatthefood_fe.data.remote.FoodCategory
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.data.remote.Restaurant
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfoDetail
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.ButtonIcon
 import com.example.se114_whatthefood_fe.view.detailFoodScreen.GetImageFromURL
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.MoneyFormat
@@ -97,7 +98,8 @@ fun CartScreen(cartViewModel: CartViewModel, navController: NavHostController){
 //        }
         PullToRefreshLazyColumn<CartItem>(
             items = listCartItems,
-            content = { item -> OrderInCart(cartItem = item, cartViewModel = cartViewModel)},
+            content = { item -> OrderInCart(cartItem = item, cartViewModel = cartViewModel,
+                navController = navController)},
             onRefresh = {
                 coroutineScope.launch {
                     isRefreshing = true
@@ -125,7 +127,9 @@ fun TopBar(modifier: Modifier = Modifier){
 
 
 @Composable
-fun OrderInCart(cartItem: CartItem, cartViewModel: CartViewModel){
+fun OrderInCart(cartItem: CartItem,
+                cartViewModel: CartViewModel,
+                navController: NavHostController? = null){
     Column(modifier = Modifier.padding(10.dp)
         .clip(shape = RoundedCornerShape(10.dp))
         .background(Color.White)){
@@ -150,7 +154,9 @@ fun OrderInCart(cartItem: CartItem, cartViewModel: CartViewModel){
         {
             Spacer(modifier = Modifier.weight(1f))
             // chi tiet button
-            Button(onClick = {},
+            Button(onClick = {
+                navController?.navigate("ConfirmOrder/${cartItem.restaurant.id}")
+            },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0Xff00a341),
                     contentColor = Color.White),
                 shape = RoundedCornerShape(10.dp)

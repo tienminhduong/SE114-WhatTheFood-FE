@@ -10,7 +10,7 @@ object ScreenRoute {
     val DetailFoodItemScreen = "DetailFoodItem/{foodItemId}"
     val CartScreen = "Cart"
     val MapScreen = "Map"
-    val ConfirmOrderScreen = "ConfirmOrder"
+    val ConfirmOrderScreen = "ConfirmOrder/{restaurantId}"
 }
 
 object SellerRoute {
