@@ -42,7 +42,7 @@ data class DealItem(
     val totalPrice: Int?,             // thêm nếu muốn hiển thị tổng tiền
     val userNote: String?,
     val address: Address,
-    val user: UserInfo
+    val user: UserInfo?
 )
 
 @Composable
