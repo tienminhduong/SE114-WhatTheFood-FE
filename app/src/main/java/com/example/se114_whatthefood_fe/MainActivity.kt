@@ -75,6 +75,7 @@ import com.example.se114_whatthefood_fe.view_model.CartViewModel
 import com.example.se114_whatthefood_fe.view_model.ConfirmOrderViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
+import com.example.se114_whatthefood_fe.view_model.MapViewModel
 import com.example.se114_whatthefood_fe.view_model.NotiViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderViewModel
@@ -297,6 +298,7 @@ fun UserScaffold(
     }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val mapViewModel = remember { MapViewModel() }
     val currentRoute = navBackStackEntry?.destination?.route
     Box(
         modifier = Modifier
@@ -441,7 +443,8 @@ fun UserScaffold(
                     )
                 }
                 composable(ScreenRoute.MapScreen){
-                    MapScreen(modifier = Modifier, navHostController = navController)
+                    MapScreen(modifier = Modifier, navHostController = navController,
+                        mapViewModel = mapViewModel)
                 }
 
             }
