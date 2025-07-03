@@ -14,6 +14,20 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+data class NewFoodItemRequest(
+    @SerializedName("restaurantId")
+    val restaurantId: Int,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("description")
+    val description: String,
+    @SerializedName("categoryName")
+    val categoryName: String,
+    @SerializedName("price")
+    val price: Int
+)
+
+
 data class ShippingInfoDetail(
     @SerializedName("foodItem")
     val foodItem: FoodItemResponse,
@@ -284,5 +298,12 @@ interface ApiService {
         @Path("id") id: String,
         @Body updatedFood: UpdateFoodItemRequest
     ): Response<Unit>
+
+    @POST("fooditems")
+    suspend fun newFoodItem(
+        @Header("Authorization") token: String,
+        @Body request: NewFoodItemRequest
+    ): Response<Any> // hoặc thay bằng response cụ thể nếu bạn định parse
+
 
 }

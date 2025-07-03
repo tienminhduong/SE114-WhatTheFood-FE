@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.data.remote.FoodItemNearByResponse
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
+import com.example.se114_whatthefood_fe.data.remote.NewFoodItemRequest
 import com.example.se114_whatthefood_fe.data.remote.UpdateFoodItemRequest
 import kotlinx.coroutines.flow.first
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -122,6 +123,17 @@ class FoodModel(
             )
         } catch (e: Exception) {
             Response.error(500, "".toResponseBody(null))
+        }
+    }
+
+    suspend fun createFoodItem(request: NewFoodItemRequest): Response<Any>? {
+        //val token = getToken()
+        val token =
+            "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ"
+        return if (token != null) {
+            api.newFoodItem("Bearer $token", request)
+        } else {
+            Response.error(401, "".toResponseBody(null))
         }
     }
 
