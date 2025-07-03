@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.se114_whatthefood_fe.data.remote.NewFoodItemRequest
 import com.example.se114_whatthefood_fe.data.remote.UpdateFoodItemRequest
 import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.view.card.Product
@@ -90,8 +91,33 @@ class SellerHomeViewModel(
 
 
     fun addProduct(newProduct: Product) {
-        val id = newProduct.id ?: (products.size + 1).toString()
-        val productWithId = newProduct.copy(id = id)
-        products = products + productWithId
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                val response = foodModel.createFoodItem(
+                    NewFoodItemRequest(
+                        restaurantId = newProduct.restaurantId!!,
+                        name = newProduct.name ?: "Tên món",
+                        description = "Thêm từ app",
+                        categoryName = "Đồ ăn", // hoặc ánh xạ từ categoryId
+                        price = newProduct.price?.toInt() ?: 0
+                    )
+                )
+                if (response != null) {
+                    if (response.isSuccessful) {
+
+                        loadProducts()
+                    } else {
+                        errorMessage = "Lỗi thêm món: ${response.code()}"
+                    }
+                }
+            } catch (e: Exception) {
+                errorMessage = "Lỗi ngoại lệ khi thêm món: ${e.message}"
+            } finally {
+                isLoading = false
+            }
+        }
     }
+
 }
