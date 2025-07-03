@@ -207,6 +207,11 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                 onClick = { authViewModel.verifyOtp(authViewModel.otpCode)},
                 modifier = modifier
             )
+            RoundCornerButton(
+                text = "Trở về đăng ký",
+                onClick = { authViewModel.otpSent = false },
+                modifier = modifier
+            )
         }
         authViewModel.authResult?.let {
             Text("Signed in as: ${it.phoneNumber}")

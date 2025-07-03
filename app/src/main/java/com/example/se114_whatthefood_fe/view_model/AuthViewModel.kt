@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -115,7 +116,7 @@ class AuthViewModel(private val authModel: AuthModel,
         isVisiblePasswordInLogin = !isVisiblePasswordInLogin
     }
     fun onForgotPasswordClick() {
-        // Handle forgot password click logic here, e.g., navigate to a reset password screen
+        // Handle forgot password logic here, e.g., navigate to a reset password screen
         // This could be implemented using a navigation controller or similar mechanism
     }
 
@@ -213,23 +214,28 @@ class AuthViewModel(private val authModel: AuthModel,
         val code = data.getString("return_code")
 
         if (code != "1") {
-            // Handle error in creating order
+            Toast.makeText(activity, "Bạn không đủ tiền trong ví ZaloPay", Toast.LENGTH_SHORT).show()
             return
         }
+
 
         ZaloPaySDK.getInstance().payOrder(activity, data.getString("zp_trans_token"), "demozpdk://app", object :
             PayOrderListener {
             override fun onPaymentCanceled(zpTransToken: String?, appTransID: String?) {
                 //Handle User Canceled
                 Log.d("Payment", "Payment canceled")
+                Toast.makeText(activity, "Thanh toán đã bị hủy", Toast.LENGTH_SHORT).show()
             }
             override fun onPaymentError(zaloPayErrorCode: ZaloPayError?, zpTransToken: String?, appTransID: String?) {
                 //Redirect to Zalo/ZaloPay Store when zaloPayError == ZaloPayError.PAYMENT_APP_NOT_FOUND
                 //Handle Error
-                Log.e("Payment", "Payment error: ${zaloPayErrorCode}")
+                //Log.e("Payment", "Payment error: ${zaloPayErrorCode}")
+                Toast.makeText(activity, "Thanh toán thất bại: ${zaloPayErrorCode?.toString()}", Toast.LENGTH_SHORT).show()
             }
             override fun onPaymentSucceeded(transactionId: String, transToken: String, appTransID: String?) {
+                
                 Log.d("Payment", "Payment succeeded")
+                Toast.makeText(activity, "Thanh toán thành công", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -254,6 +260,7 @@ class AuthViewModel(private val authModel: AuthModel,
 
                 override fun onVerificationFailed(e: FirebaseException) {
                     Log.e("Auth", "Verification Failed: ${e.message}")
+                    Toast.makeText(activity, "Xác thực thất bại, vui lòng thử lại hoặc đăng kí lại", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onCodeSent(

@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.DarkBlue
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
@@ -38,9 +39,8 @@ import kotlin.math.log
 @Composable
 @Preview
 fun LoginFormPreview() {
-//    val authViewModel = AuthViewModel()
-//    LoginForm(authViewModel)
 }
+
 @Composable
 fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
 
