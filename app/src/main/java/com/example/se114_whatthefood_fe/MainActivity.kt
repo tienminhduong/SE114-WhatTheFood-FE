@@ -68,6 +68,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
+import com.example.se114_whatthefood_fe.view.map.MapScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.CartViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
@@ -142,6 +143,8 @@ class MainActivity : ComponentActivity() {
                         navControllerWhenLogout = navController
                     )
                 }
+
+
             }
         }
     }
@@ -421,6 +424,9 @@ fun UserScaffold(
                         foodDetailViewModel = foodDetailViewModel,
                         orderId = foodItemId
                     )
+                }
+                composable(ScreenRoute.MapScreen){
+                    MapScreen(modifier = Modifier, navHostController = navController)
                 }
 
             }

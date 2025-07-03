@@ -53,6 +53,7 @@ import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import androidx.activity.compose.LocalActivity
 import androidx.activity.result.ActivityResult
 import androidx.compose.material.icons.filled.LocationOn
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -88,19 +89,12 @@ fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
                 .size(80.dp),
             contentAlignment = Alignment.Center,
         ) {
-//            Icon(
-//                imageVector =  Icons.Default.Person,
-//                contentDescription = "User Avatar",
-//                tint = LightGreen,
-//                modifier = Modifier.fillMaxSize()
-//            )
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(user?.pfpUrl)
                     .crossfade(true)
                     .diskCachePolicy(CachePolicy.ENABLED)  // Cache trên ổ đĩa
                     .memoryCachePolicy(CachePolicy.ENABLED) // Cache trên RAM
-                    //.size(100, 100) // Set kích thước ảnh
                     .placeholder(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
                     .error(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
                     .build(),
@@ -238,6 +232,7 @@ fun AccountScreen(authViewModel: AuthViewModel,
             leadingIcon = Icons.Default.LocationOn,
             trailingIcon = Icons.Default.PlayArrow,
             onClick = {
+                navController.navigate(ScreenRoute.MapScreen)
             },
             modifier = Modifier.padding(top = 5.dp)
         )
