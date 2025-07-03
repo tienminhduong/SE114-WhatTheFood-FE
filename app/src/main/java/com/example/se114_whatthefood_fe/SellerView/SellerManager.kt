@@ -1,26 +1,23 @@
 package com.example.se114_whatthefood_fe.SellerView
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.view.card.DealItem
 import com.example.se114_whatthefood_fe.view.card.DealItemCard
@@ -49,14 +45,18 @@ fun SellerManagerPreview() {
 
 @Composable
 fun SellerManager(viewModel: SellerManagerViewModel, modifier: Modifier = Modifier) {
+    LaunchedEffect(Unit) {
+        viewModel.loadAllDeals()
+    }
+
     OrderStatusScreen(viewModel)
 }
 
 
 @Composable
 fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
-    val tabs = listOf("Chờ xác nhận", "Đã xác nhận", "Đang giao", "Đã giao")
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabs = listOf("Chờ xác nhận", "Đã xác nhận", "Đang giao", "Đã giao", "Đã hoàn thành")
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     var selectedDeal by remember { mutableStateOf<DealItem?>(null) }
 
@@ -84,17 +84,20 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
                 )
         ) {
             // Tabs
-            TabRow(
+
+            ScrollableTabRow(
                 selectedTabIndex = selectedTabIndex,
                 containerColor = Color.Transparent,
                 contentColor = Color.Black,
+                edgePadding = 16.dp,
                 indicator = { tabPositions ->
                     TabRowDefaults.Indicator(
                         Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
                         color = Color.White
                     )
                 }
-            ) {
+            )
+            {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
@@ -112,7 +115,6 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val viewModel: SellerManagerViewModel = viewModel()
 
             val onDealClick: (DealItem) -> Unit = { deal ->
                 selectedDeal = deal
@@ -123,6 +125,7 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
                 1 -> AprrovedContent(onDealClick, viewModel)
                 2 -> DeliveringContent(onDealClick, viewModel)
                 3 -> DeliveredContent(onDealClick, viewModel)
+                4 -> DeliveringContent(onDealClick, viewModel)
             }
         }
     }
@@ -130,9 +133,14 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
 
 @Composable
 fun PendingContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
+
     val pendingDeals by viewModel.pendingDeals.collectAsState()
 
-    if (!pendingDeals.isEmpty()) {
+    LaunchedEffect(Unit) {
+        viewModel.loadAllDeals()
+    }
+
+    if (pendingDeals.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(pendingDeals) { deal ->
                 DealItemCard(deal = deal, onClick = { onDealClick(deal) })
@@ -150,8 +158,6 @@ fun PendingContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerView
                 fontSize = 20.sp
             )
         }
-
-
     }
 }
 
@@ -162,38 +168,23 @@ fun PendingContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerView
 @Composable
 fun AprrovedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val deals by viewModel.approvedDeals.collectAsState()
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = { viewModel.loadTestApprovedDeals() }) {
-                Text("Tạo dữ liệu test")
-            }
-            Button(onClick = { viewModel.clearApprovedDeals() }) {
-                Text("Xóa")
+
+    if (deals.isNotEmpty()) {
+        LazyColumn {
+            items(deals) { deal ->
+                DealItemCard(deal = deal, onClick = { onDealClick(deal) })
             }
         }
-
-        if (deals.isNotEmpty()) {
-            LazyColumn {
-                items(deals) { deal ->
-                    DealItemCard(deal = deal, onClick = { onDealClick(deal) })
-                }
-            }
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Chưa có đơn hàng nào cần chuẩn bị",
-                    color = Color.Black,
-                    fontSize = 20.sp
-                )
-            }
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Chưa có đơn hàng nào cần chuẩn bị",
+                color = Color.Black,
+                fontSize = 20.sp
+            )
         }
     }
 }
@@ -201,9 +192,9 @@ fun AprrovedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerVie
 
 @Composable
 fun DeliveringContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
-    val DeliveringDeals by viewModel.deleveredDeals.collectAsState()
+    val DeliveringDeals by viewModel.deliveringDeals.collectAsState()
 
-    if (!DeliveringDeals.isEmpty()) {
+    if (DeliveringDeals.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(DeliveringDeals) { deal ->
                 DealItemCard(deal = deal, onClick = { onDealClick(deal) })
@@ -230,7 +221,7 @@ fun DeliveringContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerV
 fun DeliveredContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val deliveredDeals by viewModel.deliveredDeals.collectAsState()
 
-    if (!deliveredDeals.isEmpty()) {
+    if (deliveredDeals.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(deliveredDeals) { deal ->
                 DealItemCard(deal = deal, onClick = { onDealClick(deal) })

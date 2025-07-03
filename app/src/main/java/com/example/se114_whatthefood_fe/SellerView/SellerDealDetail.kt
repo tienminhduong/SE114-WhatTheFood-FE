@@ -59,7 +59,7 @@ fun SellerDealDetail(
         // Thông tin vận chuyển
         DetailSection(title = "Thông tin vận chuyển") {
             DetailItem("Mã vận đơn", deal.id.toString())
-            DetailItem("Người nhận", deal.user.name ?: "Không rõ")
+            DetailItem("Người nhận", deal.user?.name ?: "Không rõ")
             DetailItem("SĐT", deal.userContact ?: "Không rõ")
             DetailItem("Địa chỉ", deal.address.name ?: "Không rõ")
             deal.userNote?.let {

@@ -46,8 +46,13 @@ class OrderModel(
         pageSize: Int = 10
     ): Response<List<ShippingInfo>> {
         return try {
-            val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
-            val response = api.getAllOrder("Bearer $token", pageNumber, pageSize)
+            //val token =
+
+            val response = api.getAllOrder(
+                "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEyMzQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVXNlcjMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzUxNzkzOTY3LCJpc3MiOiJUaGVGb29kIiwiYXVkIjoiRm9vZEF1ZGllbmNlIn0.VFQ6-Bx4gD42WNJCt7xyMD8uiydsVIeCh4efuD-0AN-Tut0MWXqvDaiMREsM4jFxSoIbD5xjx6qqgNRZfgS8SQ",
+                pageNumber,
+                pageSize
+            )
             if (response.isSuccessful) {
                 response
             } else {

@@ -1,13 +1,18 @@
 package com.example.se114_whatthefood_fe.SellerView_model
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
+import com.example.se114_whatthefood_fe.model.OrderModel
 import com.example.se114_whatthefood_fe.view.card.DealItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class SellerManagerViewModel : ViewModel() {
+class SellerManagerViewModel(
+    private val orderModel: OrderModel,
+    private val sellerId: Int
+) : ViewModel() {
 
     private val _pendingDeals = MutableStateFlow<List<DealItem>>(emptyList())
     val pendingDeals: StateFlow<List<DealItem>> = _pendingDeals
@@ -16,7 +21,7 @@ class SellerManagerViewModel : ViewModel() {
     val approvedDeals: StateFlow<List<DealItem>> = _approvedDeals
 
     private val _deliveringDeals = MutableStateFlow<List<DealItem>>(emptyList())
-    val deleveredDeals: StateFlow<List<DealItem>> = _deliveringDeals
+    val deliveringDeals: StateFlow<List<DealItem>> = _deliveringDeals
 
     private val _deliveredDeals = MutableStateFlow<List<DealItem>>(emptyList())
     val deliveredDeals: StateFlow<List<DealItem>> = _deliveredDeals
@@ -24,121 +29,80 @@ class SellerManagerViewModel : ViewModel() {
     private val _completedDeals = MutableStateFlow<List<DealItem>>(emptyList())
     val completedDeals: StateFlow<List<DealItem>> = _completedDeals
 
-    // Pending
-    fun addPendingDeal(deal: DealItem) {
+    val isLoading = MutableStateFlow(false)
+    val errorMessage = MutableStateFlow<String?>(null)
 
+    init {
+        loadAllDeals()
     }
 
-    fun updatePendingDeal(deal: DealItem) {
-
+    fun loadAllDeals() {
+        viewModelScope.launch {
+            isLoading.value = true
+            errorMessage.value = null
+            try {
+                val response = orderModel.getAllOrders()
+                if (response.isSuccessful) {
+                    val apiDeals = response.body() ?: emptyList()
+                    loadDealsFromApi(apiDeals)
+                } else {
+                    errorMessage.value = "Lỗi khi tải đơn hàng: ${response.code()}"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Lỗi ngoại lệ khi tải đơn hàng: ${e.message}"
+            } finally {
+                isLoading.value = false
+            }
+        }
     }
 
-    fun clearPendingDeals() {
+    fun loadDealsFromApi(apiDeals: List<ShippingInfo>) {
+        val pending = mutableListOf<DealItem>()
+        val approved = mutableListOf<DealItem>()
+        val delivering = mutableListOf<DealItem>()
+        val delivered = mutableListOf<DealItem>()
+        val completed = mutableListOf<DealItem>()
 
-    }
+        apiDeals.forEach { info ->
+            val deal = info.toDealItem()
+            when (deal.status?.lowercase()) {
+                "pending" -> pending.add(deal)
+                "approved" -> approved.add(deal)
+                "delivering" -> delivering.add(deal)
+                "delivered" -> delivered.add(deal)
+                "completed" -> completed.add(deal)
+            }
+        }
 
-    // Approved
-    fun addApprovedDeal(deal: DealItem) {
-
-    }
-
-    fun updateApprovedDeal(deal: DealItem) {
-
-    }
-
-    fun clearApprovedDeals() {
-        _pendingDeals.value = emptyList()
-    }
-
-    // Delivering
-    fun addDeliveringDeal(deal: DealItem) {
-
-    }
-
-    fun updateDeliveringDeal(deal: DealItem) {
-
-    }
-
-    fun clearDeliveringDeals() {
-
-    }
-
-    // Delivered
-    fun addDeliveredDeal(deal: DealItem) {
-
-    }
-
-    fun updateDeliveredDeal(deal: DealItem) {
-
-    }
-
-    fun clearDeliveredDeals() {
-
-    }
-
-    fun loadTestApprovedDeals() {
-
+        _pendingDeals.value = pending
+        _approvedDeals.value = approved
+        _deliveringDeals.value = delivering
+        _deliveredDeals.value = delivered
+        _completedDeals.value = completed
     }
 
     fun getNextStatus(currentStatus: String): String {
         return when (currentStatus.lowercase()) {
-            "Pending" -> "Approved"
-            "Approved" -> "Delivering"
-            "Delivering" -> "Delivered"
-            "Delivered" -> "Completed"
+            "pending" -> "Approved"
+            "approved" -> "Delivering"
+            "delivering" -> "Delivered"
+            "delivered" -> "Completed"
             else -> currentStatus
         }
     }
 
-    fun acceptDeal(deal: DealItem) {
-        val nextStatus = deal.status?.let { getNextStatus(it) }
-        val updatedDeal = deal.copy(status = nextStatus)
-
-        removeFromCurrentList(deal)
-        addToListByStatus(updatedDeal)
-
-    }
-
-    fun removeFromCurrentList(deal: DealItem) {
-        when (deal.status?.lowercase()) {
-            "Pending" -> _pendingDeals.value = _pendingDeals.value - deal
-            "Approved" -> _approvedDeals.value = _approvedDeals.value - deal
-            "Delivering" -> _deliveringDeals.value = _deliveringDeals.value - deal
-            "Delivered" -> _deliveredDeals.value = _deliveredDeals.value - deal
-        }
-    }
-
-    fun addToListByStatus(deal: DealItem) {
-        when (deal.status?.lowercase()) {
-            "Approved" -> _approvedDeals.value = _approvedDeals.value + deal
-            "Delivering" -> _deliveringDeals.value = _deliveringDeals.value + deal
-            "Delivered" -> _deliveredDeals.value = _deliveredDeals.value + deal
-            "Completed" -> _completedDeals.value = _completedDeals.value + deal
-        }
-    }
-
-    fun handleAcceptDeal(
-        deal: DealItem,
-        selectedDeal: MutableState<DealItem?>
-    ) {
-        //UpdateDealStatus(deal.id, "Approved")
-        selectedDeal.value = null
-    }
-
-
     fun ShippingInfo.toDealItem(): DealItem {
         return DealItem(
             id = this.id,
-            imageLink = this.user.pfpUrl,
-            title = "Đơn hàng của ${this.user.name}",
+            imageLink = this.user.pfpUrl ?: "",
+            title = "Đơn hàng của ${this.user.name ?: "Khách"}",
             status = this.status,
-            userContact = this.user.phoneNumber,
-            paymentMethod = this.paymentMethod,
+            userContact = this.user.phoneNumber ?: "Không rõ",
+            paymentMethod = this.paymentMethod ?: "Không rõ",
             totalPrice = this.totalPrice,
-            userNote = this.userNote,
+            userNote = this.userNote ?: "",
             address = this.address,
             user = this.user
         )
     }
-
 }

@@ -32,6 +32,7 @@ import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.FoodModel
+import com.example.se114_whatthefood_fe.model.OrderModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 val Context.dataStore by preferencesDataStore(name = "user_pref")
@@ -143,6 +144,13 @@ class MainActivity : ComponentActivity() {
             }
             val sellerHomeViewModel = remember { SellerHomeViewModel(foodModel, sellerId = 1) }
 
+            val orderModel = remember {
+                val api = RetrofitInstance.instance
+                OrderModel(api, dataStore)
+            }
+            val sellerManagerViewModel = remember {
+                SellerManagerViewModel(orderModel, sellerId = 1)
+            }
 
 
             Scaffold(
@@ -168,10 +176,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("SellerManager")
                     {
-                        SellerManager(
-                            viewModel = SellerManagerViewModel(),
-                            modifier = Modifier,
-                        )
+                        SellerManager(viewModel = sellerManagerViewModel)
                     }
                     composable("SellerNotification")
                     {
