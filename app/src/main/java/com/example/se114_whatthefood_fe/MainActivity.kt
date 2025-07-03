@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
+import com.example.se114_whatthefood_fe.model.CartModel
 import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.model.ImageModel
 import com.example.se114_whatthefood_fe.model.OrderModel
@@ -49,6 +50,7 @@ import com.example.se114_whatthefood_fe.ui.theme.MintGreen
 import com.example.se114_whatthefood_fe.view.ScaffoldRoute
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
+import com.example.se114_whatthefood_fe.view.cart.CartScreen
 import com.example.se114_whatthefood_fe.view.detailFoodScreen.DetailFoodScreen
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.DetailOrderScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.AccountScreen
@@ -57,6 +59,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
+import com.example.se114_whatthefood_fe.view_model.CartViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
@@ -153,7 +156,7 @@ fun UserScaffold(dataStore: DataStore<Preferences>,
                  authViewModel: AuthViewModel,
                  navControllerWhenLogout: NavHostController){
     val screenRootHaveBottomBar = remember {
-        listOf("Home", "Account", "Orders", "Notifications")
+        listOf("Home", "Account", "Cart","Orders", "Notifications")
     }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -181,7 +184,7 @@ fun UserScaffold(dataStore: DataStore<Preferences>,
                         navControllerWhenLogout = navControllerWhenLogout) }
                 composable(ScreenRoute.OrderScreen) {
                     val orderViewModel = remember {OrderViewModel(
-                        orderModel = com.example.se114_whatthefood_fe.model.OrderModel(
+                        orderModel = OrderModel(
                             api = RetrofitInstance.instance,
                             dataStore = dataStore
                         )
@@ -190,7 +193,14 @@ fun UserScaffold(dataStore: DataStore<Preferences>,
                 }
                 composable(ScreenRoute.NotificationScreen) { NotificationScreen() }
                 composable(ScreenRoute.CartScreen) {
-
+                    val cartModel = remember {
+                        CartModel(api = RetrofitInstance.instance,
+                            dataStore = dataStore)
+                    }
+                    val cartViewModel = remember {
+                        CartViewModel(cartModel = cartModel)
+                    }
+                    CartScreen(cartViewModel = cartViewModel, navController = navController)
                 }
                 composable(ScreenRoute.HomeScreen) {
                     //test home screen

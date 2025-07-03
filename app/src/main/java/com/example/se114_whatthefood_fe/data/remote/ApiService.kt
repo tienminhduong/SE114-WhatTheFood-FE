@@ -16,6 +16,15 @@ import retrofit2.http.Query
 import java.time.LocalDateTime
 
 
+data class CartItem(
+    @SerializedName("restaurant")
+    val restaurant: Restaurant,
+    @SerializedName("orderDetails")
+    val orderDetails: List<ShippingInfoDetail>,
+    @SerializedName("totalAmount")
+    val totalAmount: Int
+)
+
 data class AverageRating(
     @SerializedName("number")
     val number: Int,
@@ -280,4 +289,12 @@ interface ApiService {
     @GET("fooditems/{id}/ratings/summary")
     suspend fun getSummaryRatingFoodItem(@Header("Authorization") token: String,
                                             @Path("id") id: Int) : Response<AverageRating>
+
+    @GET("cart")
+    suspend fun getAllItemsInCart(@Header("Authorization") token: String): Response<List<CartItem>>
+
+    // id truyen vao
+    @GET("cart/{restaurantId}")
+    suspend fun getCartById(@Header("Authorization") token: String,
+                            @Path("restaurantId") restaurantId: Int): Response<CartItem>
 }

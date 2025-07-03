@@ -102,4 +102,8 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)
+    // pull to refresh
+    implementation (libs.accompanist.swiperefresh)
+    implementation(platform(libs.androidx.compose.bom.v20230300))
+
 }

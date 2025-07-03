@@ -188,17 +188,21 @@ fun ScreenWhenLogin(authViewModel: AuthViewModel,
                 else {
                     Log.d("Login", "Login failed")
                 }
+                authViewModel.loginSuccess = null
+                authViewModel.loginState = UIState.IDLE
             }
         }
         UIState.ERROR -> {
             // Handle error state, e.g., show an error message
             authViewModel.loginSuccess = false // Reset login success state
+            authViewModel.loginState = UIState.IDLE
         }
         UIState.IDLE -> {
             // Do nothing, this is the initial state
         }
         UIState.NETWORK_ERROR -> {
             Toast.makeText(LocalView.current.context, "Network Error", Toast.LENGTH_SHORT).show()
+            authViewModel.loginState = UIState.IDLE
         }
     }
 }

@@ -64,14 +64,6 @@ fun HeaderOrderScreen(modifier: Modifier = Modifier) {
                 .padding(vertical = 16.dp),
             fontSize = HeaderTextSize,
             color = White)
-        IconButton(onClick = { /* TODO: Implement search functionality */ },
-            modifier = Modifier.align(Alignment.CenterEnd))
-        {
-            Icon(imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon",
-                modifier = Modifier.size(30.dp),
-                tint = White)
-        }
     }
 }
 

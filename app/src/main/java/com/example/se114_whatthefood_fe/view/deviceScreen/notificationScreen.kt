@@ -1,6 +1,5 @@
 package com.example.se114_whatthefood_fe.view.deviceScreen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,13 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.se114_whatthefood_fe.ui.theme.HeaderTextSize
-import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 
 @Composable
@@ -54,13 +51,5 @@ fun HeaderNotificationScreen(modifier: Modifier = Modifier) {
                 .padding(vertical = 16.dp),
             fontSize = HeaderTextSize,
             color = White)
-        IconButton(onClick = { /* TODO: Implement setting functionality */ },
-            modifier = Modifier.align(Alignment.CenterEnd))
-        {
-            Icon(imageVector = Icons.Default.Settings,
-                contentDescription = "Search Icon",
-                modifier = Modifier.size(30.dp),
-                tint = White)
-        }
     }
 }
