@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -24,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.se114_whatthefood_fe.data.remote.Notification
 import java.util.UUID
 
 
@@ -39,12 +42,12 @@ data class SellerNotification(
 
 @Composable
 fun SellerNotificationCard(
-    item: SellerNotification,
+    item: Notification,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (item.status == false) Color(0xFFF0F0F0) else Color.White
-    val titleFontWeight = if (item.status == true) FontWeight.Normal else FontWeight.Bold
+    val backgroundColor = if (item.isRead == false) Color(0xFFF0F0F0) else Color.White
+    val titleFontWeight = if (item.isRead == true) FontWeight.Normal else FontWeight.Bold
 
     Card(
         modifier = modifier
@@ -60,7 +63,7 @@ fun SellerNotificationCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Chấm đỏ nếu chưa đọc
-                if (item.status == false) {
+                if (item.isRead == false) {
                     Box(
                         modifier = Modifier
                             .size(10.dp)
@@ -91,11 +94,29 @@ fun SellerNotificationCard(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = item.timestamp ?: "Không rõ thời gian",
+                text = item.dateTime ?: "Không rõ thời gian",
                 fontSize = 12.sp,
                 color = Color.Gray
             )
         }
+    }
+}
+
+@Composable
+fun SellerNotificationDetailScreen(notification: Notification) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(text = "Chi tiết thông báo", style = MaterialTheme.typography.headlineSmall)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Tiêu đề: ${notification.title}", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Nội dung: ${notification.content}")
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Thời gian: ${notification.dateTime}")
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

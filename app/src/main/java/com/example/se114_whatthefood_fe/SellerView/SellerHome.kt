@@ -1,6 +1,5 @@
 package com.example.se114_whatthefood_fe.SellerView
 
-import com.example.se114_whatthefood_fe.view.card.Product
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,13 +10,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Doorbell
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,10 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
+import com.example.se114_whatthefood_fe.view.card.Product
 import com.example.se114_whatthefood_fe.view.card.ProductItem
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 
 
 //@SuppressLint("ViewModelConstructorInComposable")
@@ -45,40 +44,81 @@ fun SellerHomePreview() {
 fun SellerHome(
     viewModel: SellerHomeViewModel
 ) {
-    // Trạng thái: đang chỉnh sản phẩm nào?
     var editingProduct by remember { mutableStateOf<Product?>(null) }
+    var isAddingProduct by remember { mutableStateOf(false) }
 
-    if (editingProduct != null) {
-        // Mở màn hình chỉnh sửa
-        EditProductScreen(
-            product = editingProduct!!,
-            onSave = { updatedProduct ->
-                viewModel.updateProduct(updatedProduct)
-                editingProduct = null // đóng màn
-            },
-            onCancel = {
-                editingProduct = null // hủy sửa
-            }
-        )
-    } else {
-        // Màn hình danh sách sản phẩm
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        listOf(Color(0xFF00FF7F), Color.White)
+    val isLoading = viewModel.isLoading
+    val error = viewModel.errorMessage
+    val products = viewModel.products
+
+    when {
+        editingProduct != null -> {
+            EditProductScreen(
+                product = editingProduct!!,
+                onSave = { updatedProduct ->
+                    viewModel.updateProduct(updatedProduct)
+                    editingProduct = null
+                },
+                onCancel = { editingProduct = null }
+            )
+        }
+
+        isAddingProduct -> {
+            AddProductScreen(
+                product = Product(),
+                onSave = { newProduct ->
+                    viewModel.addProduct(newProduct)
+                    isAddingProduct = false
+                },
+                onCancel = { isAddingProduct = false }
+            )
+        }
+
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            listOf(Color(0xFF00FF7F), Color.White)
+                        )
                     )
+            ) {
+                SellerHeaderHome(
+                    viewModel,
+                    onAddClick = { isAddingProduct = true }
                 )
-        ) {
-            SellerHeaderHome()
 
-            LazyColumn {
-                items(viewModel.products) { product ->
-                    ProductItem(
-                        item = product,
-                        onClick = { editingProduct = product } // Khi click vào sẽ mở chỉnh sửa
-                    )
+                when {
+                    isLoading -> {
+                        Text(
+                            text = "Đang tải sản phẩm...",
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(16.dp)
+                        )
+                    }
+
+                    error != null -> {
+                        Text(
+                            text = error,
+                            color = Color.Red,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(16.dp)
+                        )
+                    }
+
+                    else -> {
+                        LazyColumn {
+                            items(products) { product ->
+                                ProductItem(
+                                    item = product,
+                                    onClick = { editingProduct = product }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -87,32 +127,38 @@ fun SellerHome(
 
 
 @Composable
-fun SellerHeaderHome(modifier: Modifier = Modifier) {
+fun SellerHeaderHome(
+    viewModel: SellerHomeViewModel,
+    modifier: Modifier = Modifier,
+    onAddClick: () -> Unit
+) {
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
     ) {
+        // Tiêu đề căn giữa
         Text(
             text = "Quản lý sản phẩm",
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            fontSize = HeaderTextSize,
-            color = White
+            fontSize = 20.sp,
+            color = Color.White,
+            modifier = Modifier.align(Alignment.Center)
         )
+
+        // Nút thêm nằm bên phải
         IconButton(
-            onClick = { /* TODO: xử lý bấm chuông nếu cần */ },
+            onClick = onAddClick,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 16.dp)
+                .padding(end = 12.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.List,
-                contentDescription = "Deal Icon",
+                imageVector = Icons.Default.Add,
+                contentDescription = "Thêm sản phẩm",
                 modifier = Modifier.size(30.dp),
-                tint = White
+                tint = Color.White
             )
         }
     }

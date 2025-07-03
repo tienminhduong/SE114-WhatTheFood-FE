@@ -47,27 +47,28 @@ object StatusOrder{
 @Preview
 @Composable
 fun CardOrderPreview() {
-    val order = ShippingInfo(
-        id = 1,
-        orderTime = "2023-06-01T12:00:00",
-        arrivedTime = "2023-06-01T13:00:00",
-        totalPrice = 100000,
-        userNote = "Ghi chú đơn hàng",
-        restaurant = Restaurant(
-            id = 1,
-            name = "Nhà hàng Affffffffffffffff",
-            cldnrUrl = "https://example.com/image.jpg",
-            address = null
-        ),
-        status = "Đang giao",
-        paymentMethod = "Thanh toán khi nhận hàng",
-        address = Address(
-            name = "Địa chỉ giao hàng",
-            longitude = 10.7f,
-            latitude = 106.6f),
-        shippingInfoDetails = emptyList()
-    )
-    CardOrder(order = order, modifier = Modifier)
+//    val order = ShippingInfo(
+//        id = 1,
+//        orderTime = "2023-06-01T12:00:00",
+//        arrivedTime = "2023-06-01T13:00:00",
+//        totalPrice = 100000,
+//        userNote = "Ghi chú đơn hàng",
+//        restaurant = Restaurant(
+//            id = 1,
+//            name = "Nhà hàng Affffffffffffffff",
+//            cldnrUrl = "https://example.com/image.jpg",
+//            address = null
+//        ),
+//        status = "Đang giao",
+//        paymentMethod = "Thanh toán khi nhận hàng",
+//        address = Address(
+//            name = "Địa chỉ giao hàng",
+//            longitude = 10.7f,
+//            latitude = 106.6f),
+//        shippingInfoDetails = emptyList(),
+//
+//    )
+//    CardOrder(order = order, modifier = Modifier)
 }
 
 @Composable
