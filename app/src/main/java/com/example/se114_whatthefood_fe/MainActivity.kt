@@ -2,7 +2,12 @@ package com.example.se114_whatthefood_fe
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,8 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -34,6 +40,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.se114_whatthefood_fe.Constant.AppInfo
+
+import com.example.se114_whatthefood_fe.SellerView.SellerAccount
+import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
+import com.example.se114_whatthefood_fe.SellerView.SellerHome
+import com.example.se114_whatthefood_fe.SellerView.SellerManager
+import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
+import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
+import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
+import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.CartModel
@@ -72,6 +88,13 @@ import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.FoodModel
 import com.example.se114_whatthefood_fe.model.OrderModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.here.sdk.core.engine.AuthenticationMode
+import com.here.sdk.core.engine.SDKNativeEngine
+import com.here.sdk.core.engine.SDKOptions
+import com.here.sdk.core.errors.InstantiationErrorException
+import com.here.sdk.mapview.MapView
+import vn.zalopay.sdk.Environment
+import vn.zalopay.sdk.ZaloPaySDK
 import kotlinx.coroutines.launch
 
 val Context.dataStore by preferencesDataStore(name = "user_pref")
@@ -82,6 +105,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        askNotificationPermission()
+
+        // Initialize ZaloPay SDK
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+        ZaloPaySDK.init(AppInfo.APP_ID, Environment.SANDBOX)
+
+        initializeHERESDK()
+
         // Cho phép Compose vẽ dưới system bar
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
@@ -113,6 +145,28 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        ZaloPaySDK.getInstance().onResult(intent)
+    }
+
+    private fun initializeHERESDK() {
+        // Set your credentials for the HERE SDK.
+        val accessKeyID = BuildConfig.HERE_API_KEY
+        val accessKeySecret = BuildConfig.HERE_API_SECRET_KEY
+
+        Log.d("HERE SDK", accessKeyID)
+        Log.d("HERE SDK", accessKeySecret)
+
+        val authenticationMode = AuthenticationMode.withKeySecret(accessKeyID, accessKeySecret)
+        val options = SDKOptions(authenticationMode)
+        try {
+            val context = this
+            SDKNativeEngine.makeSharedInstance(context, options)
+        } catch (e: InstantiationErrorException) {
+            throw RuntimeException("Initialization of HERE SDK failed: " + e.error.name)
+        }
+    }
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),

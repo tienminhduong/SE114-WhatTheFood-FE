@@ -1,14 +1,30 @@
 package com.example.se114_whatthefood_fe.view_model
 
+import android.app.Activity
 import android.content.Context
+import com.example.se114_whatthefood_fe.BuildConfig
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.se114_whatthefood_fe.Api.CreateOrder
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.ImageModel
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import vn.zalopay.sdk.ZaloPayError
+import vn.zalopay.sdk.ZaloPaySDK
+import vn.zalopay.sdk.listeners.PayOrderListener
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AuthViewModel(private val authModel: AuthModel,
@@ -40,6 +56,7 @@ class AuthViewModel(private val authModel: AuthModel,
     var isVisiblePasswordInRegister by mutableStateOf(false)
     var isVisibleConfirmPasswordInRegister by mutableStateOf(false)
     var registerState by mutableStateOf<UIState>(UIState.IDLE)
+    var otpCode by mutableStateOf("")
 
     fun clickVisiblePasswordInRegister() {
         isVisiblePasswordInRegister = !isVisiblePasswordInRegister
@@ -88,7 +105,7 @@ class AuthViewModel(private val authModel: AuthModel,
         isVisiblePasswordInLogin = !isVisiblePasswordInLogin
     }
     fun onForgotPasswordClick() {
-        // Handle forgot password click logic here, e.g., navigate to a reset password screen
+        // Handle forgot password logic here, e.g., navigate to a reset password screen
         // This could be implemented using a navigation controller or similar mechanism
     }
 
@@ -179,4 +196,90 @@ class AuthViewModel(private val authModel: AuthModel,
         // Handle help click logic here, e.g., show a dialog or navigate to a help screen
         // This could be implemented using a dialog or navigation controller
     }
+
+    fun onPaymentClick(total: Int, activity: Activity) {
+        val orderApi = CreateOrder()
+        val data = orderApi.createOrder(total.toString())
+        val code = data.getString("return_code")
+
+        if (code != "1") {
+            Toast.makeText(activity, "Bạn không đủ tiền trong ví ZaloPay", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+
+        ZaloPaySDK.getInstance().payOrder(activity, data.getString("zp_trans_token"), "demozpdk://app", object :
+            PayOrderListener {
+            override fun onPaymentCanceled(zpTransToken: String?, appTransID: String?) {
+                //Handle User Canceled
+                Log.d("Payment", "Payment canceled")
+                Toast.makeText(activity, "Thanh toán đã bị hủy", Toast.LENGTH_SHORT).show()
+            }
+            override fun onPaymentError(zaloPayErrorCode: ZaloPayError?, zpTransToken: String?, appTransID: String?) {
+                //Redirect to Zalo/ZaloPay Store when zaloPayError == ZaloPayError.PAYMENT_APP_NOT_FOUND
+                //Handle Error
+                //Log.e("Payment", "Payment error: ${zaloPayErrorCode}")
+                Toast.makeText(activity, "Thanh toán thất bại: ${zaloPayErrorCode?.toString()}", Toast.LENGTH_SHORT).show()
+            }
+            override fun onPaymentSucceeded(transactionId: String, transToken: String, appTransID: String?) {
+                
+                Log.d("Payment", "Payment succeeded")
+                Toast.makeText(activity, "Thanh toán thành công", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    var verificationId by mutableStateOf<String?>(null)
+    var otpSent by mutableStateOf(false)
+    var authResult by mutableStateOf<FirebaseUser?>(null)
+
+    private val auth = FirebaseAuth.getInstance()
+
+
+    fun sendVerificationCode(activity: Activity) {
+        val phoneNumber = "+84${phoneRegister.removePrefix("0")}"
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(activity)
+            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    signInWithPhoneAuthCredential(credential)
+                }
+
+                override fun onVerificationFailed(e: FirebaseException) {
+                    Log.e("Auth", "Verification Failed: ${e.message}")
+                    Toast.makeText(activity, "Xác thực thất bại, vui lòng thử lại hoặc đăng kí lại", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken
+                ) {
+                    this@AuthViewModel.verificationId = verificationId
+                    otpSent = true
+                }
+            })
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    fun verifyOtp(code: String) {
+        val credential = PhoneAuthProvider.getCredential(verificationId ?: "", code)
+        signInWithPhoneAuthCredential(credential)
+    }
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    authResult = task.result?.user
+                    onRegisterClick()
+                } else {
+                    Log.e("Auth", "Sign in failed: ${task.exception?.message}")
+                }
+            }
+    }
+
 }

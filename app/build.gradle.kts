@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("secret.properties").inputStream())
+        val apiKey = properties.getProperty("HERE_API_KEY")
+        val apiSecretKey = properties.getProperty("HERE_API_SECRET_KEY")
+
+        // Define the API key as a build config field
+        buildConfigField("String", "HERE_API_KEY", "\"$apiKey\"")
+        buildConfigField("String", "HERE_API_SECRET_KEY", "\"$apiSecretKey\"")
     }
 
     buildTypes {
@@ -40,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     //change
@@ -65,6 +77,12 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.identity.jvm)
     implementation(libs.firebase.messaging.ktx)
+
+
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.appcompat)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -100,6 +118,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+    implementation(libs.okhttp)
+    implementation(libs.commons.codec)
+    implementation(libs.firebase.auth.ktx)
 
     // room
     implementation(libs.room.ktx)
@@ -108,5 +129,4 @@ dependencies {
     // pull to refresh
     implementation (libs.accompanist.swiperefresh)
     implementation(platform(libs.androidx.compose.bom.v20230300))
-
 }
