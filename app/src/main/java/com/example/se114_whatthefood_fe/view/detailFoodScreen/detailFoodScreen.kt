@@ -2,8 +2,6 @@ package com.example.se114_whatthefood_fe.view.detailFoodScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
-import androidx.compose.animation.core.estimateAnimationDurationMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,14 +18,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.StarRate
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -54,12 +55,10 @@ import com.example.se114_whatthefood_fe.data.remote.FoodCategory
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.data.remote.RatingFood
 import com.example.se114_whatthefood_fe.data.remote.Restaurant
-import com.example.se114_whatthefood_fe.ui.theme.DarkGreen
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view.authScreen.ButtonIcon
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.MoneyFormat
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
-import java.lang.String.format
 
 @Composable
 fun TopBarFoodDetailScreen(modifier: Modifier = Modifier,
@@ -98,12 +97,30 @@ fun DetailFoodScreen(modifier: Modifier = Modifier,
     }
     Scaffold(topBar = {TopBarFoodDetailScreen(navController = navController)},
         containerColor = Color.Transparent) { innerPadding->
-        FoodItemDetail(foodItem = food,
-                        foodDetailViewModel = foodDetailViewModel,
-            modifier = Modifier.padding(innerPadding) // <-- Áp dụng padding ở đây
-                .fillMaxSize()) // <-- Đảm bảo FoodItemDetail chiếm đầy không gian còn lại)
+        Box(modifier = Modifier.padding(innerPadding))
+        {
+            FoodItemDetail(
+                foodItem = food,
+                foodDetailViewModel = foodDetailViewModel,
+                modifier = Modifier.padding(innerPadding) // <-- Áp dụng padding ở đây
+                    .fillMaxSize()
+            ) // <-- Đảm bảo FoodItemDetail chiếm đầy không gian còn lại)
+
+            FloatingActionButton(
+                onClick = {},
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .padding(16.dp)
+                    .clip(shape = CircleShape),
+                containerColor = LightGreen,
+                contentColor = Color.Black
+            ) {
+                Icon(imageVector = Icons.Filled.AddShoppingCart,
+                    contentDescription = "Add to cart")
+            }
+        }
     }
 }
+
 
 @Composable
 fun FoodItemDetail(modifier: Modifier = Modifier,

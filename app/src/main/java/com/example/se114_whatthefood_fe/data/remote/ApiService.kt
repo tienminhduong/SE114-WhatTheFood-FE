@@ -297,4 +297,9 @@ interface ApiService {
     @GET("cart/{restaurantId}")
     suspend fun getCartById(@Header("Authorization") token: String,
                             @Path("restaurantId") restaurantId: Int): Response<CartItem>
+
+    @POST("cart")
+    suspend fun addToCart(@Header("Authorization") token: String,
+                          @Query("foodItemId") foodItemId: Int,
+                          @Query("amount") amount: Int = 0): Response<Unit>
 }
