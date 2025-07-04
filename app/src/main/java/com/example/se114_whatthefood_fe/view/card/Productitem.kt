@@ -92,7 +92,14 @@ fun ProductItem(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "${item.description}",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Đã bán + trạng thái
                 Row(

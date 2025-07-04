@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
     id("com.google.gms.google-services")
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
     id("kotlin-parcelize")
 }
 
@@ -82,6 +82,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.media3.common.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -127,6 +128,6 @@ dependencies {
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)
     // pull to refresh
-    implementation (libs.accompanist.swiperefresh)
+    implementation(libs.accompanist.swiperefresh)
     implementation(platform(libs.androidx.compose.bom.v20230300))
 }

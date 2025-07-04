@@ -40,6 +40,7 @@ appcompat = "1.7.1"
 roomCompiler = "2.5.0"
 roomKtx = "2.5.0"
 roomRuntime = "2.5.0"
+media3CommonKtx = "1.7.1"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
@@ -93,6 +94,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

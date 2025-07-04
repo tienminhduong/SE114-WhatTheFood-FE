@@ -69,6 +69,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.BottomBarDeviceScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.HomeScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.NotificationScreen
 import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
+import com.example.se114_whatthefood_fe.view.deviceScreen.searchScreen
 import com.example.se114_whatthefood_fe.view.map.MapScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.CartViewModel
@@ -439,6 +440,23 @@ fun UserScaffold(
                         orderId = foodItemId
                     )
                 }
+                composable(ScreenRoute.SearchScreen)
+                {
+                    val foodModel = remember {
+                        FoodModel(
+                            api = RetrofitInstance.instance,
+                            dataStore = dataStore
+                        )
+                    }
+                    val foodViewModel = remember {
+                        FoodViewModel(foodModel = foodModel)
+                    }
+                    searchScreen(
+                        navController = navController,
+                        foodViewModel = foodViewModel,
+                    )
+                }
+
                 composable(ScreenRoute.MapScreen) {
                     MapScreen(modifier = Modifier, navHostController = navController)
                 }
