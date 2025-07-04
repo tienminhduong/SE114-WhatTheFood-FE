@@ -43,9 +43,11 @@ import com.example.se114_whatthefood_fe.SellerView.SellerBottomBar
 import com.example.se114_whatthefood_fe.SellerView.SellerHome
 import com.example.se114_whatthefood_fe.SellerView.SellerManager
 import com.example.se114_whatthefood_fe.SellerView.SellerNotificationContent
+import com.example.se114_whatthefood_fe.SellerView.SellerRatedScreen
 import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
+import com.example.se114_whatthefood_fe.SellerView_model.SellerRatedViewModel
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.CartModel
@@ -279,6 +281,17 @@ fun SellerScaffold(
                 composable(SellerRoute.NotificationScreen)
                 {
                     SellerNotificationContent(viewModel = sellerNotificationViewModel)
+                }
+                composable(SellerRoute.RatedScreen)
+                {
+                    val api = RetrofitInstance.instance
+                    val sellerRatedViewModel = remember {
+                        SellerRatedViewModel(
+                            ratingModel = RatingModel(api, dataStore),
+                            sellerId = 1
+                        )
+                    }
+                    SellerRatedScreen(sellerRatedViewModel)
                 }
             }
         }

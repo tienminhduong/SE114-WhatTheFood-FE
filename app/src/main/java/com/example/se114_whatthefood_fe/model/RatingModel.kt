@@ -9,8 +9,10 @@ import com.example.se114_whatthefood_fe.data.remote.RatingFood
 import kotlinx.coroutines.flow.first
 
 
-class RatingModel(private val api: ApiService,
-                  private val dataStore: DataStore<Preferences>) {
+class RatingModel(
+    private val api: ApiService,
+    private val dataStore: DataStore<Preferences>
+) {
 
     companion object {
         private val TOKEN_KEY = stringPreferencesKey("auth_token")
@@ -25,24 +27,40 @@ class RatingModel(private val api: ApiService,
             } else {
                 emptyList()
             }
-        } catch (e: Exception)
-        {
+        } catch (e: Exception) {
             emptyList()
 
         }
     }
 
-    suspend fun getAverageRatingFoodItem(foodItemId: Int): AverageRating?{
+    suspend fun getRatingsForSeller(restaurantId: String): List<RatingFood> {
+        return try {
+            val token = getToken() ?: return emptyList()
+            val result = api.getRatingBelongToRestaurant(
+                token = "Bearer $token",
+                restaurantId = restaurantId
+            )
+
+            if (result.isSuccessful) {
+                result.body() ?: emptyList()
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+
+    suspend fun getAverageRatingFoodItem(foodItemId: Int): AverageRating? {
         val token = getToken()
         val result = api.getSummaryRatingFoodItem(token = "Bearer $token", id = foodItemId)
         return try {
-            if(result.isSuccessful)
+            if (result.isSuccessful)
                 result.body()
             else
                 null
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             null
         }
     }

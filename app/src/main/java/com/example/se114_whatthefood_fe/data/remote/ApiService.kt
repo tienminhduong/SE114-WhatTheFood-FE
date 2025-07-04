@@ -38,7 +38,7 @@ data class CartItem(
     val restaurant: Restaurant,
     @SerializedName("orderDetails")
     val orderDetails: List<ShippingInfoDetail>,
-    @SerializedName("totalAmount")
+    @SerializedName("to talAmount")
     val totalAmount: Int
 )
 
@@ -423,6 +423,13 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Response<AverageRating>
+
+    @GET("restaurants/{restaurantId}/ratings")
+    suspend fun getRatingBelongToRestaurant(
+        @Header("Authorization") token: String,
+        @Path("restaurantId") restaurantId: String
+    ): Response<List<RatingFood>>
+
 
     @GET("cart")
     suspend fun getAllItemsInCart(@Header("Authorization") token: String): Response<List<CartItem>>
