@@ -147,7 +147,15 @@ fun CardOrder(order: ShippingInfo, modifier: Modifier = Modifier){
                 ) {
                     // status don hang
                     Text(
-                        text = order.status,
+                        text = when(order.status)
+                        {
+                            StatusOrder.Pending -> "Chờ xác nhận"
+                            StatusOrder.Approved -> "Đã xác nhận"
+                            StatusOrder.Delivering -> "Đang giao"
+                            StatusOrder.Delivered -> "Đã giao"
+                            StatusOrder.Completed -> "Đã hoàn thành"
+                            else -> "Trạng thái không xác định"
+                        },
                         color = Color.White,
                         fontSize = 12.sp
                     )

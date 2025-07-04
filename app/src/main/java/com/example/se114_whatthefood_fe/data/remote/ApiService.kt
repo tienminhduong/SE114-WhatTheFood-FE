@@ -509,4 +509,8 @@ interface ApiService {
     @POST("shippinginfo/order")
     suspend fun createOrder(@Header("Authorization") token: String,
                             @Body request: NewOrder): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/setcompleted")
+    suspend fun setCompleted(@Header("Authorization") token: String,
+                             @Path("shippingInfoId") shippingInfoId: Int): Response<Unit>
 }

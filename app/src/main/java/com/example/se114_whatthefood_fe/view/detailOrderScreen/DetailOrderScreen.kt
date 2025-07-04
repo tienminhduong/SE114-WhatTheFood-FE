@@ -19,12 +19,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +46,13 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfoDetail
+import com.example.se114_whatthefood_fe.ui.theme.LightGreen
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.ButtonIcon
 import com.example.se114_whatthefood_fe.view.card.StatusOrder
 import com.example.se114_whatthefood_fe.view.card.getColorOrderStatus
 import com.example.se114_whatthefood_fe.view_model.OrderDetailViewModel
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
@@ -100,24 +106,50 @@ fun DetailOrderScreen(
             orderDetailViewModel.LoadById(orderId)
         }
     }
-    Scaffold(
-        topBar = {
-            HeaderDetailOrderScreen(navController = navController)
-        },
-        containerColor = Color.Transparent
-    ) { innerPadding ->
-        Column(
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            StatusOrder(order = order, modifier = Modifier.padding(10.dp))
-            CardDetailOrderInfo(
-                orderDetail = order?.shippingInfoDetails?.get(0),
-                modifier = Modifier.padding(10.dp)
-            )
-        }
+    Box(modifier = Modifier.fillMaxSize())
+    {
+        Scaffold(
+            topBar = {
+                HeaderDetailOrderScreen(navController = navController)
+            },
+            containerColor = Color.Transparent
+        ) { innerPadding ->
+            Column(
+                modifier = modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                StatusOrder(order = order, modifier = Modifier.padding(10.dp))
+                CardDetailOrderInfo(
+                    orderDetail = order?.shippingInfoDetails?.get(0),
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
 
+        }
+        if(order?.status == "Delivered") {
+            val coroutine = rememberCoroutineScope()
+
+            Button(
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .clip(shape = RoundedCornerShape(10.dp)), colors = ButtonDefaults.buttonColors(
+                    containerColor = LightGreen,
+                    contentColor = Color.White
+                ), onClick = {
+                    coroutine.launch {
+                        orderDetailViewModel.setCompleted(order?.id ?: 0)
+                        navController?.navigate(ScreenRoute.HomeScreen)
+                    }
+
+                }) {
+                Text(
+                    text = "Xác nhận",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 25.sp,
+                    color = Color.White
+                )
+            }
+        }
     }
 }
 

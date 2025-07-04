@@ -17,4 +17,8 @@ class OrderDetailViewModel(private val orderModel: OrderModel) : ViewModel(){
             _order.value = orderModel.getOrdersById(orderId = orderId).body()
         }
     }
+
+    suspend fun setCompleted(orderId: Int): Boolean{
+       return orderModel.setCompleted(orderId = orderId)
+    }
 }

@@ -25,6 +25,11 @@ class OrderModel(
         return preferences[TOKEN_KEY]
     }
 
+    suspend fun setCompleted(orderId: Int): Boolean{
+        val token = getToken() ?: return false
+        val response = api.setCompleted("Bearer $token", orderId)
+        return response.isSuccessful
+    }
 
     // get ordersById
     suspend fun getOrdersById(orderId: Int): Response<ShippingInfo> {
