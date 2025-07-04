@@ -28,13 +28,14 @@ import coil.compose.AsyncImage
 
 @Immutable
 data class Product(
-    val id: String? = null,
+    val id: Int? = 0,
     val name: String? = null,
     val price: Double? = 0.0,
     val soldAmount: Int? = 0,
     val isAvailable: Boolean? = false,
     val imgUrl: String? = "",
     val categoryId: Int? = 0,
+    val description: String? = "Không có mô tả chi tiết cho món ăn",
     val restaurantId: Int? = 0
 )
 
@@ -91,7 +92,14 @@ fun ProductItem(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "${item.description}",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Đã bán + trạng thái
                 Row(

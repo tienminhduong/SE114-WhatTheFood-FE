@@ -64,12 +64,32 @@ class SellerNotificationViewModel(
     }
 
     fun onNotificationClicked(notification: Notification) {
-        _notificationsState.value = _notificationsState.value.copy(
-            list = _notificationsState.value.list.map {
-                if (it.id == notification.id) it.copy(isRead = true) else it
+        viewModelScope.launch {
+            try {
+                //val token = getToken()
+                val token =
+                    "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ"
+                if (token.isNullOrBlank()) {
+                    return@launch
+                }
+
+                val response = api.readNotification("Bearer $token", notification.id)
+                if (response.isSuccessful) {
+                    val updatedNotification = response.body()
+                    // Cập nhật danh sách hiển thị với bản đã cập nhật
+                    _notificationsState.value = _notificationsState.value.copy(
+                        list = _notificationsState.value.list.map {
+                            if (it.id == notification.id) updatedNotification ?: it else it
+                        }
+                    )
+                    seeDetailNotification = notification
+                }
+
+
+            } catch (e: Exception) {
+
             }
-        )
-        seeDetailNotification = notification // ← Gán để hiển thị chi tiết
+        }
     }
 
 

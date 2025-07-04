@@ -8,6 +8,7 @@ object ScreenRoute {
     val LoginOrRegisterScreen = "LoginOrRegister"
     val DetailOrderScreen = "DetailOrder/{orderId}"
     val DetailFoodItemScreen = "DetailFoodItem/{foodItemId}"
+    val SearchScreen = "SearchResultScreen"
     val CartScreen = "Cart"
     val MapScreen = "Map"
     val ConfirmOrderScreen = "ConfirmOrder/{restaurantId}"
@@ -19,6 +20,7 @@ object SellerRoute {
     val ManagerScreen = "SellerManager"
     val NotificationScreen = "SellerNotification"
     val AccountScreen = "SellerAccount"
+    val RatedScreen = "SellerRated"
 }
 
 object ScaffoldRoute {

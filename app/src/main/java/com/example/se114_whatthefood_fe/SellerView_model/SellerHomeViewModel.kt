@@ -36,7 +36,7 @@ class SellerHomeViewModel(
                     val foodItems = response.body() ?: emptyList()
                     products = foodItems.map {
                         Product(
-                            id = it.id.toString(),
+                            id = it.id,
                             name = it.foodName,
                             price = it.price.toDouble(),
                             soldAmount = it.soldAmount,
@@ -63,14 +63,15 @@ class SellerHomeViewModel(
             errorMessage = null
             try {
                 val response = foodModel.updateFoodItem(
-                    id = updated.id ?: return@launch,
+                    id = (updated.id ?: return@launch).toString(),
                     updated = UpdateFoodItemRequest(
                         name = updated.name ?: "",
                         description = "Cập nhật từ app", // Có thể nhận từ UI
                         categoryName = "Đồ ăn",          // Ánh xạ từ categoryId nếu cần
                         price = updated.price?.toInt() ?: 0,
                         soldAmount = updated.soldAmount ?: 0,
-                        available = updated.isAvailable ?: true
+                        available = updated.isAvailable ?: true,
+                        imgUrl = updated.imgUrl ?: ""
                     )
                 )
                 if (response.isSuccessful) {
@@ -101,7 +102,8 @@ class SellerHomeViewModel(
                         name = newProduct.name ?: "Tên món",
                         description = "Thêm từ app",
                         categoryName = "Đồ ăn", // hoặc ánh xạ từ categoryId
-                        price = newProduct.price?.toInt() ?: 0
+                        price = newProduct.price?.toInt() ?: 0,
+                        imgUrl = newProduct.imgUrl ?: ""
                     )
                 )
                 if (response != null) {

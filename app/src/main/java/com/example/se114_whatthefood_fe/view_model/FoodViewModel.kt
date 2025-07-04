@@ -9,14 +9,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.se114_whatthefood_fe.data.remote.FoodItemNearByResponse
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.model.FoodModel
-import com.example.se114_whatthefood_fe.util.DefaultPaginator
 import com.example.se114_whatthefood_fe.util.CustomPaginateList
+import com.example.se114_whatthefood_fe.util.DefaultPaginator
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
-import kotlin.collections.plus
 
-class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
+class FoodViewModel(private val foodModel: FoodModel) : ViewModel() {
+
+    var _searchResults = mutableStateOf<List<FoodItemResponse>>(emptyList())
+        private set
+
 
     // tab gan ban
     var location by mutableStateOf<Location?>(null)
@@ -27,12 +30,14 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             ganBanList.isLoading = isLoading
         },
         onRequest = { nextKey, location ->
-            if(location == null) {
+            if (location == null) {
                 return@DefaultPaginator Response.error(500, "".toResponseBody())
             }
-            foodModel.getFoodItemNearBy(location.latitude.toFloat(),
-                                        location.longitude.toFloat(),
-                nextKey) // Giả sử mỗi trang có 15 mục
+            foodModel.getFoodItemNearBy(
+                location.latitude.toFloat(),
+                location.longitude.toFloat(),
+                nextKey
+            ) // Giả sử mỗi trang có 15 mục
         },
         getNextKey = { items ->
             ganBanList.page + 1
@@ -52,6 +57,7 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             location // Lấy vị trí nếu có
         }
     )
+
     // tab danh gia tot
     var goodRateList by mutableStateOf(CustomPaginateList<FoodItemNearByResponse>())
     private val paginatorGoodRate = DefaultPaginator<Int, FoodItemNearByResponse>(
@@ -75,6 +81,7 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             goodRateList.endReached = items.isEmpty()
         }
     )
+
     // tab ban chay
     var bestSellerList by mutableStateOf(CustomPaginateList<FoodItemNearByResponse>())
     private val paginatorBestSeller = DefaultPaginator<Int, FoodItemNearByResponse>(
@@ -98,9 +105,10 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             bestSellerList.endReached = items.isEmpty()
         }
     )
+
     fun loadNextItems(selectedTab: Int) {
         viewModelScope.launch {
-            when(selectedTab) {
+            when (selectedTab) {
                 // tab gan ban
                 0 -> paginatorNearBy.loadNextItems()
                 // tab ban chay
@@ -110,7 +118,8 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             }
         }
     }
-    init{
+
+    init {
         viewModelScope.launch {
             loadNextItems(0)
         }
@@ -139,7 +148,15 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
         sortBy: String = ""
     ) {
         tabDanhGiaTotList.value = getFoodItem(
-            pageNumber, pageSize, categoryId, nameContains, restaurantId, isAvailableOnly, priceLowerThan, priceHigherThan, sortBy
+            pageNumber,
+            pageSize,
+            categoryId,
+            nameContains,
+            restaurantId,
+            isAvailableOnly,
+            priceLowerThan,
+            priceHigherThan,
+            sortBy
         )
     }
 
@@ -155,11 +172,20 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
         sortBy: String = ""
     ) {
         tabBanChayList.value = getFoodItem(
-            pageNumber, pageSize, categoryId, nameContains, restaurantId, isAvailableOnly, priceLowerThan, priceHigherThan, sortBy
+            pageNumber,
+            pageSize,
+            categoryId,
+            nameContains,
+            restaurantId,
+            isAvailableOnly,
+            priceLowerThan,
+            priceHigherThan,
+            sortBy
         )
     }
+
     suspend fun loadTabGanBanList(location: Location? = null) {
-        if(location == null)
+        if (location == null)
             return
         // call api
 
@@ -174,9 +200,10 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
         isAvailableOnly: Boolean = true,
         priceLowerThan: Int = Int.MAX_VALUE,
         priceHigherThan: Int = 0,
-        sortBy: String = ""): List<FoodItemResponse>
-    {
-        val res = foodModel.getFoodItem(pageNumber,
+        sortBy: String = ""
+    ): List<FoodItemResponse> {
+        val res = foodModel.getFoodItem(
+            pageNumber,
             pageSize,
             categoryId,
             nameContains,
@@ -187,6 +214,23 @@ class FoodViewModel(private val foodModel: FoodModel) : ViewModel(){
             sortBy
         ).body()
         return res ?: emptyList()
+    }
+
+    fun searchFood(keyword: String) {
+        viewModelScope.launch {
+            try {
+                val results = getFoodItem(
+                    pageNumber = 0,
+                    pageSize = 30,
+                    nameContains = keyword,
+                    isAvailableOnly = true
+                )
+                _searchResults.value = results
+            } catch (e: Exception) {
+                //Log.e("FoodViewModel", "Error searching food: ${e.message}")
+                _searchResults.value = emptyList()
+            }
+        }
     }
 
 }

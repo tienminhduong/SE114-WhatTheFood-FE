@@ -35,7 +35,7 @@ class FoodModel(
         }
     }
 
-    suspend fun getFoodById(id: Int): Response<FoodItemResponse>{
+    suspend fun getFoodById(id: Int): Response<FoodItemResponse> {
         val token = getToken()
         return try{
             val response = api.getFoodItemById(token = "Bearer ${token ?: ""}", id = id)
@@ -121,9 +121,8 @@ class FoodModel(
         pageSize: Int = 30
     ): Response<List<FoodItemResponse>> {
         return try {
-            //val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
-            val token =
-                "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ"
+            val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
+
             val response = api.getFoodItems(
                 token = "Bearer $token",
                 isAvailableOnly = isAvailableOnly,
@@ -145,9 +144,9 @@ class FoodModel(
 
     suspend fun updateFoodItem(id: String, updated: UpdateFoodItemRequest): Response<Unit> {
         return try {
-            //val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
+            val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
             api.updateFoodItem(
-                token = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ",
+                token = "Bearer $token",
                 id = id,
                 updatedFood = updated
             )
@@ -157,9 +156,7 @@ class FoodModel(
     }
 
     suspend fun createFoodItem(request: NewFoodItemRequest): Response<Any>? {
-        //val token = getToken()
-        val token =
-            "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ"
+        val token = getToken()
         return if (token != null) {
             api.newFoodItem("Bearer $token", request)
         } else {

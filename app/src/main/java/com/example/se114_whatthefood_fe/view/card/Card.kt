@@ -6,13 +6,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -44,8 +44,8 @@ import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.data.remote.FoodItemNearByResponse
+import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.ui.theme.White
-import java.util.UUID
 
 @Immutable
 data class Card(
@@ -65,15 +65,22 @@ fun CardPreview() {
 }
 
 @Composable
-fun NearByCardView(modifier: Modifier = Modifier,
-                   card: FoodItemNearByResponse) {
-    Row(modifier = modifier.background(shape = RoundedCornerShape(8.dp),
-                                       color = White)
-        .fillMaxWidth()
-        .height(88.dp)
-        .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
-        .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
-        verticalAlignment = Alignment.CenterVertically) {
+fun NearByCardView(
+    modifier: Modifier = Modifier,
+    card: FoodItemNearByResponse
+) {
+    Row(
+        modifier = modifier
+            .background(
+                shape = RoundedCornerShape(8.dp),
+                color = White
+            )
+            .fillMaxWidth()
+            .height(88.dp)
+            .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
+            .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         // image
         AsyncImage(
             model = ImageRequest.Builder(context = LocalContext.current)
@@ -87,12 +94,17 @@ fun NearByCardView(modifier: Modifier = Modifier,
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
+            modifier = Modifier
+                .size(72.dp)
+                .clip(shape = RoundedCornerShape(8.dp))
         )
         // information
-        Column(modifier = Modifier.padding(horizontal = 8.dp)
-            .fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceAround) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceAround
+        ) {
             // title
             androidx.compose.material3.Text(
                 text = card.name,
@@ -147,13 +159,18 @@ fun NearByCardView(modifier: Modifier = Modifier,
 
 @Composable
 fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
-    Row(modifier = modifier.background(shape = RoundedCornerShape(8.dp),
-        color = White)
-        .fillMaxWidth()
-        .height(88.dp)
-        .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
-        .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
-        verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier
+            .background(
+                shape = RoundedCornerShape(8.dp),
+                color = White
+            )
+            .fillMaxWidth()
+            .height(88.dp)
+            .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
+            .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         // image
         AsyncImage(
             model = ImageRequest.Builder(context = LocalContext.current)
@@ -167,12 +184,17 @@ fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByRespon
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
+            modifier = modifier
+                .size(72.dp)
+                .clip(shape = RoundedCornerShape(8.dp))
         )
         // information
-        Column(modifier = Modifier.padding(horizontal = 8.dp)
-            .fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceAround){
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceAround
+        ) {
             // title
 
             Text(
@@ -193,18 +215,24 @@ fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByRespon
                 textAlign = TextAlign.Center,
                 fontSize = TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp) // Set font size
             )
-            Row(horizontalArrangement = Arrangement.SpaceAround,
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()) {
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,){
-                        androidx.compose.material3.Text(
-                            text = String.format("%.1f", card.rating.average),
-                        )
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    androidx.compose.material3.Text(
+                        text = String.format("%.1f", card.rating.average),
+                    )
                     // rate icon
-                    Icon(imageVector = Icons.Default.StarRate,
+                    Icon(
+                        imageVector = Icons.Default.StarRate,
                         contentDescription = "Rate Icon",
-                        tint = Color.Yellow)
+                        tint = Color.Yellow
+                    )
                 }
 
                 // so luong ban
@@ -217,13 +245,18 @@ fun BestSellerCardView(modifier: Modifier = Modifier, card: FoodItemNearByRespon
 
 @Composable
 fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse) {
-    Row(modifier = modifier.background(shape = RoundedCornerShape(8.dp),
-        color = White)
-        .fillMaxWidth()
-        .height(88.dp)
-        .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
-        .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
-        verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier
+            .background(
+                shape = RoundedCornerShape(8.dp),
+                color = White
+            )
+            .fillMaxWidth()
+            .height(88.dp)
+            .padding(8.dp) // Thêm padding để nội dung không chạm sát mép
+            .clip(RoundedCornerShape(8.dp)), // Áp dụng clip cho toàn bộ Row nếu muốn bo góc
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         // image
         AsyncImage(
             model = ImageRequest.Builder(context = LocalContext.current)
@@ -237,12 +270,17 @@ fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse
                 .build(),
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(72.dp).clip(shape= RoundedCornerShape(8.dp))
+            modifier = modifier
+                .size(72.dp)
+                .clip(shape = RoundedCornerShape(8.dp))
         )
         // information
-        Column(modifier = Modifier.padding(horizontal = 8.dp)
-            .fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceAround){
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceAround
+        ) {
             // title
 
             Text(
@@ -264,18 +302,24 @@ fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse
                 textAlign = TextAlign.Center,
                 fontSize = TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp) // Set font size
             )
-            Row(horizontalArrangement = Arrangement.SpaceAround,
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()) {
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,){
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(
                         text = String.format("%.1f", card.rating.average),
                     )
                     // rate icon
-                    Icon(imageVector = Icons.Default.StarRate,
+                    Icon(
+                        imageVector = Icons.Default.StarRate,
                         contentDescription = "Rate Icon",
-                        tint = Color.Yellow)
+                        tint = Color.Yellow
+                    )
                 }
 
                 // so luong danh gia
@@ -287,11 +331,98 @@ fun GoodRateCardView(modifier: Modifier = Modifier, card: FoodItemNearByResponse
 }
 
 @Composable
+fun SearchResultCardView(
+    card: FoodItemResponse,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White)
+            .clickable { onClick() }
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Ảnh món ăn
+        AsyncImage(
+            model = ImageRequest.Builder(context = LocalContext.current)
+                .data(card.cldnrUrl)
+                .crossfade(true)
+                .diskCachePolicy(CachePolicy.ENABLED)  // Cache trên ổ đĩa
+                .memoryCachePolicy(CachePolicy.ENABLED) // Cache trên RAM
+                //.size(100, 100) // Set kích thước ảnh
+                .placeholder(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                .error(drawableResId = com.example.se114_whatthefood_fe.R.drawable.google__g__logo)
+                .build(),
+            contentDescription = "Card Image",
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+                .size(72.dp)
+                .clip(shape = RoundedCornerShape(8.dp))
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Thông tin món ăn
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = card.foodName,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = card.restaurant.toString(),
+                fontSize = 14.sp,
+                color = Color.Gray,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.StarRate,
+                        contentDescription = null,
+                        tint = Color.Yellow,
+                        modifier = Modifier.size(16.dp)
+                    )
+//                    Text(
+//                        text = String.format("%.1f", card.rating.average
+//                        fontSize = 14.sp
+//                    )
+                }
+
+//                Text(
+//                    text = "${card.distanceInKm} km · ~${card.distanceInTime} phút",
+//                    fontSize = 12.sp,
+//                    color = Color.Gray
+//                )
+            }
+        }
+    }
+}
+
+
+@Composable
 @Preview
 fun CardRecommendPreview() {
-    CardRecommendView(card = Card(imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
-        title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f, id = 1),
-        imageLoader = rememberOptimizedImageLoader())
+    CardRecommendView(
+        card = Card(
+            imageLink = "https://m.yodycdn.com/blog/anh-nen-naruto-yody-vn-95.jpg",
+            title = "Gà rán và Mì Ý Jollibee", rate = 4.5f, distance = 2.0f, time = 30.0f, id = 1
+        ),
+        imageLoader = rememberOptimizedImageLoader()
+    )
 }
 
 @Composable
@@ -327,23 +458,30 @@ fun CardRecommendView(modifier: Modifier = Modifier, card: Card, imageLoader: Im
             .build(),
         imageLoader = imageLoader
     )
-    Column(verticalArrangement = Arrangement.Center,
+    Column(
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-           modifier = modifier
-               //.padding(8.dp)
-               .background(shape = RoundedCornerShape(8.dp), color = Color.White)
-               .width(150.dp)) {
+        modifier = modifier
+            //.padding(8.dp)
+            .background(shape = RoundedCornerShape(8.dp), color = Color.White)
+            .width(150.dp)
+    ) {
         // image
-        Image(painter = painter,
+        Image(
+            painter = painter,
             contentDescription = "Card Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth().height(100.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
         )
         // name
         androidx.compose.material3.Text(
             text = card.title ?: "No Title",
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             softWrap = true,
             textAlign = TextAlign.Center
         )
@@ -352,9 +490,10 @@ fun CardRecommendView(modifier: Modifier = Modifier, card: Card, imageLoader: Im
 
 @Composable
 fun ListRecommendFood(modifier: Modifier = Modifier, listCard: List<Card>) {
-    LazyRow(modifier = modifier.fillMaxWidth()
-        , horizontalArrangement = Arrangement.spacedBy(8.dp)){
-        items(items = listCard, key = {it.id}) { card ->
+    LazyRow(
+        modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(items = listCard, key = { it.id }) { card ->
             CardRecommendView(card = card, imageLoader = rememberOptimizedImageLoader())
         }
     }

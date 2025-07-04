@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -69,14 +70,19 @@ fun SellerBottomBar(
             route = "SellerManager"
         ),
         BottomSellerBarItem(
-            icon = Icons.Filled.Person,
-            label = "Tài Khoản",
-            route = "SellerAccount"
+            icon = Icons.Filled.Star,
+            label = "Đánh giá",
+            route = "SellerRated"
         ),
         BottomSellerBarItem(
             icon = Icons.Filled.Notifications,
             label = "Thông Báo",
             route = "SellerNotification"
+        ),
+        BottomSellerBarItem(
+            icon = Icons.Filled.Person,
+            label = "Tài Khoản",
+            route = "SellerAccount"
         ),
     )
     Row(

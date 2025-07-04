@@ -27,8 +27,6 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,12 +50,11 @@ import com.example.se114_whatthefood_fe.model.LocationManager
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.ui.theme.White
 import com.example.se114_whatthefood_fe.util.CustomPaginateList
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.card.BestSellerCardView
 import com.example.se114_whatthefood_fe.view.card.Card
-import com.example.se114_whatthefood_fe.view.card.CardRecommendView
 import com.example.se114_whatthefood_fe.view.card.GoodRateCardView
 import com.example.se114_whatthefood_fe.view.card.NearByCardView
-import com.example.se114_whatthefood_fe.view.card.rememberOptimizedImageLoader
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -71,13 +68,17 @@ fun HomeScreenPreview() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeScreen(navController: NavController,foodViewModel: FoodViewModel, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    navController: NavController,
+    foodViewModel: FoodViewModel,
+    modifier: Modifier = Modifier
+) {
     var selectedIndexTab by remember { mutableIntStateOf(0) }
     val tablist = listOf("Gần bạn", "Bán chạy", "Đánh giá tốt")
     // dung de lay vi tri hien tai cua nguoi dung
     val context = LocalContext.current
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-    val locationManager = remember { LocationManager(context, fusedLocationClient)}
+    val locationManager = remember { LocationManager(context, fusedLocationClient) }
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -89,8 +90,7 @@ fun HomeScreen(navController: NavController,foodViewModel: FoodViewModel, modifi
     val banChayList = foodViewModel.bestSellerList
     val danhGiaTotList = foodViewModel.goodRateList
     LaunchedEffect(Unit) {
-        if(!locationPermissions.allPermissionsGranted || locationPermissions.shouldShowRationale)
-        {
+        if (!locationPermissions.allPermissionsGranted || locationPermissions.shouldShowRationale) {
             locationPermissions.launchMultiplePermissionRequest()
         }
         //foodViewModel.location = locationManager.getLocation()
@@ -103,25 +103,50 @@ fun HomeScreen(navController: NavController,foodViewModel: FoodViewModel, modifi
 //            latitude = 10.8843273 // Example latitude
 //            longitude = 106.7835597 // Example longitude
 //        }
-        Log.i("homescreenfunct", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
+        Log.i(
+            "homescreenfunct",
+            "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}"
+        )
     }
     LaunchedEffect(foodViewModel.location) {
         foodViewModel.loadNextItems(0)
     }
     // fetch du lieu
-    FetchData(locationManager = locationManager, foodViewModel = foodViewModel, selectedTab = selectedIndexTab)
+    FetchData(
+        locationManager = locationManager,
+        foodViewModel = foodViewModel,
+        selectedTab = selectedIndexTab
+    )
     Column(modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
 
-        SearchBar(modifier = Modifier.wrapContentHeight())
-        LazyColumn(modifier = Modifier.padding(horizontal = 10.dp)
-                                    .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(6.dp),){
-            item {ListRecommendFood(modifier = modifier.fillMaxWidth().wrapContentHeight())}
+        SearchBar(
+            onClick = {
+                navController.navigate(ScreenRoute.SearchScreen)
+            },
+            modifier = Modifier.wrapContentHeight()
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            item {
+                ListRecommendFood(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                )
+            }
             // tab cac lua chon
-            stickyHeader { TabRowCustom(selectedIndexTab = selectedIndexTab, listTab = tablist,
-                onTabSelected = { index ->
-                    selectedIndexTab = index
-                }) }
+            stickyHeader {
+                TabRowCustom(
+                    selectedIndexTab = selectedIndexTab, listTab = tablist,
+                    onTabSelected = { index ->
+                        selectedIndexTab = index
+                    })
+            }
             // list card cua mon an
             val listCard = when (selectedIndexTab) {
 //                0 -> getDataGanBan()
@@ -131,31 +156,36 @@ fun HomeScreen(navController: NavController,foodViewModel: FoodViewModel, modifi
                 else -> CustomPaginateList()
             }
             itemsIndexed(listCard.items, key = { index, _ -> index }) { index, item ->
-                if(index >= listCard.items.size -1 && !listCard.endReached && !listCard.isLoading){
+                if (index >= listCard.items.size - 1 && !listCard.endReached && !listCard.isLoading) {
                     FetchData(locationManager, foodViewModel, selectedTab = selectedIndexTab)
                 }
-                when(selectedIndexTab)
-                {
-                    0-> NearByCardView(card = listCard.items[index],
-                        modifier = Modifier.clickable{
+                when (selectedIndexTab) {
+                    0 -> NearByCardView(
+                        card = listCard.items[index],
+                        modifier = Modifier.clickable {
                             navController.navigate("DetailFoodItem/${listCard.items[index].foodId}")
                         })
-                    1-> BestSellerCardView(card = listCard.items[index],
-                        modifier = Modifier.clickable{
+
+                    1 -> BestSellerCardView(
+                        card = listCard.items[index],
+                        modifier = Modifier.clickable {
                             navController.navigate("DetailFoodItem/${listCard.items[index].foodId}")
                         })
-                    2-> GoodRateCardView(card = listCard.items[index],
-                        modifier = Modifier.clickable{
+
+                    2 -> GoodRateCardView(
+                        card = listCard.items[index],
+                        modifier = Modifier.clickable {
                             navController.navigate("DetailFoodItem/${listCard.items[index].foodId}")
                         })
                 }
             }
-            item{
-                if(listCard.isLoading)
-                {
-                    Row(modifier = Modifier.fillMaxWidth(),
+            item {
+                if (listCard.isLoading) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center) {
+                        horizontalArrangement = Arrangement.Center
+                    ) {
                         CircularProgressIndicator(color = Color.White)
                     }
                 }
@@ -166,16 +196,18 @@ fun HomeScreen(navController: NavController,foodViewModel: FoodViewModel, modifi
 }
 
 @Composable
-fun FetchData(locationManager: LocationManager, foodViewModel: FoodViewModel, selectedTab: Int){
+fun FetchData(locationManager: LocationManager, foodViewModel: FoodViewModel, selectedTab: Int) {
     var previousTabIndex = remember { mutableIntStateOf(-1) }
     LaunchedEffect(selectedTab) {
         // neu la gan ban thi lay vi tri truoc
-        if(selectedTab == 0 && (previousTabIndex.intValue != selectedTab))
-        {
+        if (selectedTab == 0 && (previousTabIndex.intValue != selectedTab)) {
             foodViewModel.location = locationManager.getLocation()
-            Log.i("fetchdatafunct", "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}")
+            Log.i(
+                "fetchdatafunct",
+                "Location: ${foodViewModel.location?.latitude} ${foodViewModel.location?.longitude}"
+            )
         }
-        if(selectedTab != previousTabIndex.intValue) {
+        if (selectedTab != previousTabIndex.intValue) {
             previousTabIndex.intValue = selectedTab
         }
         foodViewModel.loadNextItems(selectedTab)
@@ -198,42 +230,75 @@ fun testGetData(foodViewModel: FoodViewModel): List<Card> {
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier) {
+fun SearchBar(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     val textSearch = remember { mutableStateOf("") }
-    Row(modifier = modifier.clip(shape = RoundedCornerShape(10.dp))
-        .background(White)
-        .fillMaxWidth(),
+    Row(
+        modifier = modifier
+            .clip(shape = RoundedCornerShape(10.dp))
+            .background(White)
+            .fillMaxWidth()
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start){
-        Icon(imageVector = Icons.Filled.Search,
+        horizontalArrangement = Arrangement.Start,
+
+        ) {
+        Icon(
+            imageVector = Icons.Filled.Search,
             contentDescription = null,
             tint = LightGreen,
-            modifier = Modifier.size(40.dp).padding(start = 10.dp))
-        TextField(value = textSearch.value,
-            onValueChange = { textSearch.value = it },
-            placeholder = { Text(text = "Tìm kiếm món ăn",
-                fontWeight = FontWeight.Bold,
-                color = LightGreen) },
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent
-            ),
-            modifier = Modifier.weight(1f))
+            modifier = Modifier
+                .size(40.dp)
+                .padding(start = 10.dp)
+        )
+//        TextField(
+//            value = textSearch.value,
+//            onValueChange = { textSearch.value = it },
+//            placeholder = {
+//                Text(
+//                    text = "Tìm kiếm món ăn",
+//                    fontWeight = FontWeight.Bold,
+//                    color = LightGreen
+//                )
+//            },
+//            colors = TextFieldDefaults.colors(
+//                focusedIndicatorColor = Color.Transparent,
+//                unfocusedIndicatorColor = Color.Transparent,
+//                focusedContainerColor = Color.Transparent,
+//                unfocusedContainerColor = Color.Transparent
+//            ),
+//            modifier = Modifier.weight(1f),
+//        )
+        Text(
+            text = "Tìm kiếm món ăn",
+            fontWeight = FontWeight.Bold,
+            color = LightGreen,
+            modifier = Modifier.padding(start = 10.dp)
+        )
     }
+
 }
 
 @Composable
-fun TabRowCustom(modifier: Modifier = Modifier, selectedIndexTab: Int, listTab: List<String>, onTabSelected: (Int) -> Unit) {
-    TabRow(selectedTabIndex = selectedIndexTab,
+fun TabRowCustom(
+    modifier: Modifier = Modifier,
+    selectedIndexTab: Int,
+    listTab: List<String>,
+    onTabSelected: (Int) -> Unit
+) {
+    TabRow(
+        selectedTabIndex = selectedIndexTab,
         modifier = modifier.clip(shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
         containerColor = LightGreen,
         contentColor = White,
         indicator = { tabPositions ->
             if (selectedIndexTab < tabPositions.size) {
-                TabRowDefaults.SecondaryIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedIndexTab]),
-                    color = White)
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedIndexTab]),
+                    color = White
+                )
             }
         }) {
         listTab.forEachIndexed { index, item ->
@@ -241,7 +306,8 @@ fun TabRowCustom(modifier: Modifier = Modifier, selectedIndexTab: Int, listTab: 
                 selected = selectedIndexTab == index,
                 onClick = { onTabSelected(index) },
                 text = {
-                    Text(text = item,
+                    Text(
+                        text = item,
                         fontWeight = FontWeight.W900
                     )
                 }
@@ -266,10 +332,13 @@ fun ListRecommendFood(modifier: Modifier = Modifier) {
             restaurantName = ""
         )
     )
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.padding(vertical = 16.dp)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
         Box(
-            modifier = Modifier.clip(shape = RoundedCornerShape(10.dp))
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(10.dp))
                 .fillMaxWidth()
                 .background(color = White)
                 .height(30.dp),
