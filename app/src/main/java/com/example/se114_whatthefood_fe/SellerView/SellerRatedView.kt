@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,6 +48,10 @@ fun SellerRatedScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.errorMessage.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchRatings()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +60,7 @@ fun SellerRatedScreen(
         Text(
             text = "Đánh giá từ khách hàng",
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.White//MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(16.dp))

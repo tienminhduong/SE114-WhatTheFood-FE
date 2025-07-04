@@ -26,11 +26,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -47,16 +49,19 @@ import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 
 @Composable
-fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
-                       authViewModel: AuthViewModel
+fun HeaderWhenLoggedIn(
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel
 ) {
     // Get user data from authViewModel
     val user = authViewModel.userInfo.value
     val name = user?.name ?: ""
 
-    Row(modifier = modifier.fillMaxWidth(),
+    Row(
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,) {
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         // icon for user avatar
         Box(
             modifier = Modifier
@@ -85,14 +90,15 @@ fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
                 modifier = Modifier.fillMaxSize()//.clip(shape= RoundedCornerShape(8.dp))
             )
         }
-        Text(text = name,
+        Text(
+            text = name,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             color = com.example.se114_whatthefood_fe.ui.theme.White,
-            fontSize = 30.sp)
+            fontSize = 30.sp
+        )
     }
 }
-
 
 
 @Composable
@@ -106,7 +112,10 @@ fun ButtonWithLeadingAndTrailingIcon(
     Button(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = com.example.se114_whatthefood_fe.ui.theme.White, contentColor = LightGreen),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = com.example.se114_whatthefood_fe.ui.theme.White,
+            contentColor = LightGreen
+        ),
         shape = RoundedCornerShape(0.dp)
     ) {
         Row(
@@ -114,30 +123,43 @@ fun ButtonWithLeadingAndTrailingIcon(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(imageVector = leadingIcon,
+            Icon(
+                imageVector = leadingIcon,
                 contentDescription = null,
                 tint = LightGreen,
-                modifier = Modifier.size(30.dp))
-            Text(text = text,
+                modifier = Modifier.size(30.dp)
+            )
+            Text(
+                text = text,
                 modifier = Modifier.weight(1f),
                 color = LightGreen,
                 textAlign = TextAlign.Center,
-                fontSize = 20.sp)
-            Icon(imageVector = trailingIcon,
+                fontSize = 20.sp
+            )
+            Icon(
+                imageVector = trailingIcon,
                 contentDescription = null,
                 tint = LightGreen,
-                modifier = Modifier.size(30.dp))
+                modifier = Modifier.size(30.dp)
+            )
         }
     }
 }
 
 
 @Composable
-fun SellerAccountScreen(authViewModel: AuthViewModel,
-                  modifier: Modifier = Modifier,
-                  navController: NavHostController,
-                  navControllerWhenLogout: NavHostController
+fun SellerAccountScreen(
+    authViewModel: AuthViewModel,
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    navControllerWhenLogout: NavHostController
 ) {
+
+
+    // Gọi API khi vào màn
+    LaunchedEffect(Unit) {
+        authViewModel.getUserInfo()
+    }
 
     // dung cho doi anh
     val context = LocalContext.current
@@ -151,16 +173,20 @@ fun SellerAccountScreen(authViewModel: AuthViewModel,
     }
     // add accountViewModel to handle user data and actions
 
-    Column(modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally){
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
         // Gọi suspend function để lấy login status
         val isLoggedIn by produceState<Boolean?>(initialValue = null) {
             value = authViewModel.isLoggedIn()
         }
 
-        com.example.se114_whatthefood_fe.view.deviceScreen.HeaderWhenLoggedIn(modifier = Modifier.padding(16.dp),
-            authViewModel = authViewModel)
+        com.example.se114_whatthefood_fe.view.deviceScreen.HeaderWhenLoggedIn(
+            modifier = Modifier.padding(16.dp),
+            authViewModel = authViewModel
+        )
         Spacer(modifier = Modifier.height(16.dp))
         // vi voucher
         com.example.se114_whatthefood_fe.view.deviceScreen.ButtonWithLeadingAndTrailingIcon(
@@ -187,15 +213,22 @@ fun SellerAccountScreen(authViewModel: AuthViewModel,
             modifier = Modifier.padding(top = 5.dp)
         )
         // doi anh
-        Button(onClick = { launcher.launch("image/*")}) {
-            Text(text = "Đổi ảnh đại diện", color = LightGreen)
+        Button(
+            onClick = { launcher.launch("image/*") },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF4CAF50) // Xanh lá, bạn có thể thay bằng màu xanh khác
+            )
+        ) {
+
+            Text(text = "Đổi ảnh đại diện", color = White)
         }
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {
                 authViewModel.onLogoutClick()
                 // Navigate to login or register screen after logout
-                navControllerWhenLogout.navigate(ScaffoldRoute.LoginOrRegisterScaffold) },
+                navControllerWhenLogout.navigate(ScaffoldRoute.LoginOrRegisterScaffold)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
