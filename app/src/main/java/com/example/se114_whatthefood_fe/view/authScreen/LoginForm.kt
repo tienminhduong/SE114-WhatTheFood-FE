@@ -108,13 +108,7 @@ fun LoginForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier,
         Spacer(Modifier.height(16.dp))
 
         // forgot password text
-        Text(
-            "Quên mật khẩu?",
-            modifier = Modifier.align(Alignment.End)
-                               .clickable(onClick = { authViewModel.onForgotPasswordClick() }),
-            color = DarkBlue,
-            style = MaterialTheme.typography.labelSmall,
-        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // login button

@@ -46,6 +46,7 @@ import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.data.remote.FoodItemNearByResponse
 import com.example.se114_whatthefood_fe.data.remote.FoodItemResponse
 import com.example.se114_whatthefood_fe.ui.theme.White
+import com.example.se114_whatthefood_fe.view.detailOrderScreen.MoneyFormat
 
 @Immutable
 data class Card(
@@ -375,7 +376,7 @@ fun SearchResultCardView(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = card.restaurant.toString(),
+                text = card.description?:"",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 maxLines = 1,
@@ -384,30 +385,11 @@ fun SearchResultCardView(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.StarRate,
-                        contentDescription = null,
-                        tint = Color.Yellow,
-                        modifier = Modifier.size(16.dp)
-                    )
-//                    Text(
-//                        text = String.format("%.1f", card.rating.average
-//                        fontSize = 14.sp
-//                    )
-                }
-
-//                Text(
-//                    text = "${card.distanceInKm} km · ~${card.distanceInTime} phút",
-//                    fontSize = 12.sp,
-//                    color = Color.Gray
-//                )
-            }
+            Text(
+                text = "Giá: ${MoneyFormat(card.price)}đ",
+                fontSize = 14.sp,
+                color = Color.Black
+            )
         }
     }
 }

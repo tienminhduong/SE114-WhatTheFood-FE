@@ -227,25 +227,6 @@ fun AccountScreen(authViewModel: AuthViewModel,
             onClick = { launcher.launch("image/*") },
             modifier = Modifier
         )
-        // thanh toan
-        ButtonWithLeadingAndTrailingIcon(
-            "Đổi tên",
-            leadingIcon = Icons.Default.Person,
-            trailingIcon = Icons.Default.PlayArrow,
-            onClick = {
-                // Doi ten handle
-            },
-            modifier = Modifier.padding(top = 5.dp)
-        )
-        ButtonWithLeadingAndTrailingIcon(
-            "Đổi mật khẩu",
-            leadingIcon = Icons.Default.Password,
-            trailingIcon = Icons.Default.PlayArrow,
-            onClick = {
-                // Doi mat khau handle
-            },
-            modifier = Modifier.padding(top = 5.dp)
-        )
 
         Spacer(modifier = Modifier.weight(1f))
         Button(

@@ -11,10 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.se114_whatthefood_fe.Api.CreateOrder
 import com.example.se114_whatthefood_fe.data.remote.UserInfo
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.ImageModel
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -29,6 +31,7 @@ import java.util.concurrent.TimeUnit
 
 class AuthViewModel(
     private val authModel: AuthModel,
+    private val navController: NavController,
     private val imageModel: ImageModel? = null
 ) : ViewModel() {
     // upload image
@@ -151,7 +154,6 @@ class AuthViewModel(
     }
 
     fun onForgotPasswordClick() {
-
         // Handle forgot password logic here, e.g., navigate to a reset password screen
         // This could be implemented using a navigation controller or similar mechanism
     }

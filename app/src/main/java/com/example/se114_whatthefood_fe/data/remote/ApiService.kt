@@ -148,6 +148,12 @@ data class OwnedRestaurantInfo(
     val restaurantId: Int
 )
 
+data class CreateRestaurantRequest(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("address")
+    val address: Address
+)
 
 // register
 data class RegisterRequest(
@@ -478,6 +484,12 @@ interface ApiService {
     @DELETE("cart/ordered")
     suspend fun deleteCart(@Header("Authorization") token: String,
                            @Query("restaurantId") restaurantId: Int): Response<Unit>
+
+    @POST("restaurants")
+    suspend fun createRestaurant(
+        @Header("Authorization") token: String,
+        @Body request: CreateRestaurantRequest
+    ): Response<Restaurant>
 
     @GET("users/notifications")
     suspend fun getAllNotifications(@Header("Authorization") token: String): List<Notification>

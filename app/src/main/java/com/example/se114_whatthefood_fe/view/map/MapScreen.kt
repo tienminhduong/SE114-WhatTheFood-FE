@@ -53,7 +53,7 @@ fun MapScreen(
                 .padding(16.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
-            Text("Confirm")
+            Text("Xác nhận")
         }
     }
 }

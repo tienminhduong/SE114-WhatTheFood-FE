@@ -21,6 +21,8 @@ object SellerRoute {
     val NotificationScreen = "SellerNotification"
     val AccountScreen = "SellerAccount"
     val RatedScreen = "SellerRated"
+    val RegisterRestaurantScreen = "RegisterRestaurant"
+    val MapScreen = "SellerMap"
 }
 
 object ScaffoldRoute {

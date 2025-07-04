@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Visibility
@@ -194,8 +195,8 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                 onValueChange = { authViewModel.otpCode = it },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Phone,
-                        contentDescription = "Phone Icon",
+                        imageVector = Icons.Default.Password,
+                        contentDescription = "Password Icon",
                         tint = LightGreen
                     )
                 },

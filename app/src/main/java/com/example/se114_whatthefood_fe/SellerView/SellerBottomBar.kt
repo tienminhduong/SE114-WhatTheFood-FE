@@ -61,7 +61,7 @@ fun SellerBottomBar(
     var items = listOf(
         BottomSellerBarItem(
             icon = Icons.Filled.Home,
-            label = "HOME",
+            label = "Home",
             route = "SellerHome"
         ),
         BottomSellerBarItem(

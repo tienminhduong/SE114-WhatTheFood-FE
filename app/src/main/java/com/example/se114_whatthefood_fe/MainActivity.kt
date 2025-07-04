@@ -48,6 +48,7 @@ import com.example.se114_whatthefood_fe.SellerView_model.SellerHomeViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerManagerViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerNotificationViewModel
 import com.example.se114_whatthefood_fe.SellerView_model.SellerRatedViewModel
+import com.example.se114_whatthefood_fe.SellerView_model.SellerRegisterRestaurantViewModel
 import com.example.se114_whatthefood_fe.data.remote.RetrofitInstance
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.model.CartModel
@@ -61,6 +62,7 @@ import com.example.se114_whatthefood_fe.view.ScaffoldRoute
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.SellerRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
+import com.example.se114_whatthefood_fe.view.authScreen.RestaurantRegisterScreen
 import com.example.se114_whatthefood_fe.view.cart.CartScreen
 import com.example.se114_whatthefood_fe.view.confirmScreen.CommentScreen
 import com.example.se114_whatthefood_fe.view.confirmScreen.ConfirmOrderScreen
@@ -125,12 +127,13 @@ class MainActivity : ComponentActivity() {
                 )
             }
             val authViewModel =
-                remember { AuthViewModel(authModel = authModel, imageModel = imageModel) }
+                remember { AuthViewModel(authModel = authModel, imageModel = imageModel, navController = navController) }
             // viết ở đây
             NavHost(
                 navController = navController,
                 startDestination = ScaffoldRoute.LoginOrRegisterScaffold
             ) {
+
                 composable(ScaffoldRoute.LoginOrRegisterScaffold) {
                     AuthScreen(authViewModel = authViewModel, navController = navController)
                 }
@@ -245,9 +248,15 @@ fun SellerScaffold(
     }
 
     val api = RetrofitInstance.instance
+    val sellerRegisterRestaurantViewModel = remember {
+        SellerRegisterRestaurantViewModel(navController, dataStore, api)
+    }
+
+
     val sellerNotificationViewModel = remember {
         SellerNotificationViewModel(api = api, dataStore = dataStore)
     }
+    val mapViewModel = remember { MapViewModel() }
 
     Box(
         modifier = Modifier
@@ -298,6 +307,17 @@ fun SellerScaffold(
                         )
                     }
                     SellerRatedScreen(sellerRatedViewModel)
+                }
+                composable(SellerRoute.RegisterRestaurantScreen) {
+                    RestaurantRegisterScreen(
+                        authViewModel = authViewModel,
+                        navController = navController,
+                        sellerRegisterRestaurantViewModel = sellerRegisterRestaurantViewModel
+                    )
+                }
+                composable(SellerRoute.MapScreen){
+                    MapScreen(modifier = Modifier, navHostController = navController,
+                        mapViewModel = mapViewModel)
                 }
             }
         }

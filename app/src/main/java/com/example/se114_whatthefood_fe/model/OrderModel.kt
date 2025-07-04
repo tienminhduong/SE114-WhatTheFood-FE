@@ -188,13 +188,6 @@ class OrderModel(
         return api.setOrderDelivered("Bearer $token", id)
     }
 
-//    suspend fun completeOrder(id: Int): Response<Unit> {
-//        val token =
-//            "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxMjM0NTY3ODkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5BY2MiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPd25lciIsImV4cCI6MTc1MTc4MjcxOSwiaXNzIjoiVGhlRm9vZCIsImF1ZCI6IkZvb2RBdWRpZW5jZSJ9.UgkK4txrLDDOoCEQonKOR27OFXSzZmE8zpSyZLuATnmjm4kMjJMnA4OBnDAShryGlyQvKextfgiKje7nBnmnkQ"
-//        //val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
-//        return api.setOrderCompleted("Bearer $token", id)
-//    }
-
     suspend fun getOwnedRestaurant(): Response<OwnedRestaurantInfo> {
         val token = getToken() ?: return Response.error(401, "".toResponseBody(null))
         return api.getOwnedRestaurant("Bearer $token")

@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -45,6 +47,8 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view.ScaffoldRoute
+import com.example.se114_whatthefood_fe.view.ScreenRoute
+import com.example.se114_whatthefood_fe.view.SellerRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 
 
@@ -191,37 +195,19 @@ fun SellerAccountScreen(
         // vi voucher
         com.example.se114_whatthefood_fe.view.deviceScreen.ButtonWithLeadingAndTrailingIcon(
             "Đổi ảnh đại diện",
-            leadingIcon = Icons.Default.ConfirmationNumber,
+            leadingIcon = Icons.Default.AccountCircle,
             trailingIcon = Icons.Default.PlayArrow,
-            onClick = { /* TODO: Handle click */ },
+            onClick = { launcher.launch("image/*") },
             modifier = Modifier
         )
         // thanh toan
         com.example.se114_whatthefood_fe.view.deviceScreen.ButtonWithLeadingAndTrailingIcon(
-            "Thanh toán",
-            leadingIcon = Icons.Default.Wallet,
+            "Đăng kí nhà hàng",
+            leadingIcon = Icons.Default.Restaurant,
             trailingIcon = Icons.Default.PlayArrow,
-            onClick = { authViewModel.onPaymentClick(10000, activity = activity!!) },
+            onClick = { navController.navigate(SellerRoute.RegisterRestaurantScreen) },
             modifier = Modifier.padding(top = 5.dp)
         )
-        com.example.se114_whatthefood_fe.view.deviceScreen.ButtonWithLeadingAndTrailingIcon(
-            "Map",
-            leadingIcon = Icons.Default.LocationOn,
-            trailingIcon = Icons.Default.PlayArrow,
-            onClick = {
-            },
-            modifier = Modifier.padding(top = 5.dp)
-        )
-        // doi anh
-        Button(
-            onClick = { launcher.launch("image/*") },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4CAF50) // Xanh lá, bạn có thể thay bằng màu xanh khác
-            )
-        ) {
-
-            Text(text = "Đổi ảnh đại diện", color = White)
-        }
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {

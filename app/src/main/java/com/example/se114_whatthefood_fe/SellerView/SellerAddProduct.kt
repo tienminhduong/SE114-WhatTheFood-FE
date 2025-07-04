@@ -185,7 +185,7 @@ fun AddProductScreen(
                         price = price.toDoubleOrNull(),
                         imgUrl = imgUrl,
                         isAvailable = isAvailable,
-                        description = description // ← thêm mô tả
+                        description = description, // ← thêm mô tả
                     )
                     onSave(newProduct)
                     focusManager.clearFocus()
