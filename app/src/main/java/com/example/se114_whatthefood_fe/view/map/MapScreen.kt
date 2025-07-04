@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.se114_whatthefood_fe.view_model.MapViewModel
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.mapview.MapScheme
@@ -44,9 +45,8 @@ fun MapScreen(
         }
         Button(
             onClick = {
+                navHostController.previousBackStackEntry?.savedStateHandle?.set("selectedLocation", mapViewModel.currentMapLocation)
                 navHostController.popBackStack()
-                val currentLocation = mapViewModel.currentMapLocation
-                Log.d("Hello tui map", "Current Location: ${currentLocation?.latitude}, ${currentLocation?.longitude}")
             },
             modifier = Modifier
                 .fillMaxWidth()

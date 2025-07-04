@@ -85,6 +85,7 @@ data class ShippingInfoDetailDto(
     val amount: Int
 )
 
+@Parcelize
 data class Address(
     @SerializedName("name")
     val name: String,
@@ -92,7 +93,7 @@ data class Address(
     val longitude: Float,
     @SerializedName("latitude")
     val latitude: Float
-)
+) : Parcelable
 
 // shipping info API
 data class ShippingInfo(

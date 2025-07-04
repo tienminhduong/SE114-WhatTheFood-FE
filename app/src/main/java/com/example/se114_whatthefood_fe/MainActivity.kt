@@ -395,6 +395,7 @@ fun UserScaffold(
                     val restaurantId = backStackEntry.arguments?.getInt("restaurantId")
                     ConfirmOrderScreen(navController = navController,
                         confirmOrderViewModel = confirmOrderViewModel,
+                        mapViewModel = mapViewModel,
                         id = restaurantId!!)
                 }
 
