@@ -1,6 +1,9 @@
 package com.example.se114_whatthefood_fe.view.confirmScreen
 
 import android.annotation.SuppressLint
+import android.location.Location
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,19 +50,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.example.se114_whatthefood_fe.data.remote.Address
 import com.example.se114_whatthefood_fe.data.remote.CartItem
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfoDetail
 import com.example.se114_whatthefood_fe.model.AuthModel
 import com.example.se114_whatthefood_fe.ui.theme.LightGreen
+import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.authScreen.ButtonIcon
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.MoneyFormat
 import com.example.se114_whatthefood_fe.view_model.ConfirmOrderViewModel
+import com.example.se114_whatthefood_fe.view_model.MapViewModel
 import kotlinx.coroutines.launch
 import java.nio.file.WatchEvent
 
@@ -91,8 +101,18 @@ fun HeaderConfirmOrder(modifier: Modifier = Modifier,
 fun ConfirmOrderScreen(modifier: Modifier = Modifier,
                        navController: NavHostController,
                        confirmOrderViewModel: ConfirmOrderViewModel,
+                       mapViewModel: MapViewModel,
                        id: Int){
     val currentCartItem = confirmOrderViewModel.currentCardItem
+    var currentSelectedLocation by remember { mutableStateOf<Address?>(null) }
+
+    val selectedAddress = navController.currentBackStackEntryAsState().value?.savedStateHandle?.get<Address>("selectedLocation")
+    if (selectedAddress == null)
+        Log.d("ConfirmOrderScreen", "No selected address")
+    else
+        Log.d("ConfirmOrderScreen", "Selected address: ${selectedAddress.name}: ${selectedAddress.latitude}, ${selectedAddress.longitude}")
+
+    val context = LocalContext.current
     LaunchedEffect(id) {
         confirmOrderViewModel.getCurrentCardItem(id)
     }
@@ -120,7 +140,10 @@ fun ConfirmOrderScreen(modifier: Modifier = Modifier,
                     .fillMaxHeight()
                     .background(color = LightGreen)
                     .clickable{
-                        if(confirmOrderViewModel.payType == 0)
+                        if (confirmOrderViewModel.address == null) {
+                            Toast.makeText(context, "Vui lòng chọn địa chỉ nhận hàng", Toast.LENGTH_SHORT).show()
+                        }
+                        else if(confirmOrderViewModel.payType == 0)
                             // call api
                             confirmOrderViewModel.createOrder()
                             else
@@ -149,7 +172,7 @@ fun ConfirmOrderScreen(modifier: Modifier = Modifier,
 
                 // hien content
                 ContentCartItem(cardItem = currentCartItem,
-                    confirmOrderViewModel = confirmOrderViewModel)
+                    confirmOrderViewModel = confirmOrderViewModel, navController = navController, address = selectedAddress)
             }
 
 
@@ -159,7 +182,17 @@ fun ConfirmOrderScreen(modifier: Modifier = Modifier,
 
 
 @Composable
-fun ContentCartItem(confirmOrderViewModel: ConfirmOrderViewModel,cardItem: CartItem, modifier: Modifier = Modifier){
+fun ContentCartItem(confirmOrderViewModel: ConfirmOrderViewModel,cardItem: CartItem, modifier: Modifier = Modifier,
+                    address: Address?,
+                    navController: NavHostController){
+    // set address
+    if (address != null) {
+        confirmOrderViewModel.address = address
+        Log.d("ConfirmOrderScreen", "Address set: ${address.name}: ${address.latitude}, ${address.longitude}")
+    } else {
+        Log.d("ConfirmOrderScreen", "No address selected")
+    }
+
     Column(modifier = modifier.fillMaxWidth()
         .padding(horizontal = 10.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)){
@@ -177,16 +210,18 @@ fun ContentCartItem(confirmOrderViewModel: ConfirmOrderViewModel,cardItem: CartI
                     contentDescription = null,
                     tint = Color.Red)
                 Text(text = cardItem.restaurant.address?.name.toString(),
-                    fontSize = 20.sp)
+                    fontSize = 15.sp)
             }
         }
+
+
         // card dia chi nhan hang
         Column(modifier = Modifier.clip(shape = RoundedCornerShape(10.dp))
             .background(color = Color.White)
             .fillMaxWidth()
             .padding(10.dp)
             .clickable{
-            // add ham qua map
+                navController.navigate(ScreenRoute.MapScreen)
         }){
             Text(text = "Địa chỉ nhận hàng",
                 fontSize = 20.sp,
@@ -196,8 +231,8 @@ fun ContentCartItem(confirmOrderViewModel: ConfirmOrderViewModel,cardItem: CartI
                 Icon(imageVector = Icons.Filled.LocationOn,
                     contentDescription = null,
                     tint = Color.Red)
-                Text(text = cardItem.restaurant.address?.name.toString(),
-                    fontSize = 20.sp)
+                Text(text = confirmOrderViewModel.address?.name?:"Chọn địa chỉ",
+                    fontSize = 15.sp)
             }
         }
         var payType by remember { mutableIntStateOf(0) }
