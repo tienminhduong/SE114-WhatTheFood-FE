@@ -12,14 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -76,7 +80,8 @@ fun AddProductScreen(
     ) {
         Text(
             text = "Thêm sản phẩm",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            color = Color.White
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -94,48 +99,70 @@ fun AddProductScreen(
         // Nút đổi ảnh (placeholder)
         Button(
             onClick = { launcher.launch("image/*") },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF228B22) // Xanh lá, bạn có thể thay bằng màu xanh khác
+            )
         ) {
             Text("Đổi hình ảnh")
         }
-
+        
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = imgUrl,
-            onValueChange = { imgUrl = it },
-            label = { Text("Link hình ảnh") },
-            modifier = Modifier.fillMaxWidth()
-        )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
+        TextField(
             value = name,
             onValueChange = { name = it },
             label = { Text("Tên sản phẩm") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
+        TextField(
             value = price,
             onValueChange = { price = it },
             label = { Text("Giá (VND)") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            )
         )
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Thêm mô tả món ăn
-        OutlinedTextField(
+        TextField(
             value = description,
             onValueChange = { description = it },
             label = { Text("Mô tả món ăn") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            )
         )
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -162,13 +189,19 @@ fun AddProductScreen(
                     )
                     onSave(newProduct)
                     focusManager.clearFocus()
-                }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF228B22)
+                )
             ) {
                 Text("Thêm")
             }
 
             OutlinedButton(onClick = onCancel) {
-                Text("Huỷ")
+                Text(
+                    "Huỷ",
+                    color = Color(0xFF228B22)
+                )
             }
         }
     }
