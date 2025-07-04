@@ -61,6 +61,7 @@ import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view.SellerRoute
 import com.example.se114_whatthefood_fe.view.authScreen.AuthScreen
 import com.example.se114_whatthefood_fe.view.cart.CartScreen
+import com.example.se114_whatthefood_fe.view.confirmScreen.CommentScreen
 import com.example.se114_whatthefood_fe.view.confirmScreen.ConfirmOrderScreen
 import com.example.se114_whatthefood_fe.view.detailFoodScreen.DetailFoodScreen
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.DetailOrderScreen
@@ -72,6 +73,7 @@ import com.example.se114_whatthefood_fe.view.deviceScreen.OrderScreen
 import com.example.se114_whatthefood_fe.view.map.MapScreen
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import com.example.se114_whatthefood_fe.view_model.CartViewModel
+import com.example.se114_whatthefood_fe.view_model.CommentViewModel
 import com.example.se114_whatthefood_fe.view_model.ConfirmOrderViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
 import com.example.se114_whatthefood_fe.view_model.FoodViewModel
@@ -287,6 +289,7 @@ fun SellerScaffold(dataStore: DataStore<Preferences>,
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun UserScaffold(
     dataStore: DataStore<Preferences>,
@@ -445,6 +448,18 @@ fun UserScaffold(
                 composable(ScreenRoute.MapScreen){
                     MapScreen(modifier = Modifier, navHostController = navController,
                         mapViewModel = mapViewModel)
+                }
+
+                composable(ScreenRoute.CommentScreen,
+                    arguments = listOf(
+                        navArgument("shippingId") { type = NavType.IntType }
+                    )){ navBackStackEntry ->
+                    val id = navBackStackEntry.arguments?.getInt("shippingId")
+                    val orderModel = remember{ OrderModel(api = RetrofitInstance.instance, dataStore = dataStore) }
+                    CommentScreen(viewModel = CommentViewModel(orderModel = orderModel),
+                        id = id!!,
+                        navHostController = navController
+                        )
                 }
 
             }

@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.se114_whatthefood_fe.data.remote.ApiService
 import com.example.se114_whatthefood_fe.data.remote.OwnedRestaurantInfo
 import com.example.se114_whatthefood_fe.data.remote.ShippingInfo
+import com.example.se114_whatthefood_fe.data.remote.commentRequest
 import kotlinx.coroutines.flow.first
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
@@ -25,6 +26,20 @@ class OrderModel(
         return preferences[TOKEN_KEY]
     }
 
+    suspend fun pushComment(orderId: Int, star: Int, comment: String): Boolean {
+        val token = getToken() ?: return false
+        val response = api.pushComment(token = "Bearer $token",
+                                        shippingInfoId = orderId,
+                                        request = commentRequest(star, comment))
+        return response.isSuccessful
+
+    }
+
+    suspend fun setCompleted(orderId: Int): Boolean{
+        val token = getToken() ?: return false
+        val response = api.setCompleted("Bearer $token", orderId)
+        return response.isSuccessful
+    }
 
     // get ordersById
     suspend fun getOrdersById(orderId: Int): Response<ShippingInfo> {
