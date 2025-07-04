@@ -26,7 +26,7 @@ class SellerHomeViewModel(
         loadProducts()
     }
 
-    private fun loadProducts() {
+    fun loadProducts() {
         viewModelScope.launch {
             isLoading = true
             errorMessage = null

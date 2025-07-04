@@ -80,7 +80,7 @@ fun OrderStatusScreen(viewModel: SellerManagerViewModel) {
                 .fillMaxSize()
                 .background(
                     brush = Brush.verticalGradient(
-                        colors = listOf(Color(0xFF00FF7F), Color.White)
+                        listOf(Color(0x09B256FF), Color(0xFFD7F6DF))
                     )
                 )
         ) {
@@ -170,6 +170,10 @@ fun PendingContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerView
 fun AprrovedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val deals by viewModel.approvedDeals.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadAllDeals()
+    }
+
     if (deals.isNotEmpty()) {
         LazyColumn {
             items(deals) { deal ->
@@ -194,6 +198,10 @@ fun AprrovedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerVie
 @Composable
 fun DeliveringContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val DeliveringDeals by viewModel.deliveringDeals.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadAllDeals()
+    }
 
     if (DeliveringDeals.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -222,6 +230,10 @@ fun DeliveringContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerV
 fun DeliveredContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val deliveredDeals by viewModel.deliveredDeals.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadAllDeals()
+    }
+
     if (deliveredDeals.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(deliveredDeals) { deal ->
@@ -246,6 +258,10 @@ fun DeliveredContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerVi
 @Composable
 fun CompletedContent(onDealClick: (DealItem) -> Unit, viewModel: SellerManagerViewModel) {
     val compeletedDeals by viewModel.completedDeals.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadAllDeals()
+    }
 
     if (compeletedDeals.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {

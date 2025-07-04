@@ -26,7 +26,7 @@ class SellerRatedViewModel(
         fetchRatings()
     }
 
-    private fun fetchRatings() {
+    fun fetchRatings() {
         viewModelScope.launch {
             _isLoading.value = true
             try {

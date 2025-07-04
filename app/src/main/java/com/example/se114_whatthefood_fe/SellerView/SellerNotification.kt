@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Doorbell
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -51,13 +51,10 @@ fun SellerNotificationContent(viewModel: SellerNotificationViewModel) {
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF00FF7F), Color.White)
+                    listOf(Color(0x09B256FF), Color(0xFFD7F6DF))
                 )
             )
     ) {
-        SellerHeaderNotification()
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         // Nếu đang xem chi tiết → show detail screen
         if (selectedNotification != null) {
@@ -68,6 +65,9 @@ fun SellerNotificationContent(viewModel: SellerNotificationViewModel) {
         }
         // Nếu không thì show danh sách
         else {
+            SellerHeaderNotification()
+
+            Spacer(modifier = Modifier.height(8.dp))
             when {
                 state.loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -126,7 +126,7 @@ fun SellerHeaderNotification(modifier: Modifier = Modifier) {
                 .padding(end = 16.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.Doorbell,
+                imageVector = Icons.Default.Notifications,
                 contentDescription = "Bell Icon",
                 modifier = Modifier.size(30.dp),
                 tint = White

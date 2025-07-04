@@ -3,20 +3,21 @@ package com.example.se114_whatthefood_fe.SellerView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,10 +36,61 @@ fun SellerNotificationDetailScreen(
     notification: Notification,
     onBack: () -> Unit
 ) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 0.dp, horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        IconButton(
+            onClick = onBack,
+//            modifier = Modifier
+//                .padding(start = 16.dp, top = 12.dp)
+//                .size(36.dp) // Kích thước gọn gàng
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Quay lại",
+                modifier = Modifier.size(30.dp),
+                tint = Color(0xFFFFFFFF)
+            )
+        }
+
+
+        Text(
+            text = "Thông báo",
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = HeaderTextSize,
+            color = White,
+            modifier = Modifier.weight(1f) // chiếm phần còn lại để căn giữa
+        )
+
+//        Spacer(modifier = Modifier.width(64.dp)) // tạo khoảng trắng để cân nút "Quay lại"
+
+        IconButton(
+            onClick = { /* TODO: xử lý bấm chuông nếu cần */ },
+        ) {
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Bell Icon",
+                modifier = Modifier.size(30.dp),
+                tint = White
+            )
+        }
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(Color(0xFF00FF99), Color.White)))
+            .background(
+                brush = Brush.verticalGradient(
+                    listOf(Color(0x09B256FF), Color(0xFFD7F6DF))
+                )
+            )
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -78,16 +130,5 @@ fun SellerNotificationDetailScreen(
 
         }
 
-        Button(
-            onClick = onBack,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A))
-        ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
-            Spacer(Modifier.width(8.dp))
-            Text("Quay lại", color = Color.White)
-        }
     }
 }

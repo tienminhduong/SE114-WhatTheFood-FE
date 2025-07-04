@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +54,10 @@ fun SellerHome(
     val error = HviewModel.errorMessage
     val products = HviewModel.products
 
+    LaunchedEffect(Unit) {
+        HviewModel.loadProducts()
+    }
+
     when {
         editingProduct != null -> {
             EditProductScreen(
@@ -84,7 +89,7 @@ fun SellerHome(
                     .fillMaxSize()
                     .background(
                         brush = Brush.verticalGradient(
-                            listOf(Color(0xFF00FF7F), Color.White)
+                            listOf(Color(0x09B256FF), Color(0xFFD7F6DF))
                         )
                     )
             ) {
