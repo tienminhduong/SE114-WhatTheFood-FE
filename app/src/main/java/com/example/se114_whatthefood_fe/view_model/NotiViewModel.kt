@@ -1,7 +1,9 @@
 package com.example.se114_whatthefood_fe.view_model
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,6 +21,8 @@ class NotiViewModel(
 
     private val _notificationsState = mutableStateOf(NotiState())
     val notificationsState: State<NotiState> = _notificationsState
+
+    var seeDetailNotification by mutableStateOf<Notification?>(null)
 
     companion object{
         private val TOKEN_KEY = stringPreferencesKey("auth_token")
@@ -45,6 +49,20 @@ class NotiViewModel(
                 )
             }
         }
+    }
+
+     suspend fun onNotificationClicked(notification: Notification) {
+        _notificationsState.value = _notificationsState.value.copy(
+            list = _notificationsState.value.list.map {
+                if (it.id == notification.id)
+                {
+                    it.copy(isRead = true)
+                    api.ReadNotification("Bearer ${getToken() ?: ""}",it.id)
+                }
+                else it
+            }
+        )
+        seeDetailNotification = notification
     }
 
 

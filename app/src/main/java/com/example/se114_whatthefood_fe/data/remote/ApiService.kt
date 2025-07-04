@@ -482,6 +482,11 @@ interface ApiService {
     @GET("users/notifications")
     suspend fun getAllNotifications(@Header("Authorization") token: String): List<Notification>
 
+    @GET("users/notifications/{id}")
+    suspend fun ReadNotification(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int): Notification
+
     @POST("shippinginfo/{shippingInfoId}/approve")
     suspend fun setOrderApprove(
         @Header("Authorization") token: String,
