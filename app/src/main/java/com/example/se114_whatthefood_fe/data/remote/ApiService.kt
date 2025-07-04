@@ -17,6 +17,25 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+data class commentRequest(
+    @SerializedName("star")
+    val start: Int,
+    @SerializedName("comment")
+    val comment: String
+)
+data class NewOrder(
+    @SerializedName("restaurantId")
+    val restaurantId: Int,
+    @SerializedName("shippingInfoDetails")
+    val shippingInfoDetails: MutableList<ShippingInfoDetailDto>,
+    @SerializedName("userNote")
+    val userNote: String,
+    @SerializedName("paymentMethod")
+    val paymentMethod: String,
+    @SerializedName("address")
+    val address: Address
+)
+
 data class NewFoodItemRequest(
     @SerializedName("restaurantId")
     val restaurantId: Int,
@@ -67,6 +86,14 @@ data class ShippingInfoDetail(
     val amount: Int
 )
 
+data class ShippingInfoDetailDto(
+    @SerializedName("foodItemId")
+    val foodItemId: Int,
+    @SerializedName("amount")
+    val amount: Int
+)
+
+@Parcelize
 data class Address(
     @SerializedName("name")
     val name: String,
@@ -74,7 +101,7 @@ data class Address(
     val longitude: Float,
     @SerializedName("latitude")
     val latitude: Float
-)
+) : Parcelable
 
 // shipping info API
 data class ShippingInfo(
@@ -448,6 +475,9 @@ interface ApiService {
         @Query("amount") amount: Int = 0
     ): Response<Unit>
 
+    @DELETE("cart/ordered")
+    suspend fun deleteCart(@Header("Authorization") token: String,
+                           @Query("restaurantId") restaurantId: Int): Response<Unit>
 
     @GET("users/notifications")
     suspend fun getAllNotifications(@Header("Authorization") token: String): List<Notification>
@@ -522,9 +552,23 @@ interface ApiService {
         @Query("pageSize") pageSize: Int = 10
     ): Response<List<ShippingInfo>>
 
+
     @GET("users/notifications/{id}")
     suspend fun readNotification(
         @Header("Authorization") token: String,
         @Path("id") notiId: Int
     ): Response<Notification>
+
+    @POST("shippinginfo/order")
+    suspend fun createOrder(@Header("Authorization") token: String,
+                            @Body request: NewOrder): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/setcompleted")
+    suspend fun setCompleted(@Header("Authorization") token: String,
+                             @Path("shippingInfoId") shippingInfoId: Int): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/rating")
+    suspend fun pushComment(@Header("Authorization") token: String,
+                            @Path("shippingInfoId") shippingInfoId: Int,
+                            @Body request: commentRequest): Response<Unit>
 }

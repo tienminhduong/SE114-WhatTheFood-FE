@@ -2,6 +2,7 @@ package com.example.se114_whatthefood_fe.view.detailFoodScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
@@ -59,6 +61,7 @@ import com.example.se114_whatthefood_fe.ui.theme.LightGreen
 import com.example.se114_whatthefood_fe.view.authScreen.ButtonIcon
 import com.example.se114_whatthefood_fe.view.detailOrderScreen.MoneyFormat
 import com.example.se114_whatthefood_fe.view_model.FoodDetailViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun TopBarFoodDetailScreen(modifier: Modifier = Modifier,
@@ -105,9 +108,15 @@ fun DetailFoodScreen(modifier: Modifier = Modifier,
                 modifier = Modifier.padding(innerPadding) // <-- Áp dụng padding ở đây
                     .fillMaxSize()
             ) // <-- Đảm bảo FoodItemDetail chiếm đầy không gian còn lại)
-
+            val context = LocalContext.current
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                    foodDetailViewModel.viewModelScope.launch {
+                        val result = foodDetailViewModel.addToCart(food.id)
+                        Toast.makeText(context, if(result) "Thêm vào giỏ hàng thành công"
+                                                    else "Thêm vào giỏ hàng thất bại", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier.align(Alignment.BottomEnd)
                     .padding(16.dp)
                     .clip(shape = CircleShape),

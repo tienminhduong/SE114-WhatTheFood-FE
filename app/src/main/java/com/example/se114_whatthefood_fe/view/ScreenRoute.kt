@@ -11,6 +11,8 @@ object ScreenRoute {
     val SearchScreen = "SearchResultScreen"
     val CartScreen = "Cart"
     val MapScreen = "Map"
+    val ConfirmOrderScreen = "ConfirmOrder/{restaurantId}"
+    val CommentScreen = "Comment/{shippingId}"
 }
 
 object SellerRoute {
