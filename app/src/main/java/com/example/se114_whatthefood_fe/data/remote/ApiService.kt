@@ -17,6 +17,12 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+data class commentRequest(
+    @SerializedName("star")
+    val start: Int,
+    @SerializedName("comment")
+    val comment: String
+)
 data class NewOrder(
     @SerializedName("restaurantId")
     val restaurantId: Int,
@@ -513,4 +519,9 @@ interface ApiService {
     @POST("shippinginfo/{shippingInfoId}/setcompleted")
     suspend fun setCompleted(@Header("Authorization") token: String,
                              @Path("shippingInfoId") shippingInfoId: Int): Response<Unit>
+
+    @POST("shippinginfo/{shippingInfoId}/rating")
+    suspend fun pushComment(@Header("Authorization") token: String,
+                            @Path("shippingInfoId") shippingInfoId: Int,
+                            @Body request: commentRequest): Response<Unit>
 }

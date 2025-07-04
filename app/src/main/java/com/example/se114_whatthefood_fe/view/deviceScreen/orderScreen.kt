@@ -91,6 +91,9 @@ fun Content(navController: NavController? = null, indexTab: Int, orderViewModel:
             }
             CardOrder(order = item,
                 modifier = Modifier.clickable{
+                    if(item.status == "Completed")
+                        navController?.navigate("Comment/${item.id}")
+                    else
                     navController?.navigate("DetailOrder/${item.id}")
                 })
         }
