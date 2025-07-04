@@ -54,7 +54,10 @@ import com.example.se114_whatthefood_fe.view.ScaffoldRoute
 import com.example.se114_whatthefood_fe.view_model.AuthViewModel
 import androidx.activity.compose.LocalActivity
 import androidx.activity.result.ActivityResult
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.ui.text.font.FontWeight
 import com.example.se114_whatthefood_fe.view.ScreenRoute
 import com.example.se114_whatthefood_fe.view_model.MapViewModel
 
@@ -110,7 +113,9 @@ fun HeaderWhenLoggedIn(modifier: Modifier = Modifier,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             color = White,
-            fontSize = 30.sp)
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
+            )
     }
 }
 
@@ -217,32 +222,31 @@ fun AccountScreen(authViewModel: AuthViewModel,
         // vi voucher
         ButtonWithLeadingAndTrailingIcon(
             "Đổi ảnh đại diện",
-            leadingIcon = Icons.Default.ConfirmationNumber,
+            leadingIcon = Icons.Default.AccountCircle,
             trailingIcon = Icons.Default.PlayArrow,
-            onClick = { /* TODO: Handle click */ },
+            onClick = { launcher.launch("image/*") },
             modifier = Modifier
         )
         // thanh toan
         ButtonWithLeadingAndTrailingIcon(
-            "Thanh toán",
-            leadingIcon = Icons.Default.Wallet,
-            trailingIcon = Icons.Default.PlayArrow,
-            onClick = { authViewModel.onPaymentClick(10000, activity = activity!!) },
-            modifier = Modifier.padding(top = 5.dp)
-        )
-        ButtonWithLeadingAndTrailingIcon(
-            "Map",
-            leadingIcon = Icons.Default.LocationOn,
+            "Đổi tên",
+            leadingIcon = Icons.Default.Person,
             trailingIcon = Icons.Default.PlayArrow,
             onClick = {
-                navController.navigate(ScreenRoute.MapScreen)
+                // Doi ten handle
             },
             modifier = Modifier.padding(top = 5.dp)
         )
-        // doi anh
-        Button(onClick = { launcher.launch("image/*")}) {
-            Text(text = "Đổi ảnh đại diện", color = LightGreen)
-        }
+        ButtonWithLeadingAndTrailingIcon(
+            "Đổi mật khẩu",
+            leadingIcon = Icons.Default.Password,
+            trailingIcon = Icons.Default.PlayArrow,
+            onClick = {
+                // Doi mat khau handle
+            },
+            modifier = Modifier.padding(top = 5.dp)
+        )
+
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {

@@ -151,6 +151,7 @@ class AuthViewModel(
     }
 
     fun onForgotPasswordClick() {
+
         // Handle forgot password logic here, e.g., navigate to a reset password screen
         // This could be implemented using a navigation controller or similar mechanism
     }
@@ -307,7 +308,7 @@ class AuthViewModel(
             .setActivity(activity)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                    signInWithPhoneAuthCredential(credential)
+                    signInWithPhoneAuthCredential(credential, activity)
                 }
 
                 override fun onVerificationFailed(e: FirebaseException) {
@@ -326,18 +327,24 @@ class AuthViewModel(
                     this@AuthViewModel.verificationId = verificationId
                     otpSent = true
                 }
+
+                override fun onCodeAutoRetrievalTimeOut(p0: String) {
+                    super.onCodeAutoRetrievalTimeOut(p0)
+                    Toast.makeText(activity, "Thời gian xác thực đã hết, vui lòng đăng kí lại", Toast.LENGTH_SHORT).show()
+                    otpSent = false
+                }
             })
             .build()
 
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
-    fun verifyOtp(code: String) {
+    fun verifyOtp(code: String, activity: Activity) {
         val credential = PhoneAuthProvider.getCredential(verificationId ?: "", code)
-        signInWithPhoneAuthCredential(credential)
+        signInWithPhoneAuthCredential(credential, activity)
     }
 
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential, activity: Activity) {
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -345,6 +352,7 @@ class AuthViewModel(
                     onRegisterClick()
                 } else {
                     Log.e("Auth", "Sign in failed: ${task.exception?.message}")
+                    Toast.makeText(activity, "Mã OTP chưa đúng, vui lòng thử lại", Toast.LENGTH_SHORT).show()
                 }
             }
     }

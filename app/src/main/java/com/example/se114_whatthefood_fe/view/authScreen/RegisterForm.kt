@@ -204,7 +204,7 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
             )
             RoundCornerButton(
                 text = "Xác thực",
-                onClick = { authViewModel.verifyOtp(authViewModel.otpCode)},
+                onClick = { authViewModel.verifyOtp(authViewModel.otpCode, activity!!)},
                 modifier = modifier
             )
             RoundCornerButton(
@@ -212,11 +212,6 @@ fun RegisterForm(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                 onClick = { authViewModel.otpSent = false },
                 modifier = modifier
             )
-        }
-        authViewModel.authResult?.let {
-            Text("Signed in as: ${it.phoneNumber}")
-            Text("Role: ${authViewModel.optionRole.value}")
-            Text("Name: ${authViewModel.nameRegister}")
         }
     }
 
