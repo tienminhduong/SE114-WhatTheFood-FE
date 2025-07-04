@@ -3,6 +3,7 @@ package com.example.se114_whatthefood_fe.view.confirmScreen
 import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -111,7 +112,7 @@ fun ConfirmOrderScreen(modifier: Modifier = Modifier,
     else
         Log.d("ConfirmOrderScreen", "Selected address: ${selectedAddress.name}: ${selectedAddress.latitude}, ${selectedAddress.longitude}")
 
-
+    val context = LocalContext.current
     LaunchedEffect(id) {
         confirmOrderViewModel.getCurrentCardItem(id)
     }
@@ -139,7 +140,10 @@ fun ConfirmOrderScreen(modifier: Modifier = Modifier,
                     .fillMaxHeight()
                     .background(color = LightGreen)
                     .clickable{
-                        if(confirmOrderViewModel.payType == 0)
+                        if (confirmOrderViewModel.address == null) {
+                            Toast.makeText(context, "Vui lòng chọn địa chỉ nhận hàng", Toast.LENGTH_SHORT).show()
+                        }
+                        else if(confirmOrderViewModel.payType == 0)
                             // call api
                             confirmOrderViewModel.createOrder()
                             else
@@ -181,8 +185,13 @@ fun ConfirmOrderScreen(modifier: Modifier = Modifier,
 fun ContentCartItem(confirmOrderViewModel: ConfirmOrderViewModel,cardItem: CartItem, modifier: Modifier = Modifier,
                     address: Address?,
                     navController: NavHostController){
-
-    var currentLocation by remember { mutableStateOf<Address?>(null) }
+    // set address
+    if (address != null) {
+        confirmOrderViewModel.address = address
+        Log.d("ConfirmOrderScreen", "Address set: ${address.name}: ${address.latitude}, ${address.longitude}")
+    } else {
+        Log.d("ConfirmOrderScreen", "No address selected")
+    }
 
     Column(modifier = modifier.fillMaxWidth()
         .padding(horizontal = 10.dp),
@@ -204,6 +213,8 @@ fun ContentCartItem(confirmOrderViewModel: ConfirmOrderViewModel,cardItem: CartI
                     fontSize = 15.sp)
             }
         }
+
+
         // card dia chi nhan hang
         Column(modifier = Modifier.clip(shape = RoundedCornerShape(10.dp))
             .background(color = Color.White)
@@ -220,7 +231,7 @@ fun ContentCartItem(confirmOrderViewModel: ConfirmOrderViewModel,cardItem: CartI
                 Icon(imageVector = Icons.Filled.LocationOn,
                     contentDescription = null,
                     tint = Color.Red)
-                Text(text = address?.name?:"Chọn địa chỉ",
+                Text(text = confirmOrderViewModel.address?.name?:"Chọn địa chỉ",
                     fontSize = 15.sp)
             }
         }

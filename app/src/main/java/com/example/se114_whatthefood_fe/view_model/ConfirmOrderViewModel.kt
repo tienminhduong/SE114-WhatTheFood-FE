@@ -29,6 +29,7 @@ class ConfirmOrderViewModel(private val cartModel: CartModel,  val authModel: Au
     var description by mutableStateOf("")
     var currentCardItem by mutableStateOf<CartItem?>(null)
     var payType by mutableIntStateOf(0)
+    var address by mutableStateOf<Address?>(null)
 
     fun createOrder(){
         viewModelScope.launch {
@@ -41,7 +42,7 @@ class ConfirmOrderViewModel(private val cartModel: CartModel,  val authModel: Au
             shippingInfoDetails = shippingInfoDetail,
             userNote = description,
             paymentMethod = if (payType == 0) "Cash" else "Momo",
-            address = currentCardItem?.restaurant?.address?:Address("", 0.0f, 0.0f)
+            address = address!!
         )
 
             cartModel.createNewOrder(order)
